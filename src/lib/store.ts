@@ -37,8 +37,6 @@ export interface Region {
 interface AppState {
   language: Language;
   setLanguage: (lang: Language) => void;
-  theme: 'light' | 'dark';
-  setTheme: (theme: 'light' | 'dark') => void;
   selectedRegion: string | null;
   setSelectedRegion: (regionId: string | null) => void;
   compareList: string[];
@@ -50,12 +48,6 @@ interface AppState {
 export const useAppStore = create<AppState>((set) => ({
   language: 'en',
   setLanguage: (language) => set({ language }),
-  theme: (typeof window !== 'undefined' && localStorage.getItem('theme') === 'dark') ? 'dark' : 'light',
-  setTheme: (theme) => {
-    localStorage.setItem('theme', theme);
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-    set({ theme });
-  },
   selectedRegion: null,
   setSelectedRegion: (selectedRegion) => set({ selectedRegion }),
   compareList: [],
