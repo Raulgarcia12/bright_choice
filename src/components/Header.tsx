@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Globe, LogIn, LogOut, Shield, BarChart3 } from 'lucide-react';
+import { Globe, LogIn, LogOut, Shield, BarChart3, Moon, Sun } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -9,7 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { t } from '@/lib/i18n';
 
 export default function Header() {
-  const { language, setLanguage, selectedRegion, setSelectedRegion } = useAppStore();
+  const { language, setLanguage, selectedRegion, setSelectedRegion, theme, setTheme } = useAppStore();
   const { data: regions } = useRegions();
   const { session, isAdmin, signOut } = useAuth();
   const location = useLocation();
@@ -49,6 +49,15 @@ export default function Header() {
               ))}
             </SelectContent>
           </Select>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            className="gap-1 font-medium"
+          >
+            {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+          </Button>
 
           <Button
             variant="ghost"

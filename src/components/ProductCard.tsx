@@ -7,6 +7,15 @@ import { Progress } from '@/components/ui/progress';
 import { useAppStore, type Product } from '@/lib/store';
 import { calculateConvenienceScore } from '@/lib/convenienceScore';
 import { t } from '@/lib/i18n';
+import ledBulb from '@/assets/led-bulb.jpg';
+import ledPanel from '@/assets/led-panel.jpg';
+import ledHighbay from '@/assets/led-highbay.jpg';
+
+const categoryImages: Record<string, string> = {
+  Bulb: ledBulb,
+  Panel: ledPanel,
+  'High Bay': ledHighbay,
+};
 
 interface ProductCardProps {
   product: Product;
@@ -40,6 +49,16 @@ export default function ProductCard({ product, allProducts }: ProductCardProps) 
         />
 
         <CardContent className="p-5">
+          {/* Product image */}
+          <div className="mb-3 flex justify-center rounded-lg bg-muted/20 p-3">
+            <img
+              src={categoryImages[product.category] || ledBulb}
+              alt={`${product.brand} ${product.model}`}
+              className="h-16 w-16 object-contain"
+              loading="lazy"
+            />
+          </div>
+
           <div className="mb-1 text-xs font-medium uppercase tracking-wider text-muted-foreground">{product.brand}</div>
           <h3 className="mb-3 text-sm font-semibold leading-tight text-foreground">{product.model}</h3>
 
