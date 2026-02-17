@@ -11,49 +11,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
+import ProductFormDialog from '@/components/admin/ProductFormDialog';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-
-interface ProductForm {
-  brand: string;
-  model: string;
-  category: string;
-  watts: string;
-  lumens: string;
-  cct: string;
-  cri: string;
-  lifespan: string;
-  warranty: string;
-  cert_ul: boolean;
-  cert_dlc: boolean;
-  cert_energy_star: boolean;
-  price: string;
-  currency: string;
-  region_id: string;
-  sales_channel: string;
-  use_type: string;
-  is_recommended: boolean;
-}
-
-const emptyForm: ProductForm = {
-  brand: '', model: '', category: 'Bulb', watts: '', lumens: '', cct: '4000', cri: '80',
-  lifespan: '25000', warranty: '3', cert_ul: false, cert_dlc: false, cert_energy_star: false,
-  price: '', currency: 'USD', region_id: '', sales_channel: 'Distributor', use_type: 'Commercial', is_recommended: false,
-};
 
 export default function AdminPage() {
   const { language } = useAppStore();
@@ -66,15 +33,11 @@ export default function AdminPage() {
 
   const [search, setSearch] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editId, setEditId] = useState<string | null>(null);
-  const [form, setForm] = useState<ProductForm>(emptyForm);
+  const [editProduct, setEditProduct] = useState<any>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && (!session || !isAdmin)) {
-      navigate('/login');
-    }
+    if (!authLoading && (!session || !isAdmin)) navigate('/login');
   }, [session, isAdmin, authLoading, navigate]);
 
   if (authLoading || !isAdmin) return null;
@@ -84,50 +47,13 @@ export default function AdminPage() {
   );
 
   function openEdit(product: any) {
-    setEditId(product.id);
-    setForm({
-      brand: product.brand, model: product.model, category: product.category,
-      watts: String(product.watts), lumens: String(product.lumens), cct: String(product.cct),
-      cri: String(product.cri), lifespan: String(product.lifespan), warranty: String(product.warranty),
-      cert_ul: product.cert_ul, cert_dlc: product.cert_dlc, cert_energy_star: product.cert_energy_star,
-      price: String(product.price), currency: product.currency, region_id: product.region_id || '',
-      sales_channel: product.sales_channel, use_type: product.use_type, is_recommended: product.is_recommended,
-    });
+    setEditProduct(product);
     setDialogOpen(true);
   }
 
   function openNew() {
-    setEditId(null);
-    setForm(emptyForm);
+    setEditProduct(null);
     setDialogOpen(true);
-  }
-
-  async function handleSave() {
-    setSaving(true);
-    const payload = {
-      brand: form.brand, model: form.model, category: form.category,
-      watts: Number(form.watts), lumens: Number(form.lumens), cct: Number(form.cct),
-      cri: Number(form.cri), lifespan: Number(form.lifespan), warranty: Number(form.warranty),
-      cert_ul: form.cert_ul, cert_dlc: form.cert_dlc, cert_energy_star: form.cert_energy_star,
-      price: Number(form.price), currency: form.currency, region_id: form.region_id || null,
-      sales_channel: form.sales_channel, use_type: form.use_type, is_recommended: form.is_recommended,
-    };
-
-    let error;
-    if (editId) {
-      ({ error } = await supabase.from('products').update(payload).eq('id', editId));
-    } else {
-      ({ error } = await supabase.from('products').insert(payload));
-    }
-
-    setSaving(false);
-    if (error) {
-      toast({ title: error.message, variant: 'destructive' });
-    } else {
-      toast({ title: t('productSaved', language) });
-      setDialogOpen(false);
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-    }
   }
 
   async function handleDelete() {
@@ -142,15 +68,13 @@ export default function AdminPage() {
     setDeleteId(null);
   }
 
-  const updateForm = (field: keyof ProductForm, value: any) => setForm((f) => ({ ...f, [field]: value }));
-
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <main className="mx-auto max-w-7xl px-4 py-6">
-        <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-foreground">{t('adminPanel', language)}</h1>
-          <Button onClick={openNew}><Plus className="mr-2 h-4 w-4" />{t('addProduct', language)}</Button>
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h1 className="text-xl font-bold text-foreground sm:text-2xl">{t('adminPanel', language)}</h1>
+          <Button onClick={openNew} size="sm"><Plus className="mr-2 h-4 w-4" />{t('addProduct', language)}</Button>
         </div>
 
         <div className="mb-4">
@@ -160,7 +84,31 @@ export default function AdminPage() {
           </div>
         </div>
 
-        <div className="rounded-lg border bg-card">
+        {/* Mobile card list */}
+        <div className="space-y-3 sm:hidden">
+          {filtered.map((p) => (
+            <div key={p.id} className="rounded-lg border bg-card p-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="font-medium text-foreground">{p.brand}</div>
+                  <div className="text-sm text-muted-foreground">{p.model}</div>
+                </div>
+                <Badge variant="secondary">{p.category}</Badge>
+              </div>
+              <div className="mt-2 flex items-center justify-between text-sm">
+                <span>{p.currency === 'CAD' ? 'CA$' : '$'}{p.price}</span>
+                <span className="text-muted-foreground">{p.efficiency} lm/W</span>
+              </div>
+              <div className="mt-3 flex gap-2">
+                <Button variant="outline" size="sm" className="flex-1" onClick={() => openEdit(p)}><Pencil className="mr-1 h-3 w-3" />Edit</Button>
+                <Button variant="outline" size="sm" className="text-destructive" onClick={() => setDeleteId(p.id)}><Trash2 className="h-3 w-3" /></Button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop table */}
+        <div className="hidden rounded-lg border bg-card sm:block">
           <Table>
             <TableHeader>
               <TableRow>
@@ -195,130 +143,13 @@ export default function AdminPage() {
         </div>
       </main>
 
-      {/* Product form dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>{editId ? t('editProduct', language) : t('addProduct', language)}</DialogTitle>
-          </DialogHeader>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>{t('brand', language)}</Label>
-              <Input value={form.brand} onChange={(e) => updateForm('brand', e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label>{t('model', language)}</Label>
-              <Input value={form.model} onChange={(e) => updateForm('model', e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label>{t('category', language)}</Label>
-              <Select value={form.category} onValueChange={(v) => updateForm('category', v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Bulb">Bulb</SelectItem>
-                  <SelectItem value="Panel">Panel</SelectItem>
-                  <SelectItem value="High Bay">High Bay</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>{t('useType', language)}</Label>
-              <Select value={form.use_type} onValueChange={(v) => updateForm('use_type', v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Residential">Residential</SelectItem>
-                  <SelectItem value="Commercial">Commercial</SelectItem>
-                  <SelectItem value="Industrial">Industrial</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>{t('watts', language)}</Label>
-              <Input type="number" value={form.watts} onChange={(e) => updateForm('watts', e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label>{t('lumens', language)}</Label>
-              <Input type="number" value={form.lumens} onChange={(e) => updateForm('lumens', e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label>{t('cct', language)} (K)</Label>
-              <Input type="number" value={form.cct} onChange={(e) => updateForm('cct', e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label>{t('cri', language)}</Label>
-              <Input type="number" value={form.cri} onChange={(e) => updateForm('cri', e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label>{t('lifespan', language)} ({t('hours', language)})</Label>
-              <Input type="number" value={form.lifespan} onChange={(e) => updateForm('lifespan', e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label>{t('warranty', language)} ({t('years', language)})</Label>
-              <Input type="number" value={form.warranty} onChange={(e) => updateForm('warranty', e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label>{t('price', language)}</Label>
-              <Input type="number" step="0.01" value={form.price} onChange={(e) => updateForm('price', e.target.value)} />
-            </div>
-            <div className="space-y-2">
-              <Label>Currency</Label>
-              <Select value={form.currency} onValueChange={(v) => updateForm('currency', v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="USD">USD</SelectItem>
-                  <SelectItem value="CAD">CAD</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>{t('salesChannel', language)}</Label>
-              <Select value={form.sales_channel} onValueChange={(v) => updateForm('sales_channel', v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Distributor">Distributor</SelectItem>
-                  <SelectItem value="Retail">Retail</SelectItem>
-                  <SelectItem value="Online">Online</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>{t('region', language)}</Label>
-              <Select value={form.region_id} onValueChange={(v) => updateForm('region_id', v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {(regions || []).map((r) => (
-                    <SelectItem key={r.id} value={r.id}>{r.name} ({r.abbreviation})</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="col-span-2 flex flex-wrap gap-4">
-              <div className="flex items-center gap-2">
-                <Checkbox id="ul" checked={form.cert_ul} onCheckedChange={(c) => updateForm('cert_ul', !!c)} />
-                <Label htmlFor="ul">UL</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Checkbox id="dlc" checked={form.cert_dlc} onCheckedChange={(c) => updateForm('cert_dlc', !!c)} />
-                <Label htmlFor="dlc">DLC</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Checkbox id="es" checked={form.cert_energy_star} onCheckedChange={(c) => updateForm('cert_energy_star', !!c)} />
-                <Label htmlFor="es">Energy Star</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Checkbox id="rec" checked={form.is_recommended} onCheckedChange={(c) => updateForm('is_recommended', !!c)} />
-                <Label htmlFor="rec">⭐ {t('recommended', language)}</Label>
-              </div>
-            </div>
-          </div>
-          <div className="mt-4 flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>{t('cancel', language)}</Button>
-            <Button onClick={handleSave} disabled={saving}>{saving ? t('loading', language) : t('save', language)}</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <ProductFormDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        editProduct={editProduct}
+        regions={regions || []}
+      />
 
-      {/* Delete confirmation */}
       <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>

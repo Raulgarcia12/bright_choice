@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { BarChart3, Lightbulb, TrendingUp, Shield } from 'lucide-react';
+import { BarChart3, Lightbulb, TrendingUp, Shield, SlidersHorizontal, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '@/components/Header';
 import ProductCard from '@/components/ProductCard';
@@ -10,6 +10,8 @@ import { useAppStore } from '@/lib/store';
 import { t } from '@/lib/i18n';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 const Index = () => {
   const { language, selectedRegion, compareList } = useAppStore();
@@ -35,17 +37,17 @@ const Index = () => {
         transition={{ duration: 0.6 }}
         className="border-b bg-gradient-to-br from-primary/5 via-background to-primary/10"
       >
-        <div className="mx-auto max-w-7xl px-4 py-10">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:py-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
             className="text-center"
           >
-            <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-4xl">
               {language === 'en' ? 'Find the Best LED Products' : 'Encuentra los Mejores Productos LED'}
             </h1>
-            <p className="mx-auto mt-3 max-w-2xl text-base text-muted-foreground">
+            <p className="mx-auto mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base sm:mt-3">
               {language === 'en'
                 ? 'Compare specifications, pricing, and convenience scores across 100+ commercial LED products for the US & Canada market.'
                 : 'Compara especificaciones, precios y scores de conveniencia en más de 100 productos LED comerciales para el mercado de EE.UU. y Canadá.'}
@@ -57,39 +59,61 @@ const Index = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.5 }}
-            className="mx-auto mt-8 grid max-w-3xl grid-cols-3 gap-4"
+            className="mx-auto mt-6 grid max-w-3xl grid-cols-3 gap-3 sm:mt-8 sm:gap-4"
           >
             {[
               { icon: Lightbulb, value: `${allProducts.length}+`, label: language === 'en' ? 'Products' : 'Productos' },
               { icon: TrendingUp, value: '3', label: language === 'en' ? 'Categories' : 'Categorías' },
               { icon: Shield, value: '3', label: language === 'en' ? 'Certifications' : 'Certificaciones' },
             ].map((stat, i) => (
-              <div key={i} className="flex flex-col items-center rounded-xl border bg-card/80 p-4 backdrop-blur-sm">
-                <stat.icon className="mb-2 h-5 w-5 text-primary" />
-                <span className="text-2xl font-bold text-foreground">{stat.value}</span>
-                <span className="text-xs text-muted-foreground">{stat.label}</span>
+              <div key={i} className="flex flex-col items-center rounded-xl border bg-card/80 p-3 backdrop-blur-sm sm:p-4">
+                <stat.icon className="mb-1 h-4 w-4 text-primary sm:mb-2 sm:h-5 sm:w-5" />
+                <span className="text-lg font-bold text-foreground sm:text-2xl">{stat.value}</span>
+                <span className="text-[10px] text-muted-foreground sm:text-xs">{stat.label}</span>
               </div>
             ))}
           </motion.div>
         </div>
       </motion.section>
 
-      <main className="mx-auto max-w-7xl px-4 py-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-md grid-cols-2 bg-muted/30 p-1">
-            <TabsTrigger value="catalog" className="data-[state=active]:bg-card data-[state=active]:shadow-sm">
-              {t('products', language)}
-              {filtered.length > 0 && (
-                <Badge variant="secondary" className="ml-2 text-xs">{filtered.length}</Badge>
-              )}
-            </TabsTrigger>
-            <TabsTrigger value="compare" className="data-[state=active]:bg-card data-[state=active]:shadow-sm">
-              {t('comparator', language)}
-              {compareList.length > 0 && (
-                <Badge className="ml-2 text-xs">{compareList.length}</Badge>
-              )}
-            </TabsTrigger>
-          </TabsList>
+      <main className="mx-auto max-w-7xl px-4 py-4 sm:py-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
+          <div className="flex items-center gap-2">
+            <TabsList className="grid w-full max-w-md grid-cols-2 bg-muted/30 p-1">
+              <TabsTrigger value="catalog" className="data-[state=active]:bg-card data-[state=active]:shadow-sm text-sm">
+                {t('products', language)}
+                {filtered.length > 0 && (
+                  <Badge variant="secondary" className="ml-2 text-xs">{filtered.length}</Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="compare" className="data-[state=active]:bg-card data-[state=active]:shadow-sm text-sm">
+                {t('comparator', language)}
+                {compareList.length > 0 && (
+                  <Badge className="ml-2 text-xs">{compareList.length}</Badge>
+                )}
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Mobile filter button */}
+            {activeTab === 'catalog' && (
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="sm" className="lg:hidden gap-1">
+                    <SlidersHorizontal className="h-4 w-4" />
+                    <span className="hidden sm:inline">{t('filters', language)}</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-[300px] overflow-y-auto">
+                  <SheetHeader>
+                    <SheetTitle>{t('filters', language)}</SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-4">
+                    <FilterSidebar products={allProducts} filters={filters} onFiltersChange={setFilters} />
+                  </div>
+                </SheetContent>
+              </Sheet>
+            )}
+          </div>
 
           <AnimatePresence mode="wait">
             <motion.div
@@ -102,7 +126,7 @@ const Index = () => {
               {activeTab === 'catalog' && (
                 <TabsContent value="catalog" forceMount className="mt-0">
                   <div className="flex gap-6">
-                    <aside className="hidden w-64 shrink-0 lg:block">
+                    <aside className="hidden w-60 shrink-0 lg:block">
                       <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -113,7 +137,7 @@ const Index = () => {
                       </motion.div>
                     </aside>
 
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       {isLoading ? (
                         <div className="flex items-center justify-center py-20">
                           <motion.div
@@ -133,10 +157,10 @@ const Index = () => {
                         </motion.div>
                       ) : (
                         <>
-                          <p className="mb-4 text-sm text-muted-foreground">
+                          <p className="mb-3 text-sm text-muted-foreground">
                             {t('showingProducts', language, { count: filtered.length })}
                           </p>
-                          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 sm:gap-4">
                             {filtered.map((product, index) => (
                               <motion.div
                                 key={product.id}
