@@ -1,0 +1,60 @@
+
+> vite_react_shadcn_ts@0.0.0 lint
+> eslint .
+
+
+C:\Users\rg640\dev\bright_choice\bright_choice\src\components\ComparatorView.tsx
+  63:76  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\rg640\dev\bright_choice\bright_choice\src\components\FilterSidebar.tsx
+  27:14  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+  37:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\rg640\dev\bright_choice\bright_choice\src\components\ProductCard.tsx
+  44:98  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  45:96  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\rg640\dev\bright_choice\bright_choice\src\components\admin\ProductFormDialog.tsx
+  32:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  58:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\rg640\dev\bright_choice\bright_choice\src\components\ui\badge.tsx
+  29:17  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\rg640\dev\bright_choice\bright_choice\src\components\ui\button.tsx
+  47:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\rg640\dev\bright_choice\bright_choice\src\components\ui\command.tsx
+  24:11  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+C:\Users\rg640\dev\bright_choice\bright_choice\src\components\ui\form.tsx
+  129:10  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\rg640\dev\bright_choice\bright_choice\src\components\ui\navigation-menu.tsx
+  111:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\rg640\dev\bright_choice\bright_choice\src\components\ui\sidebar.tsx
+  636:3  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\rg640\dev\bright_choice\bright_choice\src\components\ui\sonner.tsx
+  27:19  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\rg640\dev\bright_choice\bright_choice\src\components\ui\textarea.tsx
+  5:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+C:\Users\rg640\dev\bright_choice\bright_choice\src\components\ui\toggle.tsx
+  37:18  warning  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+C:\Users\rg640\dev\bright_choice\bright_choice\src\pages\Admin.tsx
+  36:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  49:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\rg640\dev\bright_choice\bright_choice\src\pages\Index.tsx
+  22:9  warning  The 'allProducts' logical expression could make the dependencies of useMemo Hook (at line 23) change on every render. To fix this, wrap the initialization of 'allProducts' in its own useMemo() Hook  react-hooks/exhaustive-deps
+  22:9  warning  The 'allProducts' logical expression could make the dependencies of useMemo Hook (at line 26) change on every render. To fix this, wrap the initialization of 'allProducts' in its own useMemo() Hook  react-hooks/exhaustive-deps
+
+C:\Users\rg640\dev\bright_choice\bright_choice\tailwind.config.ts
+  143:13  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+Ô£û 21 problems (10 errors, 11 warnings)
+

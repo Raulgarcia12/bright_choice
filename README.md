@@ -1,73 +1,70 @@
-# Welcome to your Lovable project
+# Bright Choice - Precision LED Intelligence
 
-## Project info
+**A Professional B2B Solution for Commercial Lighting Intelligence in North America.**
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+---
 
-## How can I edit this code?
+[![Vite](https://img.shields.io/badge/Powered%20by-Vite-646CFF?logo=vite&style=flat-square)](https://vitejs.dev/)
+[![React](https://img.shields.io/badge/Stack-React%2018-61DAFB?logo=react&style=flat-square)](https://reactjs.org/)
+[![Supabase](https://img.shields.io/badge/Database-Supabase-3ECF8E?logo=supabase&style=flat-square)](https://supabase.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Styling-Tailwind%20CSS-38B2AC?logo=tailwind-css&style=flat-square)](https://tailwindcss.com/)
 
-There are several ways of editing your application.
+## 💡 Executive Summary
 
-**Use Lovable**
+**Bright Choice** is a high-performance, bilingual (English/Spanish) web platform designed specifically for the US and Canadian commercial lighting markets. It empowers B2B professionals, distributors, and contractors to make data-driven procurement decisions through advanced product comparison and regional market intelligence.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## 🚀 Key Business Value Propositions
 
-Changes made via Lovable will be committed automatically to this repo.
+### ⚖️ Convenience Score™ (0–100)
+Eliminate guesswork with our proprietary weighting algorithm. Each product is scored based on:
+- **Price Competitiveness (30%)**
+- **Luminous Efficiency (25%)**
+- **Lifecycle Longevity (20%)**
+- **Warranty Coverage (15%)**
+- **Regional Logistics (10%)**
 
-**Use your preferred IDE**
+### 🌎 Northern American Regional Intelligence
+Dynamic filtering optimized for the regulatory and economic environments of **US States** and **Canadian Provinces**. Market-specific pricing (USD/CAD) and certification verification (UL, DLC, Energy Star).
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 🛠️ Enterprise-Ready Admin Suite
+A secure, centralized control panel for product lifecycle management. Administrators can effortlessly scale the catalog, manage regional availability, and update technical benchmarks.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 🏗️ Technical Architecture
 
-Follow these steps:
+- **Frontend**: Scalable React 18 architecture with Vite for near-instant rendering.
+- **Data Layer**: Supabase (PostgreSQL) with integrated Row Level Security (RLS) and real-time synchronization.
+- **State Management**: Zustand for lightweight, optimized application state.
+- **Language Stack**: Full i18n support (English/Spanish) for the diversified North American workforce.
+- **Design System**: Tailored Shadcn UI components optimized for B2B data density and mobile responsiveness.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 🛠️ Getting Started
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Prerequisites
+- Node.js (v18+)
+- A Supabase Project
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Installation
+```bash
+# 1. Clone the project
+git clone <repository-url>
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# 2. Install dependencies
+npm install
+
+# 3. Environment Setup
+# Create a .env file with your Supabase credentials
+VITE_SUPABASE_URL=your_project_url
+VITE_SUPABASE_PUBLISHABLE_KEY=your_anon_key
+
+# 4. Launch Development Server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## 🔒 Security & Compliance
+- **Authentication**: Secure admin login via Supabase Auth.
+- **Compliance Tracking**: Integrated tracking for UL, DLC, and Energy Star certifications.
+- **Permissions**: Role-based access control (RBAC) ensuring data integrity.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+*Transforming professional lighting procurement through data-driven clarity.*
