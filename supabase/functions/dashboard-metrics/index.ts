@@ -32,7 +32,8 @@ serve(async (req) => {
         // Average efficiency
         const { data: products } = await supabase
             .from("products")
-            .select("watts, lumens, price, cri, cert_dlc");
+            .select("watts, lumens, price, cri, cert_dlc, category")
+            .limit(1000);
 
         const allProducts = products || [];
         const avgEfficiency =

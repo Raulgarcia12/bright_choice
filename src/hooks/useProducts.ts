@@ -9,6 +9,7 @@ export function useProducts(regionId: string | null) {
       let query = supabase
         .from('products')
         .select('*, regions(name, abbreviation, country)')
+        .limit(1000)
         .order('brand');
 
       if (regionId) {
