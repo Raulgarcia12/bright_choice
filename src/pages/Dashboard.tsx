@@ -7,8 +7,8 @@ import { BarChart3, TrendingUp, Zap, DollarSign, Activity, Clock } from 'lucide-
 import { motion } from 'framer-motion';
 import {
     BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
-    RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
-    PieChart, Pie, Cell,
+    RadarChart, Radar, PolarAngleAxis, PolarRadiusAxis,
+    PieChart, Pie, Cell, ScatterChart, Scatter, ZAxis, Legend, CartesianGrid
 } from 'recharts';
 import Header from '@/components/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -108,6 +108,45 @@ export default function Dashboard() {
         return Array.from(counts.entries()).map(([name, value]) => ({ name, value }));
     }, [allProducts]);
 
+    // Efficiency Frontier Data (Price vs Efficiency)
+    const frontierData = useMemo(() => {
+        return allProducts
+            .filter(p => p.price > 0 && p.efficiency > 0)
+            .map(p => ({
+                name: `${p.brand} ${p.model}`,
+                brand: p.brand,
+                price: p.price,
+                efficiency: p.efficiency,
+                lumens: p.lumens
+            }));
+    }, [allProducts]);
+
+    // Competitive Gaps: Brands vs Market Average
+    const competitiveGaps = useMemo(() => {
+        if (allProducts.length === 0) return [];
+        const marketAvgEff = allProducts.reduce((s, p) => s + (p.efficiency || 0), 0) / allProducts.length;
+        const marketAvgPrice = allProducts.reduce((s, p) => s + p.price, 0) / allProducts.length;
+
+        const brandStats = new Map<string, { totalEff: number; totalPrice: number; count: number }>();
+        allProducts.forEach(p => {
+            const s = brandStats.get(p.brand) || { totalEff: 0, totalPrice: 0, count: 0 };
+            s.totalEff += p.efficiency || 0;
+            s.totalPrice += p.price || 0;
+            s.count += 1;
+            brandStats.set(p.brand, s);
+        });
+
+        return Array.from(brandStats.entries()).map(([brand, s]) => {
+            const brandAvgEff = s.totalEff / s.count;
+            const brandAvgPrice = s.totalPrice / s.count;
+            return {
+                brand,
+                effGap: ((brandAvgEff - marketAvgEff) / marketAvgEff) * 100,
+                priceGap: ((brandAvgPrice - marketAvgPrice) / marketAvgPrice) * 100
+            };
+        }).sort((a, b) => b.effGap - a.effGap);
+    }, [allProducts]);
+
     // Efficiency by brand for radar chart
     const efficiencyByBrand = useMemo(() => {
         const brandMap = new Map<string, { totalEff: number; count: number }>();
@@ -178,50 +217,107 @@ export default function Dashboard() {
                         </Card>
                     </motion.div>
 
-                    {/* Efficiency Radar */}
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+                    {/* Efficiency Frontier (Scatter Plot) */}
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="lg:col-span-2">
                         <Card>
-                            <CardHeader>
-                                <CardTitle className="text-lg">Avg Efficacy by Brand (lm/W)</CardTitle>
+                            <CardHeader className="flex flex-row items-center justify-between pb-2">
+                                <CardTitle className="text-lg">Efficiency Frontier (Value Analysis)</CardTitle>
+                                <Badge variant="outline" className="text-[10px] bg-primary/5">Efficiency vs Price</Badge>
                             </CardHeader>
                             <CardContent>
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <RadarChart data={efficiencyByBrand}>
-                                        <PolarGrid />
-                                        <PolarAngleAxis dataKey="brand" tick={{ fontSize: 11 }} />
-                                        <PolarRadiusAxis tick={{ fontSize: 10 }} />
-                                        <Radar dataKey="efficiency" stroke="#22c55e" fill="#22c55e" fillOpacity={0.3} />
-                                    </RadarChart>
-                                </ResponsiveContainer>
+                                <div className="h-[400px] w-full mt-4">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis
+                                                type="number"
+                                                dataKey="price"
+                                                name="Price"
+                                                unit="$"
+                                                label={{ value: 'Price (USD)', position: 'bottom', fontSize: 12 }}
+                                            />
+                                            <YAxis
+                                                type="number"
+                                                dataKey="efficiency"
+                                                name="Efficiency"
+                                                unit=" lm/W"
+                                                label={{ value: 'Efficiency (lm/W)', angle: -90, position: 'insideLeft', fontSize: 12 }}
+                                            />
+                                            <ZAxis type="number" dataKey="lumens" range={[60, 400]} name="Lumens" />
+                                            <Tooltip cursor={{ strokeDasharray: '3 3' }} content={({ active, payload }) => {
+                                                if (active && payload && payload.length) {
+                                                    const data = payload[0].payload;
+                                                    return (
+                                                        <div className="bg-background border rounded-lg p-3 shadow-xl">
+                                                            <p className="font-bold text-sm">{data.name}</p>
+                                                            <p className="text-xs text-muted-foreground">{data.brand}</p>
+                                                            <div className="mt-2 space-y-1">
+                                                                <div className="flex justify-between gap-4 text-xs font-medium">
+                                                                    <span>Price:</span>
+                                                                    <span>${data.price.toFixed(2)}</span>
+                                                                </div>
+                                                                <div className="flex justify-between gap-4 text-xs font-medium text-green-600">
+                                                                    <span>Efficacy:</span>
+                                                                    <span>{data.efficiency} lm/W</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                }
+                                                return null;
+                                            }} />
+                                            <Legend verticalAlign="top" height={36} />
+                                            {Array.from(new Set(frontierData.map(d => d.brand))).map((brand, i) => (
+                                                <Scatter
+                                                    key={brand}
+                                                    name={brand}
+                                                    data={frontierData.filter(d => d.brand === brand)}
+                                                    fill={CHART_COLORS[i % CHART_COLORS.length]}
+                                                />
+                                            ))}
+                                        </ScatterChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                <p className="mt-4 text-[11px] text-center text-muted-foreground italic">
+                                    Targets: High Efficiency (Up) and Low Price (Left).
+                                </p>
                             </CardContent>
                         </Card>
                     </motion.div>
 
-                    {/* Category Distribution */}
+                    {/* Competitive Gap Table */}
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
-                        <Card>
+                        <Card className="h-full">
                             <CardHeader>
-                                <CardTitle className="text-lg">Category Distribution</CardTitle>
+                                <CardTitle className="text-lg">Competitive Gap Analysis</CardTitle>
+                                <p className="text-xs text-muted-foreground">Brand Average vs Market Average</p>
                             </CardHeader>
-                            <CardContent className="flex items-center justify-center">
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <PieChart>
-                                        <Pie
-                                            data={categoryDistribution}
-                                            dataKey="value"
-                                            nameKey="name"
-                                            cx="50%"
-                                            cy="50%"
-                                            outerRadius={100}
-                                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                                        >
-                                            {categoryDistribution.map((_, index) => (
-                                                <Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip />
-                                    </PieChart>
-                                </ResponsiveContainer>
+                            <CardContent>
+                                <div className="space-y-4">
+                                    {competitiveGaps.slice(0, 5).map((gap) => (
+                                        <div key={gap.brand} className="space-y-2">
+                                            <div className="flex justify-between items-end">
+                                                <span className="text-sm font-semibold">{gap.brand}</span>
+                                                <div className="flex gap-3 text-[10px]">
+                                                    <span className={gap.effGap >= 0 ? 'text-green-600' : 'text-red-500'}>
+                                                        Eff: {gap.effGap >= 0 ? '+' : ''}{gap.effGap.toFixed(1)}%
+                                                    </span>
+                                                    <span className={gap.priceGap <= 0 ? 'text-green-600' : 'text-red-500'}>
+                                                        Price: {gap.priceGap >= 0 ? '+' : ''}{gap.priceGap.toFixed(1)}%
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                                                    <div className={`h-full ${gap.effGap >= 0 ? 'bg-green-500' : 'bg-red-500'}`} style={{ width: `${Math.min(Math.max(50 + gap.effGap, 0), 100)}%` }} />
+                                                </div>
+                                                <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                                                    <div className={`h-full ${gap.priceGap <= 0 ? 'bg-green-500' : 'bg-red-500'}`} style={{ width: `${Math.min(Math.max(50 - gap.priceGap, 0), 100)}%` }} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </CardContent>
                         </Card>
                     </motion.div>

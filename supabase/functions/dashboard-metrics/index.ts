@@ -50,20 +50,21 @@ serve(async (req) => {
         const dlcCertified = allProducts.filter((p) => p.cert_dlc).length;
         const dlcPercent = allProducts.length > 0 ? (dlcCertified / allProducts.length) * 100 : 0;
 
-        // Recent changes (last 30 days)
-        const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString();
-        const { count: recentChangeCount } = await supabase
-            .from("change_logs")
-            .select("*", { count: "exact", head: true })
-            .gte("detected_at", thirtyDaysAgo);
+        // Category benchmarks
+        const categoryMap = new Map<string, { totalEff: number; count: number }>();
+        allProducts.forEach((p: any) => {
+            if (p.category) {
+                const s = categoryMap.get(p.category) || { totalEff: 0, count: 0 };
+                s.totalEff += (p.watts > 0 ? p.lumens / p.watts : 0);
+                s.count += 1;
+                categoryMap.set(p.category, s);
+            }
+        });
 
-        // Last scrape run
-        const { data: lastRun } = await supabase
-            .from("scrape_runs")
-            .select("completed_at, status, products_found")
-            .order("started_at", { ascending: false })
-            .limit(1)
-            .single();
+        const benchmarks = Array.from(categoryMap.entries()).map(([category, s]) => ({
+            category,
+            avgEfficacy: Math.round((s.totalEff / s.count) * 10) / 10
+        }));
 
         return new Response(
             JSON.stringify({
@@ -75,6 +76,7 @@ serve(async (req) => {
                 dlcPercent: Math.round(dlcPercent),
                 recentChangeCount: recentChangeCount || 0,
                 lastScrapeRun: lastRun || null,
+                benchmarks,
             }),
             {
                 headers: { ...corsHeaders, "Content-Type": "application/json" },

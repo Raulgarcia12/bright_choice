@@ -28,6 +28,26 @@ export class CreeScraper extends BaseScraper {
             await rateLimit(new URL(baseUrl).hostname);
             await page.goto(catalogUrl, { waitUntil: 'networkidle' });
 
+            // Auto-scroll to trigger infinite loading
+            this.log.info('Auto-scrolling to load all products...');
+            await page.evaluate(async () => {
+                await new Promise<void>((resolve) => {
+                    let totalHeight = 0;
+                    const distance = 100;
+                    const timer = setInterval(() => {
+                        const scrollHeight = document.body.scrollHeight;
+                        window.scrollBy(0, distance);
+                        totalHeight += distance;
+
+                        // Stop scrolling after a reasonable limit or reaching bottom
+                        if (totalHeight >= scrollHeight || totalHeight > 15000) {
+                            clearInterval(timer);
+                            resolve();
+                        }
+                    }, 100);
+                });
+            });
+
             // Wait for product cards to render
             const productSelector = (this.brandConfig.scraperConfig?.productSelector as string) || '[data-product]';
             await page.waitForSelector(productSelector, { timeout: 10000 }).catch(() => {

@@ -18,9 +18,21 @@ const Index = () => {
   const { data: products, isLoading } = useProducts(selectedRegion);
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const [activeTab, setActiveTab] = useState('catalog');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
 
   const allProducts = products || [];
-  const filtered = useMemo(() => applyFilters(allProducts, filters), [allProducts, filters]);
+  const filtered = useMemo(() => {
+    setCurrentPage(1); // Reset to first page when filters change
+    return applyFilters(allProducts, filters);
+  }, [allProducts, filters]);
+
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const paginatedProducts = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filtered.slice(start, start + itemsPerPage);
+  }, [filtered, currentPage]);
+
   const compareProducts = useMemo(
     () => allProducts.filter((p) => compareList.includes(p.id)),
     [allProducts, compareList]
@@ -157,11 +169,37 @@ const Index = () => {
                         </motion.div>
                       ) : (
                         <>
-                          <p className="mb-3 text-sm text-muted-foreground">
-                            {t('showingProducts', language, { count: filtered.length })}
-                          </p>
+                          <div className="mb-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+                            <p className="text-sm text-muted-foreground">
+                              {t('showingProducts', language, { count: filtered.length })}
+                            </p>
+
+                            {/* Pagination Controls */}
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                disabled={currentPage === 1}
+                              >
+                                {language === 'en' ? 'Prev' : 'Anterior'}
+                              </Button>
+                              <span className="text-xs font-medium">
+                                {language === 'en' ? 'Page' : 'Página'} {currentPage} / {totalPages}
+                              </span>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                disabled={currentPage === totalPages}
+                              >
+                                {language === 'en' ? 'Next' : 'Siguiente'}
+                              </Button>
+                            </div>
+                          </div>
+
                           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 sm:gap-4">
-                            {filtered.map((product, index) => (
+                            {paginatedProducts.map((product, index) => (
                               <motion.div
                                 key={product.id}
                                 initial={{ opacity: 0, y: 20 }}
@@ -172,6 +210,28 @@ const Index = () => {
                               </motion.div>
                             ))}
                           </div>
+
+                          {/* Bottom Pagination */}
+                          {totalPages > 1 && (
+                            <div className="mt-8 flex justify-center gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                disabled={currentPage === 1}
+                              >
+                                {language === 'en' ? 'Prev' : 'Anterior'}
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                disabled={currentPage === totalPages}
+                              >
+                                {language === 'en' ? 'Next' : 'Siguiente'}
+                              </Button>
+                            </div>
+                          )}
                         </>
                       )}
                     </div>

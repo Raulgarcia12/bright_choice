@@ -23,33 +23,48 @@ export class PhilipsScraper extends BaseScraper {
 
         this.log.info(`Fetching product API from ${apiUrl}`);
 
+        const categories = (this.brandConfig.scraperConfig?.categories as string[]) || [
+            'indoor-luminaires', 'outdoor-luminaires', 'lamps', 'led-modules', 'controls'
+        ];
+
         try {
-            await rateLimit(new URL(baseUrl).hostname);
+            for (const category of categories) {
+                const categoryApiUrl = `${apiUrl}?category=${category}&limit=100`;
+                this.log.info(`Fetching Philips products for category: ${category}`);
 
-            const response = await axios.get<{ products: PhilipsApiProduct[] }>(apiUrl, {
-                headers: {
-                    'User-Agent': 'BrightChoice-Bot/1.0 (competitive-intelligence; contact@brightchoice.app)',
-                    'Accept': 'application/json',
-                },
-                timeout: 30000,
-            });
+                await rateLimit(new URL(baseUrl).hostname);
 
-            const apiProducts = response.data?.products || [];
-
-            for (const item of apiProducts) {
-                if (!item.name) continue;
-
-                products.push({
-                    model: item.name,
-                    sku: item.sku,
-                    category: item.category,
-                    productUrl: item.url ? new URL(item.url, baseUrl).toString() : undefined,
-                    specs: item.specifications || {},
-                    rawHtml: JSON.stringify(item), // Store raw JSON for audit
+                const response = await axios.get<{ products: PhilipsApiProduct[] }>(categoryApiUrl, {
+                    headers: {
+                        'User-Agent': 'BrightChoice-Bot/1.0 (competitive-intelligence; contact@brightchoice.app)',
+                        'Accept': 'application/json',
+                    },
+                    timeout: 30000,
                 });
+
+                const apiProducts = response.data?.products || [];
+                this.log.info(`Found ${apiProducts.length} products in ${category}`);
+
+                for (const item of apiProducts) {
+                    if (!item.name) continue;
+
+                    // Avoid duplicates if a product is in multiple categories
+                    if (products.some(p => p.sku === item.sku || (p.model === item.name && p.sku === item.sku))) {
+                        continue;
+                    }
+
+                    products.push({
+                        model: item.name,
+                        sku: item.sku,
+                        category: item.category || category,
+                        productUrl: item.url ? new URL(item.url, baseUrl).toString() : undefined,
+                        specs: item.specifications || {},
+                        rawHtml: JSON.stringify(item),
+                    });
+                }
             }
 
-            this.log.info(`Parsed ${products.length} products from Signify/Philips`);
+            this.log.info(`Total unique products parsed from Signify/Philips: ${products.length}`);
         } catch (error) {
             this.log.error(`Failed to scrape Signify: ${error instanceof Error ? error.message : error}`);
             throw error;
