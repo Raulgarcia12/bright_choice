@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Globe, LogIn, LogOut, Shield, BarChart3, Menu, X, Moon, Sun } from 'lucide-react';
+import { Globe, LogIn, LogOut, Shield, BarChart3, Menu, X, Moon, Sun, Package, Activity } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -37,6 +37,18 @@ export default function Header() {
         </Link>
 
         {/* Desktop nav */}
+        <nav className="hidden items-center gap-1 md:flex">
+          <Link to="/" className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${location.pathname === '/' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+            Dashboard
+          </Link>
+          <Link to="/products" className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${location.pathname === '/products' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+            Products
+          </Link>
+          <Link to="/changes" className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${location.pathname === '/changes' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground'}`}>
+            Changes
+          </Link>
+        </nav>
+
         <div className="hidden items-center gap-2 md:flex">
           <Select value={selectedRegion || 'all'} onValueChange={(v) => setSelectedRegion(v === 'all' ? null : v)}>
             <SelectTrigger className="w-[160px] h-9 bg-background/50 text-sm">
@@ -99,6 +111,11 @@ export default function Header() {
             className="overflow-hidden border-t bg-card md:hidden"
           >
             <div className="space-y-3 px-4 py-4">
+              <div className="flex flex-col gap-1">
+                <Link to="/" onClick={() => setMobileOpen(false)} className={`px-3 py-2 rounded-md text-sm font-medium ${location.pathname === '/' ? 'bg-primary/10 text-primary' : 'text-muted-foreground'}`}>Dashboard</Link>
+                <Link to="/products" onClick={() => setMobileOpen(false)} className={`px-3 py-2 rounded-md text-sm font-medium ${location.pathname === '/products' ? 'bg-primary/10 text-primary' : 'text-muted-foreground'}`}>Products</Link>
+                <Link to="/changes" onClick={() => setMobileOpen(false)} className={`px-3 py-2 rounded-md text-sm font-medium ${location.pathname === '/changes' ? 'bg-primary/10 text-primary' : 'text-muted-foreground'}`}>Changes</Link>
+              </div>
               <Select value={selectedRegion || 'all'} onValueChange={(v) => setSelectedRegion(v === 'all' ? null : v)}>
                 <SelectTrigger className="w-full h-10 bg-background/50">
                   <SelectValue placeholder={t('selectRegion', language)} />

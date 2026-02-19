@@ -1,0 +1,57 @@
+name: Bi-Weekly Scraper
+
+on:
+  schedule:
+    # Runs at 03:00 UTC on the 1st and 15th of each month
+    - cron: "0 3 1,15 * *"
+  workflow_dispatch:
+    inputs:
+      brand:
+        description: "Specific brand to scrape (leave empty for all)"
+        required: false
+        type: string
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install scraper dependencies
+        working-directory: services/scraper
+        run: npm install
+
+      - name: Install Playwright browsers
+        working-directory: services/scraper
+        run: npx playwright install chromium
+
+      - name: Run scraper
+        working-directory: services/scraper
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          LOG_LEVEL: info
+        run: |
+          if [ -n "${{ inputs.brand }}" ]; then
+            npx tsx src/index.ts --brand="${{ inputs.brand }}"
+          else
+            npx tsx src/index.ts
+          fi
+
+      - name: Trigger change alerts
+        if: success()
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          curl -s -X POST "${SUPABASE_URL}/functions/v1/change-alerts" \
+            -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
+            -H "Content-Type: application/json" || true

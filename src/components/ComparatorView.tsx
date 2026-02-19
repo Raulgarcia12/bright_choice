@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
-import { ChevronDown, ChevronUp, Trophy, DollarSign, Zap, Clock } from 'lucide-react';
+import { ChevronDown, ChevronUp, Trophy, DollarSign, Zap, Clock, ExternalLink } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer, PolarRadiusAxis } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -147,10 +149,15 @@ export default function ComparatorView({ products, allProducts }: ComparatorView
                       ))}
                     </div>
 
-                    <div className="flex gap-1">
-                      {p.cert_ul && <Badge variant="outline" className="text-xs">UL</Badge>}
-                      {p.cert_dlc && <Badge variant="outline" className="text-xs">DLC</Badge>}
-                      {p.cert_energy_star && <Badge variant="outline" className="text-xs">E★</Badge>}
+                    <div className="flex items-center justify-between">
+                      <div className="flex gap-1">
+                        {p.cert_ul && <Badge variant="outline" className="text-xs">UL</Badge>}
+                        {p.cert_dlc && <Badge variant="outline" className="text-xs">DLC</Badge>}
+                        {p.cert_energy_star && <Badge variant="outline" className="text-xs">E★</Badge>}
+                      </div>
+                      <Link to={`/products/${p.id}`} className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
+                        Details <ExternalLink className="h-3 w-3" />
+                      </Link>
                     </div>
 
                     <Collapsible open={expandedId === p.id} onOpenChange={(open) => setExpandedId(open ? p.id : null)}>

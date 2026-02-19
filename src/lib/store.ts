@@ -4,6 +4,7 @@ import type { Language } from './i18n';
 export interface Product {
   id: string;
   brand: string;
+  brand_id: string | null;
   model: string;
   category: string;
   watts: number;
@@ -22,6 +23,13 @@ export interface Product {
   sales_channel: string;
   use_type: string;
   is_recommended: boolean;
+  sku: string | null;
+  product_url: string | null;
+  spec_hash: string | null;
+  ip_rating: string | null;
+  dimming: string | null;
+  voltage: string | null;
+  last_scraped_at: string | null;
   created_at: string;
   updated_at: string;
   regions?: { name: string; abbreviation: string; country: string } | null;

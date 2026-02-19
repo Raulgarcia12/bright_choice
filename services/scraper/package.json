@@ -1,0 +1,33 @@
+{
+    "name": "bright-choice-scraper",
+    "version": "1.0.0",
+    "type": "module",
+    "description": "Competitive intelligence scraping service for Bright Choice",
+    "main": "dist/index.js",
+    "scripts": {
+        "build": "tsc",
+        "start": "node dist/index.js",
+        "dev": "tsx src/index.ts",
+        "scrape": "tsx src/index.ts",
+        "scrape:brand": "tsx src/index.ts --brand",
+        "test": "vitest run",
+        "lint": "eslint src/"
+    },
+    "dependencies": {
+        "@supabase/supabase-js": "^2.95.3",
+        "axios": "^1.7.0",
+        "cheerio": "^1.0.0",
+        "playwright": "^1.48.0",
+        "winston": "^3.14.0",
+        "crypto-js": "^4.2.0",
+        "dotenv": "^16.4.0",
+        "p-limit": "^6.1.0"
+    },
+    "devDependencies": {
+        "@types/node": "^22.16.5",
+        "@types/crypto-js": "^4.2.0",
+        "tsx": "^4.19.0",
+        "typescript": "^5.8.3",
+        "vitest": "^3.2.4"
+    }
+}
