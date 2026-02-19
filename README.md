@@ -113,8 +113,8 @@ Apply the professional schema (Tables, RLS, Views) via the Supabase SQL Editor:
 This project demonstrates senior-level proficiency in **Data Engineering**, **System Architecture**, and **Modern Full-Stack Development**. 
 
 **Author:** [Raul Garcia](https://github.com/Raulgarcia12)  
-**LinkedIn:** [Your Profile Link Here]  
-**Email:** [Your Email Here]  
+**LinkedIn:** [linkedin.com/in/graulgarcia]  
+**Email:** [Graulgarcia12@gmail.com]  
 
 ---
 <p align="center">
