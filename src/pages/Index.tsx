@@ -61,8 +61,8 @@ const Index = () => {
             </h1>
             <p className="mx-auto mt-2 max-w-2xl text-sm text-muted-foreground sm:text-base sm:mt-3">
               {language === 'en'
-                ? 'Compare specifications, pricing, and convenience scores across 100+ commercial LED products for the US & Canada market.'
-                : 'Compara especificaciones, precios y scores de conveniencia en más de 100 productos LED comerciales para el mercado de EE.UU. y Canadá.'}
+                ? 'Compare specifications, pricing, and convenience scores across 250+ commercial LED products for the US & Canada market.'
+                : 'Compara especificaciones, precios y scores de conveniencia en más de 250 productos LED comerciales para el mercado de EE.UU. y Canadá.'}
             </p>
           </motion.div>
 
@@ -175,25 +175,50 @@ const Index = () => {
                             </p>
 
                             {/* Pagination Controls */}
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1">
                               <Button
                                 variant="outline"
-                                size="sm"
+                                size="icon"
+                                className="h-8 w-8"
                                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                                 disabled={currentPage === 1}
                               >
-                                {language === 'en' ? 'Prev' : 'Anterior'}
+                                {language === 'en' ? '<' : '<'}
                               </Button>
-                              <span className="text-xs font-medium">
-                                {language === 'en' ? 'Page' : 'Página'} {currentPage} / {totalPages}
-                              </span>
+
+                              <div className="flex items-center gap-1 mx-1">
+                                {Array.from({ length: totalPages }).map((_, i) => {
+                                  const p = i + 1;
+                                  // Show first, last, current, and pages around current
+                                  if (p === 1 || p === totalPages || (p >= currentPage - 1 && p <= currentPage + 1)) {
+                                    return (
+                                      <Button
+                                        key={p}
+                                        variant={currentPage === p ? 'default' : 'outline'}
+                                        size="sm"
+                                        className="h-8 w-8 p-0 text-xs"
+                                        onClick={() => setCurrentPage(p)}
+                                      >
+                                        {p}
+                                      </Button>
+                                    );
+                                  }
+                                  // Show dots
+                                  if (p === currentPage - 2 || p === currentPage + 2) {
+                                    return <span key={p} className="text-muted-foreground">...</span>;
+                                  }
+                                  return null;
+                                })}
+                              </div>
+
                               <Button
                                 variant="outline"
-                                size="sm"
+                                size="icon"
+                                className="h-8 w-8"
                                 onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                                 disabled={currentPage === totalPages}
                               >
-                                {language === 'en' ? 'Next' : 'Siguiente'}
+                                {language === 'en' ? '>' : '>'}
                               </Button>
                             </div>
                           </div>
@@ -213,22 +238,48 @@ const Index = () => {
 
                           {/* Bottom Pagination */}
                           {totalPages > 1 && (
-                            <div className="mt-8 flex justify-center gap-2">
+                            <div className="mt-8 flex justify-center items-center gap-1">
                               <Button
                                 variant="outline"
-                                size="sm"
+                                size="icon"
+                                className="h-8 w-8"
                                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                                 disabled={currentPage === 1}
                               >
-                                {language === 'en' ? 'Prev' : 'Anterior'}
+                                {'<'}
                               </Button>
+
+                              <div className="flex items-center gap-1 mx-2">
+                                {Array.from({ length: totalPages }).map((_, i) => {
+                                  const p = i + 1;
+                                  if (p === 1 || p === totalPages || (p >= currentPage - 1 && p <= currentPage + 1)) {
+                                    return (
+                                      <Button
+                                        key={p}
+                                        variant={currentPage === p ? 'default' : 'outline'}
+                                        size="sm"
+                                        className="h-8 w-8 p-0 text-xs"
+                                        onClick={() => setCurrentPage(p)}
+                                      >
+                                        {p}
+                                      </Button>
+                                    );
+                                  }
+                                  if (p === currentPage - 2 || p === currentPage + 2) {
+                                    return <span key={p} className="text-muted-foreground">...</span>;
+                                  }
+                                  return null;
+                                })}
+                              </div>
+
                               <Button
                                 variant="outline"
-                                size="sm"
+                                size="icon"
+                                className="h-8 w-8"
                                 onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                                 disabled={currentPage === totalPages}
                               >
-                                {language === 'en' ? 'Next' : 'Siguiente'}
+                                {'>'}
                               </Button>
                             </div>
                           )}
