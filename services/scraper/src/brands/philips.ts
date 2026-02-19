@@ -4,8 +4,8 @@
  * Uses Axios for their API-driven product catalog.
  */
 import axios from 'axios';
-import { BaseScraper, type RawProduct } from './BaseScraper.js';
-import { rateLimit } from '../utils/rateLimiter.js';
+import { BaseScraper, type RawProduct } from './BaseScraper';
+import { rateLimit } from '../utils/rateLimiter';
 
 interface PhilipsApiProduct {
     name?: string;

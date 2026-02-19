@@ -5,8 +5,8 @@
  */
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { BaseScraper, type RawProduct } from './BaseScraper.js';
-import { rateLimit } from '../utils/rateLimiter.js';
+import { BaseScraper, type RawProduct } from './BaseScraper';
+import { rateLimit } from '../utils/rateLimiter';
 
 export class AcuityScraper extends BaseScraper {
     async scrape(): Promise<RawProduct[]> {

@@ -3,9 +3,9 @@
  * Abstract base class for all brand-specific scrapers.
  * Each brand scraper extends this and implements scrape() and parse().
  */
-import { logger } from '../utils/logger.js';
-import { rateLimit, sleep } from '../utils/rateLimiter.js';
-import { config } from '../config.js';
+import { logger } from '../utils/logger';
+import { rateLimit, sleep } from '../utils/rateLimiter';
+import { config } from '../config';
 
 /** Represents a single scraped product before normalization */
 export interface RawProduct {

@@ -2,7 +2,7 @@
  * Rate Limiter
  * Ensures respectful request pacing per domain.
  */
-import { config } from '../config.js';
+import { config } from '../config';
 
 const domainTimestamps = new Map<string, number>();
 

@@ -4,9 +4,9 @@
  * Uses Playwright for dynamic JS-rendered content.
  */
 import { chromium } from 'playwright';
-import { BaseScraper, type RawProduct } from './BaseScraper.js';
-import { rateLimit } from '../utils/rateLimiter.js';
-import { config } from '../config.js';
+import { BaseScraper, type RawProduct } from './BaseScraper';
+import { rateLimit } from '../utils/rateLimiter';
+import { config } from '../config';
 
 export class CreeScraper extends BaseScraper {
     async scrape(): Promise<RawProduct[]> {

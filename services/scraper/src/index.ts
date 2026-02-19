@@ -3,24 +3,24 @@
  * Entry point for the scraper service.
  * Coordinates brand scrapers, normalization, and change detection.
  */
-import { validateConfig, config } from './config.js';
-import { logger } from './utils/logger.js';
-import { supabaseAdmin } from './utils/supabaseAdmin.js';
-import { AcuityScraper } from './brands/acuity.js';
-import { CreeScraper } from './brands/cree.js';
-import { PhilipsScraper } from './brands/philips.js';
-import { mapAttributes } from './normalizer/attributeMap.js';
-import { parseAndConvert, extractNumeric } from './normalizer/unitConverter.js';
-import { validateProduct } from './normalizer/validator.js';
-import { generateSpecHash, buildSpecSnapshot } from './detector/hashEngine.js';
-import { processProductChange } from './detector/changeDetector.js';
-import type { BaseScraper, BrandConfig, RawProduct } from './brands/BaseScraper.js';
+import { validateConfig, config } from './config';
+import { logger } from './utils/logger';
+import { supabaseAdmin } from './utils/supabaseAdmin';
+import { AcuityScraper } from './brands/acuity';
+import { CreeScraper } from './brands/cree';
+import { PhilipsScraper } from './brands/philips';
+import { mapAttributes } from './normalizer/attributeMap';
+import { parseAndConvert, extractNumeric } from './normalizer/unitConverter';
+import { validateProduct } from './normalizer/validator';
+import { generateSpecHash, buildSpecSnapshot } from './detector/hashEngine';
+import { processProductChange } from './detector/changeDetector';
+import type { BaseScraper, BrandConfig, RawProduct } from '';
 
 // Map brand names to scraper classes
 const SCRAPER_REGISTRY: Record<string, new (config: BrandConfig) => BaseScraper> = {
     'Acuity Brands': AcuityScraper as any,
     'Cree Lighting': CreeScraper as any,
-    'Signify': PhilipsScraper as any,
+    'Philips': PhilipsScraper as any,
 };
 
 /**

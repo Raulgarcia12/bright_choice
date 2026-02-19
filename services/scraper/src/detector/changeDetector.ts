@@ -3,9 +3,9 @@
  * Compares current product data against stored versions.
  * Generates field-level diffs and stores change logs.
  */
-import { supabaseAdmin } from '../utils/supabaseAdmin.js';
-import { logger } from '../utils/logger.js';
-import { generateSpecHash, buildSpecSnapshot } from './hashEngine.js';
+import { supabaseAdmin } from '../utils/supabaseAdmin';
+import { logger } from '../utils/logger';
+import { generateSpecHash, buildSpecSnapshot } from './hashEngine';
 
 interface ProductRow {
     id: string;

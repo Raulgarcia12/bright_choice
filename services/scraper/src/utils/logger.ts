@@ -3,7 +3,7 @@
  * Structured logging for the scraper service.
  */
 import winston from 'winston';
-import { config } from './config.js';
+import { config } from '../config';
 
 export const logger = winston.createLogger({
     level: config.logging.level,

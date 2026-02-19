@@ -3,7 +3,7 @@
  * Validates normalized product data against expected ranges.
  * Flags suspicious values for manual review.
  */
-import { logger } from '../utils/logger.js';
+import { logger } from '../utils/logger';
 
 interface ValidationRule {
     field: string;
