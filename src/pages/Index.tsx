@@ -91,7 +91,7 @@ const Index = () => {
       <main className="mx-auto max-w-7xl px-4 py-4 sm:py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
           <div className="flex items-center gap-2">
-            <TabsList className="grid w-full max-w-md grid-cols-2 bg-muted/30 p-1">
+            <TabsList className="grid w-full max-w-full grid-cols-2 bg-muted/30 p-1 sm:max-w-md">
               <TabsTrigger value="catalog" className="data-[state=active]:bg-card data-[state=active]:shadow-sm text-sm">
                 {t('products', language)}
                 {filtered.length > 0 && (
@@ -169,7 +169,7 @@ const Index = () => {
                         </motion.div>
                       ) : (
                         <>
-                          <div className="mb-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+                          <div className="mb-4 flex flex-col justify-between gap-2 xs:flex-col sm:flex-row sm:items-center">
                             <p className="text-sm text-muted-foreground">
                               {t('showingProducts', language, { count: filtered.length })}
                             </p>
@@ -223,7 +223,7 @@ const Index = () => {
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 sm:gap-4">
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
                             {paginatedProducts.map((product, index) => (
                               <motion.div
                                 key={product.id}

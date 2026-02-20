@@ -79,7 +79,7 @@ export default function ChangeLog() {
                         />
                     </div>
                     <Select value={selectedField} onValueChange={setSelectedField}>
-                        <SelectTrigger className="w-[200px]">
+                        <SelectTrigger className="w-full sm:w-[200px]">
                             <Filter className="mr-2 h-4 w-4" />
                             <SelectValue placeholder="Filter by field" />
                         </SelectTrigger>
@@ -121,7 +121,7 @@ export default function ChangeLog() {
                                 transition={{ delay: Math.min(index * 0.03, 0.3) }}
                             >
                                 <Card className="hover:border-primary/30 transition-colors">
-                                    <CardContent className="flex items-center gap-4 p-4">
+                                    <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:gap-4">
                                         <div className="shrink-0 rounded-full bg-amber-100 p-2 dark:bg-amber-900/30">
                                             <Activity className="h-4 w-4 text-amber-600" />
                                         </div>
@@ -143,7 +143,7 @@ export default function ChangeLog() {
                                                 <span className="text-green-600 font-medium">{change.new_value}</span>
                                             </p>
                                         </div>
-                                        <p className="shrink-0 text-xs text-muted-foreground">
+                                        <p className="text-xs text-muted-foreground sm:shrink-0 sm:ml-auto">
                                             {new Date(change.detected_at).toLocaleDateString(undefined, {
                                                 month: 'short',
                                                 day: 'numeric',

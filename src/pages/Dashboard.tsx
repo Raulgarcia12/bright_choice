@@ -31,7 +31,7 @@ function KPICard({ title, value, subtitle, icon: Icon, trend }: {
             transition={{ duration: 0.4 }}
         >
             <Card className="relative overflow-hidden">
-                <CardContent className="p-6">
+                <CardContent className="p-4 sm:p-6">
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-muted-foreground">{title}</p>
@@ -186,7 +186,7 @@ export default function Dashboard() {
 
                 {/* KPI Cards */}
                 {kpis && (
-                    <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+                    <div className="mb-8 grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-6">
                         <KPICard icon={BarChart3} title="Products" value={String(kpis.totalProducts)} subtitle="In catalog" />
                         <KPICard icon={Zap} title="Avg Efficacy" value={`${kpis.avgEfficiency}`} subtitle="lm/W" trend="+2.3% vs last quarter" />
                         <KPICard icon={DollarSign} title="Avg Price" value={`$${kpis.avgPrice}`} subtitle="USD" />
@@ -218,14 +218,14 @@ export default function Dashboard() {
                     </motion.div>
 
                     {/* Efficiency Frontier (Scatter Plot) */}
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="lg:col-span-2">
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="col-span-1 lg:col-span-2">
                         <Card>
-                            <CardHeader className="flex flex-row items-center justify-between pb-2">
-                                <CardTitle className="text-lg">Efficiency Frontier (Value Analysis)</CardTitle>
+                            <CardHeader className="flex flex-col gap-2 pb-2 sm:flex-row sm:items-center sm:justify-between">
+                                <CardTitle className="text-base sm:text-lg">Efficiency Frontier (Value Analysis)</CardTitle>
                                 <Badge variant="outline" className="text-[10px] bg-primary/5">Efficiency vs Price</Badge>
                             </CardHeader>
                             <CardContent>
-                                <div className="h-[400px] w-full mt-4">
+                                <div className="h-[240px] sm:h-[340px] lg:h-[400px] w-full mt-2 sm:mt-4">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                                             <CartesianGrid strokeDasharray="3 3" />
@@ -296,9 +296,9 @@ export default function Dashboard() {
                                 <div className="space-y-4">
                                     {competitiveGaps.slice(0, 5).map((gap) => (
                                         <div key={gap.brand} className="space-y-2">
-                                            <div className="flex justify-between items-end">
+                                            <div className="flex flex-col gap-1 sm:flex-row sm:justify-between sm:items-end">
                                                 <span className="text-sm font-semibold">{gap.brand}</span>
-                                                <div className="flex gap-3 text-[10px]">
+                                                <div className="flex gap-3 text-[10px] sm:text-xs">
                                                     <span className={gap.effGap >= 0 ? 'text-green-600' : 'text-red-500'}>
                                                         Eff: {gap.effGap >= 0 ? '+' : ''}{gap.effGap.toFixed(1)}%
                                                     </span>
