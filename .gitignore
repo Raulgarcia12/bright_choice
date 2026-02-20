@@ -1,4 +1,29 @@
+# ──────────────────────────────────────────
+# Dependencies
+# ──────────────────────────────────────────
+node_modules
+.pnp
+.pnp.js
+
+# ──────────────────────────────────────────
+# Build outputs
+# ──────────────────────────────────────────
+dist
+dist-ssr
+build
+*.local
+
+# ──────────────────────────────────────────
+# Environment / secrets  ← DO NOT COMMIT
+# ──────────────────────────────────────────
+.env
+.env.*
+!.env.example
+!.env.test
+
+# ──────────────────────────────────────────
 # Logs
+# ──────────────────────────────────────────
 logs
 *.log
 npm-debug.log*
@@ -6,19 +31,24 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+services/scraper/logs/
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
+# ──────────────────────────────────────────
+# Editor & OS artifacts
+# ──────────────────────────────────────────
 .vscode/*
 !.vscode/extensions.json
 .idea
 .DS_Store
+Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# ──────────────────────────────────────────
+# TypeScript / Vite cache
+# ──────────────────────────────────────────
+*.tsbuildinfo
+.vite/
