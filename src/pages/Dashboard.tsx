@@ -13,6 +13,7 @@ import {
 } from 'recharts';
 import Header from '@/components/Header';
 import GeoMap from '@/components/GeoMap';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -233,13 +234,15 @@ export default function Dashboard() {
                             </CardHeader>
                             <CardContent className="p-2 pt-0">
                                 <div className="h-[180px] sm:h-[220px]">
-                                    <GeoMap
-                                        country="USA"
-                                        regionCounts={usaRegionCounts}
-                                        selectedState={selectedState}
-                                        onSelectState={setSelectedState}
-                                        language={language}
-                                    />
+                                    <ErrorBoundary fallback={<div className="flex h-full items-center justify-center text-xs text-muted-foreground">Map unavailable</div>}>
+                                        <GeoMap
+                                            country="USA"
+                                            regionCounts={usaRegionCounts}
+                                            selectedState={selectedState}
+                                            onSelectState={setSelectedState}
+                                            language={language}
+                                        />
+                                    </ErrorBoundary>
                                 </div>
                             </CardContent>
                         </Card>
@@ -251,13 +254,15 @@ export default function Dashboard() {
                             </CardHeader>
                             <CardContent className="p-2 pt-0">
                                 <div className="h-[180px] sm:h-[220px]">
-                                    <GeoMap
-                                        country="Canada"
-                                        regionCounts={canadaRegionCounts}
-                                        selectedState={selectedState}
-                                        onSelectState={setSelectedState}
-                                        language={language}
-                                    />
+                                    <ErrorBoundary fallback={<div className="flex h-full items-center justify-center text-xs text-muted-foreground">Map unavailable</div>}>
+                                        <GeoMap
+                                            country="Canada"
+                                            regionCounts={canadaRegionCounts}
+                                            selectedState={selectedState}
+                                            onSelectState={setSelectedState}
+                                            language={language}
+                                        />
+                                    </ErrorBoundary>
                                 </div>
                             </CardContent>
                         </Card>
