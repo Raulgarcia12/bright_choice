@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { BarChart3, Lightbulb, TrendingUp, Shield, SlidersHorizontal, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '@/components/Header';
@@ -22,10 +22,12 @@ const Index = () => {
   const itemsPerPage = 12;
 
   const allProducts = products || [];
-  const filtered = useMemo(() => {
-    setCurrentPage(1); // Reset to first page when filters change
-    return applyFilters(allProducts, filters);
-  }, [allProducts, filters]);
+  const filtered = useMemo(() => applyFilters(allProducts, filters), [allProducts, filters]);
+
+  // Reset to page 1 whenever filters or products change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters, allProducts]);
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginatedProducts = useMemo(() => {
