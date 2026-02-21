@@ -1,20 +1,21 @@
 /**
- * GeoMap — Interactive choropleth map for USA states or Canadian provinces.
- * Uses react-simple-maps with TopoJSON from a public CDN.
+ * GeoMap — Interactive choropleth map for North America (USA + Canada combined).
+ * Uses react-simple-maps with two TopoJSON sources overlaid in one ComposableMap.
  * Colored by product count per region; click to filter.
  */
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
 import { motion } from 'framer-motion';
 
-// Public CDN TopoJSON sources (us-atlas is the only well-known one; use naturalearth for Canada)
+// Public CDN TopoJSON sources
 const USA_TOPO = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json';
-const CANADA_TOPO = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
+const CANADA_PROV_TOPO = 'https://gist.githubusercontent.com/Saw-mon-and-Natalie/a11f058fc0dcce9343b02498a46b3d44/raw/canada.json';
 
 interface GeoMapProps {
-    country: 'USA' | 'Canada';
-    /** Map of state/province abbreviation → product count */
-    regionCounts: Record<string, number>;
+    /** Map of state/province abbreviation → product count for USA */
+    usaRegionCounts: Record<string, number>;
+    /** Map of state/province abbreviation → product count for Canada */
+    canadaRegionCounts: Record<string, number>;
     selectedState: string | null;
     onSelectState: (abbr: string | null) => void;
     language: 'en' | 'es';
@@ -32,9 +33,6 @@ const US_FIPS: Record<string, string> = {
     '47': 'TN', '48': 'TX', '49': 'UT', '50': 'VT', '51': 'VA', '53': 'WA',
     '54': 'WV', '55': 'WI', '56': 'WY',
 };
-
-// Canadian provinces TopoJSON — reliable Gist with province-level geometries
-const CANADA_PROV_TOPO = 'https://gist.githubusercontent.com/Saw-mon-and-Natalie/a11f058fc0dcce9343b02498a46b3d44/raw/canada.json';
 
 // Province name → abbreviation map (includes variant spellings from different TopoJSON sources)
 const CA_PROV: Record<string, string> = {
@@ -56,66 +54,62 @@ function interpolateColor(t: number): string {
     return `rgb(${r},${g},${b})`;
 }
 
-export default function GeoMap({ country, regionCounts, selectedState, onSelectState, language }: GeoMapProps) {
+export default function GeoMap({ usaRegionCounts, canadaRegionCounts, selectedState, onSelectState, language }: GeoMapProps) {
     const [tooltip, setTooltip] = useState<{ name: string; abbr: string; count: number } | null>(null);
-    const [error, setError] = useState<string | null>(null);
+    const [usaError, setUsaError] = useState(false);
+    const [canadaError, setCanadaError] = useState(false);
 
-    const geoUrl = country === 'USA' ? USA_TOPO : CANADA_PROV_TOPO;
-
+    // Merge all counts to get a unified max for the color scale
+    const allCounts = useMemo(() => ({ ...usaRegionCounts, ...canadaRegionCounts }), [usaRegionCounts, canadaRegionCounts]);
     const maxCount = useMemo(() => {
-        const vals = Object.values(regionCounts);
+        const vals = Object.values(allCounts);
         return vals.length > 0 ? Math.max(1, ...vals) : 1;
-    }, [regionCounts]);
+    }, [allCounts]);
 
-    function getAbbr(geo: any): string {
-        try {
-            if (country === 'USA') {
-                return US_FIPS[String(geo.id)] || '';
-            }
-            const name =
-                geo.properties?.name ||
-                geo.properties?.NAME ||
-                geo.properties?.PRENAME ||
-                geo.properties?.prov_name_en || '';
-            return CA_PROV[name] || geo.properties?.abbrev || geo.properties?.postal || '';
-        } catch {
-            return '';
-        }
+    function getUsaAbbr(geo: any): string {
+        return US_FIPS[String(geo.id)] || '';
+    }
+
+    function getCanadaAbbr(geo: any): string {
+        const name =
+            geo.properties?.name ||
+            geo.properties?.NAME ||
+            geo.properties?.PRENAME ||
+            geo.properties?.prov_name_en || '';
+        return CA_PROV[name] || geo.properties?.abbrev || geo.properties?.postal || '';
     }
 
     function getName(geo: any): string {
-        try {
-            return (
-                geo.properties?.name ||
-                geo.properties?.NAME ||
-                geo.properties?.PRENAME ||
-                geo.properties?.prov_name_en || ''
-            );
-        } catch {
-            return '';
-        }
+        return (
+            geo.properties?.name ||
+            geo.properties?.NAME ||
+            geo.properties?.PRENAME ||
+            geo.properties?.prov_name_en || ''
+        );
     }
 
-    function getFill(abbr: string): string {
-        if (!abbr || !(abbr in regionCounts)) return '#cbd5e1'; // slate-300 = no data
-        const count = regionCounts[abbr] || 0;
+    function getFill(abbr: string, counts: Record<string, number>): string {
+        if (!abbr || !(abbr in counts)) return '#cbd5e1'; // slate-300 = no data
+        const count = counts[abbr] || 0;
         const t = Math.min(count / maxCount, 1);
         return interpolateColor(t);
     }
 
-    if (error) {
+    // Use geoMercator for a standard North America view showing both countries
+    const projection = 'geoMercator';
+    const projConfig = {
+        scale: 220,
+        center: [-96, 55] as [number, number],
+    };
+
+    // If both failed, show error
+    if (usaError && canadaError) {
         return (
             <div className="flex h-full items-center justify-center text-xs text-muted-foreground p-4 text-center">
                 {language === 'en' ? 'Map unavailable' : 'Mapa no disponible'}
             </div>
         );
     }
-
-    const projection = country === 'USA' ? 'geoAlbersUsa' : 'geoAzimuthalEqualArea';
-    const projConfig =
-        country === 'USA'
-            ? { scale: 680 }
-            : { scale: 280, center: [-96, 60] as [number, number], rotate: [0, 0, 45] as [number, number, number] };
 
     return (
         <div className="relative h-full w-full select-none overflow-hidden">
@@ -124,50 +118,101 @@ export default function GeoMap({ country, regionCounts, selectedState, onSelectS
                 projectionConfig={projConfig}
                 style={{ width: '100%', height: '100%' }}
             >
-                <Geographies
-                    geography={geoUrl}
-                    onError={() => setError('Failed to load map')}
-                >
-                    {({ geographies }) =>
-                        geographies.map((geo) => {
-                            const abbr = getAbbr(geo);
-                            const name = getName(geo);
-                            const count = regionCounts[abbr] || 0;
-                            const isSelected = selectedState === abbr;
-                            const fill = isSelected ? '#6366f1' : getFill(abbr);
+                {/* ── USA States ── */}
+                {!usaError && (
+                    <Geographies
+                        geography={USA_TOPO}
+                        onError={() => setUsaError(true)}
+                    >
+                        {({ geographies }) =>
+                            geographies.map((geo) => {
+                                const abbr = getUsaAbbr(geo);
+                                const name = getName(geo);
+                                const count = usaRegionCounts[abbr] || 0;
+                                const isSelected = selectedState === abbr;
+                                const fill = isSelected ? '#6366f1' : getFill(abbr, usaRegionCounts);
 
-                            return (
-                                <Geography
-                                    key={geo.rsmKey}
-                                    geography={geo}
-                                    onMouseEnter={() => abbr && setTooltip({ name, abbr, count })}
-                                    onMouseLeave={() => setTooltip(null)}
-                                    onClick={() => abbr && onSelectState(isSelected ? null : abbr)}
-                                    style={{
-                                        default: {
-                                            fill,
-                                            stroke: '#fff',
-                                            strokeWidth: 0.6,
-                                            outline: 'none',
-                                            transition: 'fill 0.25s ease',
-                                        },
-                                        hover: {
-                                            fill: isSelected ? '#6366f1' : '#818cf8',
-                                            stroke: '#fff',
-                                            strokeWidth: 0.6,
-                                            outline: 'none',
-                                            cursor: 'pointer',
-                                        },
-                                        pressed: {
-                                            fill: '#6366f1',
-                                            outline: 'none',
-                                        },
-                                    }}
-                                />
-                            );
-                        })
-                    }
-                </Geographies>
+                                return (
+                                    <Geography
+                                        key={geo.rsmKey}
+                                        geography={geo}
+                                        onMouseEnter={() => abbr && setTooltip({ name, abbr, count })}
+                                        onMouseLeave={() => setTooltip(null)}
+                                        onClick={() => abbr && onSelectState(isSelected ? null : abbr)}
+                                        style={{
+                                            default: {
+                                                fill,
+                                                stroke: '#fff',
+                                                strokeWidth: 0.5,
+                                                outline: 'none',
+                                                transition: 'fill 0.25s ease',
+                                            },
+                                            hover: {
+                                                fill: isSelected ? '#6366f1' : '#818cf8',
+                                                stroke: '#fff',
+                                                strokeWidth: 0.5,
+                                                outline: 'none',
+                                                cursor: 'pointer',
+                                            },
+                                            pressed: {
+                                                fill: '#6366f1',
+                                                outline: 'none',
+                                            },
+                                        }}
+                                    />
+                                );
+                            })
+                        }
+                    </Geographies>
+                )}
+
+                {/* ── Canada Provinces ── */}
+                {!canadaError && (
+                    <Geographies
+                        geography={CANADA_PROV_TOPO}
+                        onError={() => setCanadaError(true)}
+                    >
+                        {({ geographies }) =>
+                            geographies.map((geo) => {
+                                const abbr = getCanadaAbbr(geo);
+                                const name = getName(geo);
+                                const count = canadaRegionCounts[abbr] || 0;
+                                const isSelected = selectedState === abbr;
+                                const fill = isSelected ? '#6366f1' : getFill(abbr, canadaRegionCounts);
+
+                                return (
+                                    <Geography
+                                        key={geo.rsmKey}
+                                        geography={geo}
+                                        onMouseEnter={() => abbr && setTooltip({ name, abbr, count })}
+                                        onMouseLeave={() => setTooltip(null)}
+                                        onClick={() => abbr && onSelectState(isSelected ? null : abbr)}
+                                        style={{
+                                            default: {
+                                                fill,
+                                                stroke: '#fff',
+                                                strokeWidth: 0.5,
+                                                outline: 'none',
+                                                transition: 'fill 0.25s ease',
+                                            },
+                                            hover: {
+                                                fill: isSelected ? '#6366f1' : '#818cf8',
+                                                stroke: '#fff',
+                                                strokeWidth: 0.5,
+                                                outline: 'none',
+                                                cursor: 'pointer',
+                                            },
+                                            pressed: {
+                                                fill: '#6366f1',
+                                                outline: 'none',
+                                            },
+                                        }}
+                                    />
+                                );
+                            })
+                        }
+                    </Geographies>
+                )}
             </ComposableMap>
 
             {/* Tooltip */}

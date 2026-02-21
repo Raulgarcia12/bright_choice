@@ -234,47 +234,24 @@ export default function Dashboard() {
                             {language === 'en' ? '— click a state or province' : '— haz clic en un estado o provincia'}
                         </span>
                     </div>
-                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                        {/* USA Map */}
-                        <Card className="overflow-hidden">
-                            <CardHeader className="pb-1 pt-3 px-4">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">🇺🇸 United States</CardTitle>
-                            </CardHeader>
-                            <CardContent className="p-2 pt-0">
-                                <div className="h-[180px] sm:h-[220px]">
-                                    <ErrorBoundary fallback={<div className="flex h-full items-center justify-center text-xs text-muted-foreground">Map unavailable</div>}>
-                                        <GeoMap
-                                            country="USA"
-                                            regionCounts={usaRegionCounts}
-                                            selectedState={selectedState}
-                                            onSelectState={setSelectedState}
-                                            language={language}
-                                        />
-                                    </ErrorBoundary>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* Canada Map */}
-                        <Card className="overflow-hidden">
-                            <CardHeader className="pb-1 pt-3 px-4">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">🇨🇦 Canada</CardTitle>
-                            </CardHeader>
-                            <CardContent className="p-2 pt-0">
-                                <div className="h-[180px] sm:h-[220px]">
-                                    <ErrorBoundary fallback={<div className="flex h-full items-center justify-center text-xs text-muted-foreground">Map unavailable</div>}>
-                                        <GeoMap
-                                            country="Canada"
-                                            regionCounts={canadaRegionCounts}
-                                            selectedState={selectedState}
-                                            onSelectState={setSelectedState}
-                                            language={language}
-                                        />
-                                    </ErrorBoundary>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
+                    <Card className="overflow-hidden">
+                        <CardHeader className="pb-1 pt-3 px-4">
+                            <CardTitle className="text-sm font-medium text-muted-foreground">🌎 North America</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-2 pt-0">
+                            <div className="h-[320px] sm:h-[380px]">
+                                <ErrorBoundary fallback={<div className="flex h-full items-center justify-center text-xs text-muted-foreground">Map unavailable</div>}>
+                                    <GeoMap
+                                        usaRegionCounts={usaRegionCounts}
+                                        canadaRegionCounts={canadaRegionCounts}
+                                        selectedState={selectedState}
+                                        onSelectState={setSelectedState}
+                                        language={language}
+                                    />
+                                </ErrorBoundary>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </motion.section>
 
                 {/* ── KPI Cards ── */}
