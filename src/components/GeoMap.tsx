@@ -115,7 +115,7 @@ export default function GeoMap({ country, regionCounts, selectedState, onSelectS
     const projConfig =
         country === 'USA'
             ? { scale: 680 }
-            : { scale: 250, center: [-96, 62] as [number, number], rotate: [0, 0, 0] as [number, number, number] };
+            : { scale: 375, center: [-96, 62] as [number, number], rotate: [0, 0, 45] as [number, number, number] };
 
     return (
         <div className="relative h-full w-full select-none">
