@@ -11,6 +11,7 @@ import ChangeLog from "./pages/ChangeLog";
 import LoginPage from "./pages/Login";
 import AdminPage from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import SetupPage from "./pages/Setup";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/products/:id" element={<ProductDetail />} />
           <Route path="/changes" element={<ProtectedRoute minRole="analyst"><ChangeLog /></ProtectedRoute>} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/setup" element={<SetupPage />} />
           <Route path="/admin" element={<ProtectedRoute minRole="admin"><AdminPage /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
