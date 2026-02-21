@@ -13,8 +13,8 @@ interface ValidationRule {
 }
 
 const VALIDATION_RULES: ValidationRule[] = [
-    { field: 'watts', min: 1, max: 2000, required: true },
-    { field: 'lumens', min: 50, max: 200000, required: true },
+    { field: 'watts', min: 0, max: 2000, required: false },
+    { field: 'lumens', min: 0, max: 200000, required: false },
     { field: 'efficiency', min: 10, max: 250, required: false },
     { field: 'cct', min: 2000, max: 10000, required: false },
     { field: 'cri', min: 50, max: 100, required: false },

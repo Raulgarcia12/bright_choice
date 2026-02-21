@@ -80,22 +80,45 @@ async function processBrand(brand: BrandConfig): Promise<{
                 };
 
                 // Extract numeric values with unit conversion
-                if (mapped.watts) normalized.watts = extractNumeric(mapped.watts.value) || 0;
-                if (mapped.lumens) normalized.lumens = extractNumeric(mapped.lumens.value) || 0;
-                if (mapped.cct) normalized.cct = extractNumeric(mapped.cct.value) || 4000;
-                if (mapped.cri) normalized.cri = extractNumeric(mapped.cri.value) || 80;
+                // Provide sensible defaults for all required DB columns
+                normalized.watts = mapped.watts
+                    ? (extractNumeric(mapped.watts.value) || 0)
+                    : (extractNumeric(raw.specs['Watts'] || raw.specs['watts'] || raw.specs['Wattage'] || '0') || 0);
+
+                normalized.lumens = mapped.lumens
+                    ? (extractNumeric(mapped.lumens.value) || 0)
+                    : (extractNumeric(raw.specs['Lumens'] || raw.specs['lumens'] || raw.specs['Lumen Output'] || '0') || 0);
+
+                normalized.cct = mapped.cct
+                    ? (extractNumeric(mapped.cct.value) || null)
+                    : (extractNumeric(raw.specs['CCT'] || raw.specs['cct'] || raw.specs['Color Temperature'] || '') || null);
+
+                normalized.cri = mapped.cri
+                    ? (extractNumeric(mapped.cri.value) || 80)
+                    : (extractNumeric(raw.specs['CRI'] || raw.specs['cri'] || '') || 80);
+
                 if (mapped.lifespan) {
                     const lifeVal = parseAndConvert(mapped.lifespan.value, 'hours');
                     normalized.lifespan = lifeVal?.value || 25000;
+                } else {
+                    normalized.lifespan = extractNumeric(raw.specs['Lifespan'] || raw.specs['lifespan'] || '') || 25000;
                 }
                 if (mapped.warranty) {
                     const warVal = parseAndConvert(mapped.warranty.value, 'years');
                     normalized.warranty = warVal?.value || 3;
+                } else {
+                    normalized.warranty = extractNumeric(raw.specs['Warranty'] || raw.specs['warranty'] || '') || 3;
                 }
+
                 if (mapped.efficiency) normalized.efficiency = extractNumeric(mapped.efficiency.value);
                 if (mapped.ip_rating) normalized.ip_rating = mapped.ip_rating.value;
                 if (mapped.voltage) normalized.voltage = mapped.voltage.value;
                 if (mapped.dimming) normalized.dimming = mapped.dimming.value;
+
+                // Certification flags
+                normalized.cert_ul = raw.specs['cert_ul'] === 'true' || (mapped as any).raw_cert_ul?.value === 'true' || false;
+                normalized.cert_dlc = raw.specs['cert_dlc'] === 'true' || (mapped as any).raw_cert_dlc?.value === 'true' || false;
+                normalized.cert_energy_star = raw.specs['cert_energy_star'] === 'true' || (mapped as any).raw_cert_energy_star?.value === 'true' || false;
 
                 // Validate core spec data
                 const validation = validateProduct(normalized as any);

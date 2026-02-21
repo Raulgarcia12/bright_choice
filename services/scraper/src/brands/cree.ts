@@ -2,14 +2,15 @@
  * Cree Lighting Scraper
  *
  * Target: https://www.creelighting.com/products/
- * Cree's site uses static HTML rendered server-side — Axios + Cheerio is fine.
- * They also publish a product data sheet Excel/CSV on their site, but we HTML-scrape
- * the category listing pages for broader coverage.
+ * Built with Gatsby (SSR). Product family cards on listing pages have
+ * inline spec summaries (Lumen Output, Wattage) plus links to detail pages.
+ * Detail pages do NOT have HTML spec tables — specs are in PDF ordering matrices.
  *
- * Real extraction approach:
- *  1. Fetch the main /products listing page with Axios
- *  2. Parse product family cards with Cheerio
- *  3. Follow product detail links to extract full specs
+ * Strategy:
+ *  1. Fetch each real product sub-category page (troffers, high-bay, etc.)
+ *  2. Parse the SSR HTML for product family links and inline specs
+ *  3. Extract Lumen Output and Wattage from the card text
+ *  4. Follow the detail page link to get the full product title (h1)
  *
  * Cree Lighting is a US company (HQ: Durham, NC).
  * Geo data provided by brandGeoConfig.
@@ -21,32 +22,26 @@ import { rateLimit, sleep } from '../utils/rateLimiter';
 
 const CREE_BASE = 'https://www.creelighting.com';
 
-// Real Cree product category URLs (verified Jan 2026)
+// Real working sub-category URLs on creelighting.com (verified Feb 2026)
 const CREE_CATEGORY_URLS = [
-    '/products/indoor/led-lamps',
-    '/products/indoor/high-bay',
-    '/products/indoor/troffers',
-    '/products/indoor/downlights',
-    '/products/outdoor/area-roadway',
-    '/products/outdoor/flood',
+    // Indoor
+    '/products/indoor/troffers/',
+    '/products/indoor/high-bay-low-bay/',
+    '/products/indoor/specification-linear/',
+    '/products/indoor/surface-ambient/',
+    '/products/indoor/new-construction-downlights/',
+    '/products/indoor/retrofit-downlights/',
+    '/products/indoor/dynamic-skylight/',
+    // Outdoor
+    '/products/outdoor/area/',
+    '/products/outdoor/canopy-and-soffit/',
+    '/products/outdoor/street-and-roadway/',
+    '/products/outdoor/parking-structure/',
+    '/products/outdoor/bollards-and-pathway/',
+    '/products/outdoor/flood/',
+    '/products/outdoor/wall-mount/',
+    '/products/outdoor/vapor-tight/',
 ];
-
-// Real CSS selectors on creelighting.com (as of Jan 2026)
-const SELECTORS = {
-    // Product family card on listing page
-    productCard: '.product-family-card, .product-card, article.product',
-    // Product name / title in card
-    name: 'h2, h3, .product-title, .product-name',
-    // Link to product detail page
-    link: 'a',
-    // SKU / Part number on detail page
-    sku: '[data-part-number], .part-number, .sku',
-    // Spec table on the individual product page
-    specTable: 'table.specifications, .spec-table, .product-specs table',
-    specRow: 'tr',
-    specLabel: 'th, td:first-child',
-    specValue: 'td:last-child',
-};
 
 export class CreeScraper extends BaseScraper {
     async scrape(): Promise<RawProduct[]> {
@@ -63,7 +58,7 @@ export class CreeScraper extends BaseScraper {
             await rateLimit(new URL(baseUrl).hostname);
 
             try {
-                const { data: catHtml } = await axios.get<string>(catUrl, {
+                const { data: html } = await axios.get<string>(catUrl, {
                     headers: {
                         'User-Agent':
                             'BrightChoice-Bot/1.0 (competitive-intelligence; contact@brightchoice.app)',
@@ -72,39 +67,101 @@ export class CreeScraper extends BaseScraper {
                     timeout: 30000,
                 });
 
-                const $cat = cheerio.load(catHtml);
-                const cards = $cat(SELECTORS.productCard);
-                this.log.info(`Found ${cards.length} product cards in ${catPath}`);
+                const $ = cheerio.load(html);
 
-                if (cards.length === 0) {
-                    // Fallback: grab any anchor with /products/ in the href
-                    const productLinks: string[] = [];
-                    $cat('a[href*="/products/"]').each((_, el) => {
-                        const href = $cat(el).attr('href');
-                        if (href && !productLinks.includes(href) && href !== catPath) {
-                            productLinks.push(href);
+                // Detect the category name from the H1
+                const categoryName = $('h1').first().text().trim() || catPath;
+                let catLabel = this.inferCategory(catPath);
+
+                // Find all product family detail links on the page
+                // Cree uses links like /products/indoor/troffers/flex-series-square-lens/
+                // These are deeper than the category URL itself (have an extra path segment)
+                const catPathClean = catPath.replace(/\/$/, '');
+                const productLinks: Array<{ href: string; cardText: string }> = [];
+
+                $('a').each((_, el) => {
+                    const href = $(el).attr('href');
+                    if (!href) return;
+
+                    // Must start with the current category path and go one level deeper
+                    if (
+                        href.startsWith(catPathClean + '/') &&
+                        href !== catPath &&
+                        href !== catPathClean + '/' &&
+                        !href.includes('#') &&
+                        !href.includes('?')
+                    ) {
+                        // Only add unique links
+                        if (!productLinks.some((p) => p.href === href)) {
+                            // Grab surrounding text for inline specs
+                            const parent = $(el).closest('div, article, section, li');
+                            const cardText = parent.length > 0 ? parent.text() : $(el).text();
+                            productLinks.push({ href, cardText });
                         }
-                    });
-                    this.log.info(`Fallback: found ${productLinks.length} product links`);
-
-                    for (const href of productLinks.slice(0, 20)) {
-                        const p = await this.scrapeProductDetail(baseUrl, href);
-                        if (p) products.push(p);
-                        await sleep(800);
                     }
-                    continue;
-                }
-
-                // Collect detail page URLs from cards
-                const detailUrls: string[] = [];
-                cards.each((_, el) => {
-                    const link = $cat(el).find(SELECTORS.link).first().attr('href');
-                    if (link) detailUrls.push(link);
                 });
 
-                for (const href of detailUrls) {
-                    const p = await this.scrapeProductDetail(baseUrl, href);
-                    if (p) products.push(p);
+                this.log.info(
+                    `Found ${productLinks.length} product family links in ${catPath}`
+                );
+
+                for (const { href, cardText } of productLinks) {
+                    try {
+                        // Extract inline specs from the card text
+                        const inlineSpecs = this.extractInlineSpecs(cardText);
+
+                        // Fetch the detail page for the proper H1 title
+                        const fullUrl = href.startsWith('http')
+                            ? href
+                            : `${baseUrl}${href}`;
+
+                        await rateLimit(new URL(baseUrl).hostname);
+
+                        const { data: detailHtml } = await axios.get<string>(fullUrl, {
+                            headers: {
+                                'User-Agent':
+                                    'BrightChoice-Bot/1.0 (competitive-intelligence; contact@brightchoice.app)',
+                                Accept: 'text/html',
+                            },
+                            timeout: 25000,
+                        });
+
+                        const $d = cheerio.load(detailHtml);
+                        const model = $d('h1').first().text().trim();
+
+                        if (!model) {
+                            this.log.warn(`No h1 model title found at ${fullUrl}`);
+                            continue;
+                        }
+
+                        // Skip if it's a generic category title we already have
+                        if (products.some((p) => p.model === model)) continue;
+
+                        // Try to extract additional specs from the detail page text
+                        const fullPageText = $d('body').text();
+                        const detailSpecs = this.extractInlineSpecs(fullPageText);
+
+                        // Merge: detail page specs override listing page specs
+                        const specs = { ...inlineSpecs, ...detailSpecs };
+
+                        products.push({
+                            model,
+                            sku: undefined,
+                            category: catLabel,
+                            productUrl: fullUrl,
+                            specs,
+                            rawHtml: detailHtml.slice(0, 3000),
+                            geo: { country: 'USA' },
+                        });
+
+                        this.log.info(
+                            `✓ ${model} — ${Object.keys(specs).length} specs extracted`
+                        );
+                    } catch (err) {
+                        const msg = err instanceof Error ? err.message : String(err);
+                        this.log.warn(`Failed detail page ${href}: ${msg}`);
+                    }
+
                     await sleep(600);
                 }
             } catch (err) {
@@ -117,84 +174,100 @@ export class CreeScraper extends BaseScraper {
         return products;
     }
 
-    private async scrapeProductDetail(
-        baseUrl: string,
-        href: string
-    ): Promise<RawProduct | null> {
-        const fullUrl = href.startsWith('http')
-            ? href
-            : `${baseUrl}${href.startsWith('/') ? '' : '/'}${href}`;
+    /**
+     * Extract specs from inline text on Cree's Gatsby-rendered cards.
+     * Example text: "FLEX Series Square LensTroffersLumen Output: 2,600 - 10,000 L Wattage: 18 - 82 W"
+     */
+    private extractInlineSpecs(text: string): Record<string, string> {
+        const specs: Record<string, string> = {};
 
-        await rateLimit(new URL(baseUrl).hostname);
-
-        try {
-            const { data: html } = await axios.get<string>(fullUrl, {
-                headers: {
-                    'User-Agent':
-                        'BrightChoice-Bot/1.0 (competitive-intelligence; contact@brightchoice.app)',
-                    Accept: 'text/html',
-                },
-                timeout: 25000,
-            });
-
-            const $ = cheerio.load(html);
-
-            // Detect model name (try several common selectors)
-            const model =
-                $('h1.product-title').text().trim() ||
-                $('h1').first().text().trim() ||
-                $('[data-product-name]').text().trim();
-
-            if (!model) {
-                this.log.warn(`No model found at ${fullUrl}`);
-                return null;
+        // Lumen Output: 2,600 - 10,000 L  or  Lumens: 5,000
+        const lumensMatch = text.match(
+            /(?:Lumen\s*Output|Lumens?|Delivered\s*Lumens)\s*[:=]\s*([\d,.\-–\s]+)\s*(?:L|lm)?/i
+        );
+        if (lumensMatch) {
+            // Take the max value from a range like "2,600 - 10,000"
+            const nums = lumensMatch[1].replace(/,/g, '').match(/[\d.]+/g);
+            if (nums && nums.length > 0) {
+                specs['Lumens'] = nums[nums.length - 1]; // max value
             }
-
-            const sku =
-                $(SELECTORS.sku).first().text().replace(/Part\s*(?:Number|#)?:/i, '').trim() ||
-                undefined;
-
-            // Detect category from URL path
-            let category = 'Bulb';
-            if (/high.bay/i.test(fullUrl)) category = 'High Bay';
-            else if (/troffer|panel/i.test(fullUrl)) category = 'Panel';
-
-            // Extract specs from table
-            const specs: Record<string, string> = {};
-            $(SELECTORS.specTable)
-                .find(SELECTORS.specRow)
-                .each((_, row) => {
-                    const label = $(row).find(SELECTORS.specLabel).first().text().trim();
-                    const value = $(row).find(SELECTORS.specValue).last().text().trim();
-                    if (label && value && label !== value) {
-                        specs[label] = value;
-                    }
-                });
-
-            // Also try definition list format
-            $('dl.specs, .technical-specs dl').find('dt').each((_, dt) => {
-                const label = $(dt).text().trim();
-                const value = $(dt).next('dd').text().trim();
-                if (label && value) specs[label] = value;
-            });
-
-            if (Object.keys(specs).length === 0) {
-                this.log.warn(`No specs extracted from ${fullUrl}`);
-            }
-
-            return {
-                model,
-                sku,
-                category,
-                productUrl: fullUrl,
-                specs,
-                rawHtml: $.html().slice(0, 5000), // Store first 5KB for audit
-                geo: { country: 'USA' },
-            };
-        } catch (err) {
-            const msg = err instanceof Error ? err.message : String(err);
-            this.log.warn(`Failed to scrape Cree detail ${fullUrl}: ${msg}`);
-            return null;
         }
+
+        // Wattage: 18 - 82 W  or  Watts: 50W
+        const wattsMatch = text.match(
+            /(?:Wattage|Watts?|System\s*Wattage)\s*[:=]\s*([\d,.\-–\s]+)\s*W?/i
+        );
+        if (wattsMatch) {
+            const nums = wattsMatch[1].replace(/,/g, '').match(/[\d.]+/g);
+            if (nums && nums.length > 0) {
+                specs['Watts'] = nums[nums.length - 1]; // max value
+            }
+        }
+
+        // CCT: 3000K, 3500K, 4000K, 5000K  or  Color Temperature: 4000K
+        const cctMatch = text.match(
+            /(?:CCT|Color\s*Temp(?:erature)?)\s*[:=]\s*([\d,K°\s\-–/]+)/i
+        );
+        if (cctMatch) {
+            const nums = cctMatch[1].match(/\d{3,5}/g);
+            if (nums && nums.length > 0) {
+                specs['CCT'] = nums[0]; // first / typical
+            }
+        }
+
+        // CRI: ≥80  or  CRI: 90+
+        const criMatch = text.match(/CRI\s*[:=≥>]\s*(\d{2,3})/i);
+        if (criMatch) {
+            specs['CRI'] = criMatch[1];
+        }
+
+        // Lifetime / Life: 60,000 hours  or  L70 Lifetime: 100,000
+        const lifeMatch = text.match(
+            /(?:Life(?:time)?|L70|Rated\s*Life)\s*[:=]\s*([\d,]+)\s*(?:hours?|hrs?)?/i
+        );
+        if (lifeMatch) {
+            specs['Lifespan'] = lifeMatch[1].replace(/,/g, '') + ' hours';
+        }
+
+        // Warranty: 10-year  or  Warranty: 5 years
+        const warrantyMatch = text.match(
+            /Warranty\s*[:=]\s*(\d+)\s*[-–]?\s*(?:year|yr)/i
+        );
+        if (warrantyMatch) {
+            specs['Warranty'] = warrantyMatch[1] + ' years';
+        }
+
+        // IP rating: IP65, IP66
+        const ipMatch = text.match(/(?:IP\s*(?:Rating|Code)?\s*[:=]?\s*)(IP\d{2})/i);
+        if (ipMatch) {
+            specs['IP Rating'] = ipMatch[1];
+        }
+
+        // Certifications: UL, DLC, ENERGY STAR
+        if (/\bUL\b/.test(text)) specs['cert_ul'] = 'true';
+        if (/\bDLC\b/.test(text)) specs['cert_dlc'] = 'true';
+        if (/ENERGY\s*STAR/i.test(text)) specs['cert_energy_star'] = 'true';
+
+        return specs;
+    }
+
+    /** Map URL path to our product category labels */
+    private inferCategory(catPath: string): string {
+        const p = catPath.toLowerCase();
+        if (p.includes('troffer')) return 'Panel';
+        if (p.includes('high-bay') || p.includes('low-bay')) return 'High Bay';
+        if (p.includes('linear') || p.includes('strip')) return 'Linear';
+        if (p.includes('downlight')) return 'Downlight';
+        if (p.includes('flood')) return 'Flood Light';
+        if (p.includes('area') || p.includes('roadway') || p.includes('street'))
+            return 'Area Light';
+        if (p.includes('canopy') || p.includes('soffit')) return 'Canopy';
+        if (p.includes('parking')) return 'Parking Structure';
+        if (p.includes('bollard') || p.includes('pathway')) return 'Bollard';
+        if (p.includes('wall')) return 'Wall Pack';
+        if (p.includes('vapor')) return 'Vapor Tight';
+        if (p.includes('surface') || p.includes('ambient')) return 'Surface Mount';
+        if (p.includes('skylight') || p.includes('dynamic')) return 'Specialty';
+        return 'Bulb';
     }
 }

@@ -33,17 +33,16 @@ const US_FIPS: Record<string, string> = {
     '54': 'WV', '55': 'WI', '56': 'WY',
 };
 
-// Canadian provinces: ISO 3166-2 numeric id → abbreviation
-// world-atlas countries-110m.json uses numeric ISO 3166-1 — Canada = 124, but that's 1 country polygon.
-// For individual provinces we use a different reliable source:
-const CANADA_PROV_TOPO = 'https://gist.githubusercontent.com/milafrerichs/69035da4707ea51886eb/raw/4cb01fa4b7f10efe6fc96f2a66dac6d5ec2161a3/canadaprovtopo.json';
+// Canadian provinces TopoJSON — reliable Gist with province-level geometries
+const CANADA_PROV_TOPO = 'https://gist.githubusercontent.com/Saw-mon-and-Natalie/a11f058fc0dcce9343b02498a46b3d44/raw/canada.json';
 
-// Province name → abbreviation map
+// Province name → abbreviation map (includes variant spellings from different TopoJSON sources)
 const CA_PROV: Record<string, string> = {
     'Alberta': 'AB', 'British Columbia': 'BC', 'Manitoba': 'MB', 'New Brunswick': 'NB',
-    'Newfoundland and Labrador': 'NL', 'Northwest Territories': 'NT', 'Nova Scotia': 'NS',
+    'Newfoundland and Labrador': 'NL', 'Newfoundland  & Labrador': 'NL', 'Newfoundland & Labrador': 'NL',
+    'Northwest Territories': 'NT', 'Nova Scotia': 'NS',
     'Nunavut': 'NU', 'Ontario': 'ON', 'Prince Edward Island': 'PE', 'Quebec': 'QC',
-    'Saskatchewan': 'SK', 'Yukon': 'YT',
+    'Saskatchewan': 'SK', 'Yukon': 'YT', 'Yukon Territory': 'YT',
 };
 
 /** Interpolate between two hex values 0-1 */
@@ -112,11 +111,11 @@ export default function GeoMap({ country, regionCounts, selectedState, onSelectS
         );
     }
 
-    const projection = country === 'USA' ? 'geoAlbersUsa' : 'geoMercator';
+    const projection = country === 'USA' ? 'geoAlbersUsa' : 'geoAzimuthalEqualArea';
     const projConfig =
         country === 'USA'
             ? { scale: 680 }
-            : { scale: 300, center: [-90, 65] as [number, number] };
+            : { scale: 250, center: [-96, 62] as [number, number], rotate: [0, 0, 0] as [number, number, number] };
 
     return (
         <div className="relative h-full w-full select-none">

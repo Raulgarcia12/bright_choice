@@ -1,0 +1,136 @@
+2026-02-21 02:09:58 [32minfo[39m: ­ƒÜÇ Bright Choice Scraper starting...
+2026-02-21 02:09:58 [32minfo[39m: Processing 1 brand(s): Cree Lighting
+2026-02-21 02:09:58 [32minfo[39m [Cree Lighting]: Starting scrape (attempt 1/3)
+2026-02-21 02:09:58 [32minfo[39m [Cree Lighting]: Scraping Cree category: https://www.creelighting.com/products/indoor/led-lamps
+2026-02-21 02:10:00 [33mwarn[39m [Cree Lighting]: Failed to scrape Cree category /products/indoor/led-lamps: Request failed with status code 404
+2026-02-21 02:10:00 [32minfo[39m [Cree Lighting]: Scraping Cree category: https://www.creelighting.com/products/indoor/high-bay
+2026-02-21 02:10:01 [33mwarn[39m [Cree Lighting]: Failed to scrape Cree category /products/indoor/high-bay: Request failed with status code 404
+2026-02-21 02:10:01 [32minfo[39m [Cree Lighting]: Scraping Cree category: https://www.creelighting.com/products/indoor/troffers
+2026-02-21 02:10:02 [32minfo[39m [Cree Lighting]: Found 0 product cards in /products/indoor/troffers
+2026-02-21 02:10:02 [32minfo[39m [Cree Lighting]: Fallback: found 56 product links
+2026-02-21 02:10:02 [33mwarn[39m [Cree Lighting]: No model found at https://www.creelighting.com/products/
+2026-02-21 02:10:03 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/
+2026-02-21 02:10:04 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/area/
+2026-02-21 02:10:05 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/canopy-and-soffit/
+2026-02-21 02:10:06 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/street-and-roadway/
+2026-02-21 02:10:08 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/parking-structure/
+2026-02-21 02:10:09 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/bollards-and-pathway/
+2026-02-21 02:10:10 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/flood/
+2026-02-21 02:10:11 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/wall-mount/
+2026-02-21 02:10:12 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/vapor-tight/
+2026-02-21 02:10:13 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/accessories-outdoor/
+2026-02-21 02:10:15 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/accessories-outdoor/?product_categories=poles-tenons-brackets
+2026-02-21 02:10:16 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/indoor/
+2026-02-21 02:10:17 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/indoor/troffers/
+2026-02-21 02:10:18 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/indoor/high-bay-low-bay/
+2026-02-21 02:10:19 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/indoor/dynamic-skylight/
+2026-02-21 02:10:20 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/indoor/specification-linear/
+2026-02-21 02:10:21 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/indoor/surface-ambient/
+2026-02-21 02:10:22 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/indoor/new-construction-downlights/
+2026-02-21 02:10:23 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/indoor/retrofit-downlights/
+2026-02-21 02:10:24 [32minfo[39m [Cree Lighting]: Scraping Cree category: https://www.creelighting.com/products/indoor/downlights
+2026-02-21 02:10:25 [33mwarn[39m [Cree Lighting]: Failed to scrape Cree category /products/indoor/downlights: Request failed with status code 404
+2026-02-21 02:10:25 [32minfo[39m [Cree Lighting]: Scraping Cree category: https://www.creelighting.com/products/outdoor/area-roadway
+2026-02-21 02:10:26 [33mwarn[39m [Cree Lighting]: Failed to scrape Cree category /products/outdoor/area-roadway: Request failed with status code 404
+2026-02-21 02:10:26 [32minfo[39m [Cree Lighting]: Scraping Cree category: https://www.creelighting.com/products/outdoor/flood
+2026-02-21 02:10:26 [32minfo[39m [Cree Lighting]: Found 0 product cards in /products/outdoor/flood
+2026-02-21 02:10:26 [32minfo[39m [Cree Lighting]: Fallback: found 44 product links
+2026-02-21 02:10:27 [33mwarn[39m [Cree Lighting]: No model found at https://www.creelighting.com/products/
+2026-02-21 02:10:28 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/
+2026-02-21 02:10:29 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/area/
+2026-02-21 02:10:30 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/canopy-and-soffit/
+2026-02-21 02:10:32 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/street-and-roadway/
+2026-02-21 02:10:33 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/parking-structure/
+2026-02-21 02:10:34 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/bollards-and-pathway/
+2026-02-21 02:10:35 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/flood/
+2026-02-21 02:10:36 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/wall-mount/
+2026-02-21 02:10:37 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/vapor-tight/
+2026-02-21 02:10:38 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/accessories-outdoor/
+2026-02-21 02:10:39 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/outdoor/accessories-outdoor/?product_categories=poles-tenons-brackets
+2026-02-21 02:10:40 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/indoor/
+2026-02-21 02:10:41 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/indoor/troffers/
+2026-02-21 02:10:42 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/indoor/high-bay-low-bay/
+2026-02-21 02:10:44 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/indoor/dynamic-skylight/
+2026-02-21 02:10:45 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/indoor/specification-linear/
+2026-02-21 02:10:46 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/indoor/surface-ambient/
+2026-02-21 02:10:47 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/indoor/new-construction-downlights/
+2026-02-21 02:10:48 [33mwarn[39m [Cree Lighting]: No specs extracted from https://www.creelighting.com/products/indoor/retrofit-downlights/
+2026-02-21 02:10:49 [32minfo[39m [Cree Lighting]: Cree scrape complete ÔÇö 38 products total
+2026-02-21 02:10:49 [32minfo[39m [Cree Lighting]: Scrape completed: 38 products found
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Outdoor LED Lighting Fixtures: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Outdoor LED Area Lighting: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Canopy & Soffit: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Roadway & Street Lighting Fixtures: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Parking Structure: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Pathway Lighting & Bollards: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product OUTDOOR LED FLOOD LIGHTING: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Wall Mount: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Vapor Tight Light Fixtures: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Accessories & Options: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Accessories & Options: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Indoor Lighting: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Troffers: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product High-Bay/Low-Bay LED Lights: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Dynamic Lighting Experience: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Architectural Linear: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Surface/Suspended Ambient: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product New Construction Downlights: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product LED Retrofit Downlights: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Outdoor LED Lighting Fixtures: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Outdoor LED Area Lighting: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Canopy & Soffit: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Roadway & Street Lighting Fixtures: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Parking Structure: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Pathway Lighting & Bollards: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product OUTDOOR LED FLOOD LIGHTING: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Wall Mount: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Vapor Tight Light Fixtures: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Accessories & Options: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Accessories & Options: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Indoor Lighting: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Troffers: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product High-Bay/Low-Bay LED Lights: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Dynamic Lighting Experience: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Architectural Linear: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product Surface/Suspended Ambient: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product New Construction Downlights: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Product validation failed: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [33mwarn[39m: Skipping invalid product LED Retrofit Downlights: Missing required field: watts; Missing required field: lumens
+2026-02-21 02:10:49 [32minfo[39m: Ô£à Scraper finished {"found":38,"newProducts":0,"changed":0,"errors":38}
