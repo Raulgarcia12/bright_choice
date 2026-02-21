@@ -14,7 +14,8 @@ import { parseAndConvert, extractNumeric } from './normalizer/unitConverter';
 import { validateProduct } from './normalizer/validator';
 import { generateSpecHash, buildSpecSnapshot } from './detector/hashEngine';
 import { processProductChange } from './detector/changeDetector';
-import type { BaseScraper, BrandConfig, RawProduct } from '';
+import { getGeoVariants } from './geo/geoResolver';
+import type { BaseScraper, BrandConfig, RawProduct } from './brands/BaseScraper';
 
 // Map brand names to scraper classes
 const SCRAPER_REGISTRY: Record<string, new (config: BrandConfig) => BaseScraper> = {
@@ -96,7 +97,7 @@ async function processBrand(brand: BrandConfig): Promise<{
                 if (mapped.voltage) normalized.voltage = mapped.voltage.value;
                 if (mapped.dimming) normalized.dimming = mapped.dimming.value;
 
-                // Validate
+                // Validate core spec data
                 const validation = validateProduct(normalized as any);
                 if (!validation.isValid) {
                     logger.warn(`Skipping invalid product ${raw.model}: ${validation.errors.join('; ')}`);
@@ -104,37 +105,62 @@ async function processBrand(brand: BrandConfig): Promise<{
                     continue;
                 }
 
-                // Check if product already exists (by brand + model)
-                const { data: existing } = await supabaseAdmin
-                    .from('products')
-                    .select('*')
-                    .eq('brand', brand.name)
-                    .eq('model', raw.model)
-                    .single();
+                // ── Geo expansion ────────────────────────────────────────────
+                // Determine which state/province rows to insert.
+                // If the raw product has an explicit geo hint (e.g. Philips tagging
+                // which regional site it came from), use that. Otherwise, expand
+                // from the static brandGeoConfig (one row per state/province).
+                const geoVariants = getGeoVariants(brand.name);
 
-                if (existing) {
-                    // Existing product → detect changes
-                    const result = await processProductChange(existing.id, existing, normalized);
-                    if (result.isChanged) stats.changed++;
-                } else {
-                    // New product → insert
-                    const specSnapshot = buildSpecSnapshot(normalized as any);
-                    const specHash = generateSpecHash(specSnapshot);
+                // If the scraper tagged a specific country, filter variants to that country
+                const filteredVariants = raw.geo?.country
+                    ? geoVariants.filter(v => v.country === raw.geo!.country)
+                    : geoVariants;
 
-                    const { error: insertError } = await supabaseAdmin
+                // If the scraper tagged a specific state, use only that (single row)
+                const variantsToInsert = raw.geo?.state_province
+                    ? [{ state_province: raw.geo.state_province, currency: raw.geo.country === 'Canada' ? 'CAD' : 'USD' as 'USD' | 'CAD', country: raw.geo.country ?? 'USA' as 'USA' | 'Canada' }]
+                    : filteredVariants;
+
+                // Insert/update one row per state/province
+                for (const variant of variantsToInsert) {
+                    const geoPayload = {
+                        ...normalized,
+                        state_province: variant.state_province,
+                        currency: variant.currency,
+                    };
+
+                    // Check if this exact (brand + model + state_province) row exists
+                    const { data: existing } = await supabaseAdmin
                         .from('products')
-                        .insert({
-                            ...normalized,
-                            spec_hash: specHash,
-                            price: 0, // Price TBD — often scraped separately
-                            last_scraped_at: new Date().toISOString(),
-                        } as any);
+                        .select('*')
+                        .eq('brand', brand.name)
+                        .eq('model', raw.model)
+                        .eq('state_province', variant.state_province)
+                        .single();
 
-                    if (insertError) {
-                        logger.error(`Failed to insert product ${raw.model}: ${insertError.message}`);
-                        stats.errors++;
+                    if (existing) {
+                        const result = await processProductChange(existing.id, existing, geoPayload);
+                        if (result.isChanged) stats.changed++;
                     } else {
-                        stats.newProducts++;
+                        const specSnapshot = buildSpecSnapshot(geoPayload as any);
+                        const specHash = generateSpecHash(specSnapshot);
+
+                        const { error: insertError } = await supabaseAdmin
+                            .from('products')
+                            .insert({
+                                ...geoPayload,
+                                spec_hash: specHash,
+                                price: 0,
+                                last_scraped_at: new Date().toISOString(),
+                            } as any);
+
+                        if (insertError) {
+                            logger.error(`Failed to insert ${raw.model}/${variant.state_province}: ${insertError.message}`);
+                            stats.errors++;
+                        } else {
+                            stats.newProducts++;
+                        }
                     }
                 }
 

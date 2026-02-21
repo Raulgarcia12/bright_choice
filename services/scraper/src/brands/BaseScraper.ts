@@ -15,6 +15,15 @@ export interface RawProduct {
     productUrl?: string;
     specs: Record<string, string>;
     rawHtml?: string;
+    /** Optional geo hint extracted from the source page */
+    geo?: {
+        /** Country the product page targets */
+        country?: 'USA' | 'Canada';
+        /** Specific US state or Canadian province from the page (e.g. 'TX') */
+        state_province?: string;
+        /** If the page indicates a specific set of markets */
+        available_in?: string[];
+    };
 }
 
 /** Represents brand configuration from the database */

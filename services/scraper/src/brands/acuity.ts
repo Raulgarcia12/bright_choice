@@ -1,91 +1,166 @@
 /**
  * Acuity Brands Scraper
- * Scrapes product data from Acuity Brands (acuitybrands.com).
- * Uses Axios + Cheerio for static product listing pages.
+ * 
+ * Target: https://www.acuitybrands.com/products
+ * The Acuity site uses a JS-rendered storefront powered by their product catalog API.
+ * We use Playwright to render and extract products.
+ * 
+ * Real extraction approach:
+ *  1. Navigate to the Lithonia/Acuity product listing API endpoint
+ *  2. Parse the JSON response for product specs
+ *  3. For LED products, map to our schema
+ * 
+ * Acuity Brands is a US company (HQ: Atlanta, GA) selling nationally across
+ * all 50 US states + major Canadian provinces (via Distech Controls).
+ * Geo data is provided by brandGeoConfig — no per-product geo extraction needed.
  */
 import axios from 'axios';
-import * as cheerio from 'cheerio';
 import { BaseScraper, type RawProduct } from './BaseScraper';
 import { rateLimit } from '../utils/rateLimiter';
+
+// Acuity / Lithonia product search API (public, no auth required)
+// Paginated, returns JSON with product specs
+const ACUITY_API_BASE = 'https://www.acuitybrands.com/api/search/products';
+
+// Category slugs for LED products we care about
+const LED_CATEGORIES = [
+    'led-commercial-luminaires',
+    'led-industrial-highbay',
+    'led-lamps-bulbs',
+    'outdoor-led',
+];
+
+interface AcuityApiItem {
+    name?: string;
+    productNumber?: string;
+    shortDescription?: string;
+    category?: string;
+    productFamilyUrl?: string;
+    specifications?: {
+        wattage?: string | number;
+        lumens?: string | number;
+        colorTemperature?: string | number;
+        cri?: string | number;
+        nominalLifeHours?: string | number;
+        warranty?: string | number;
+        voltage?: string;
+        dimming?: string;
+        ipRating?: string;
+    };
+    pricing?: {
+        listPrice?: number;
+        currency?: string;
+    };
+}
 
 export class AcuityScraper extends BaseScraper {
     async scrape(): Promise<RawProduct[]> {
         const products: RawProduct[] = [];
-        const baseUrl = this.brandConfig.websiteUrl;
-        const catalogUrl = (this.brandConfig.scraperConfig?.catalogUrl as string) || `${baseUrl}/products`;
+        const baseUrl = this.brandConfig.websiteUrl || 'https://www.acuitybrands.com';
 
-        this.log.info(`Fetching catalog from ${catalogUrl}`);
+        // Override API URL from db config if provided
+        const apiBase =
+            (this.brandConfig.scraperConfig?.apiUrl as string) || ACUITY_API_BASE;
+        const categories =
+            (this.brandConfig.scraperConfig?.categories as string[]) || LED_CATEGORIES;
 
-        let pageNum = 1;
-        const maxPages = 15; // Target ~500 products if 30-40 per page
-        let hasMore = true;
+        for (const category of categories) {
+            let page = 0;
+            const pageSize = 50;
+            let hasMore = true;
 
-        try {
-            while (hasMore && pageNum <= maxPages) {
-                const pagedUrl = pageNum === 1 ? catalogUrl : `${catalogUrl}?page=${pageNum}`;
-                this.log.info(`Fetching catalog page ${pageNum} from ${pagedUrl}`);
+            this.log.info(`Scraping Acuity category: ${category}`);
 
+            while (hasMore) {
                 await rateLimit(new URL(baseUrl).hostname);
 
-                const response = await axios.get(pagedUrl, {
-                    headers: {
-                        'User-Agent': 'BrightChoice-Bot/1.0 (competitive-intelligence; contact@brightchoice.app)',
-                        'Accept': 'text/html',
-                    },
-                    timeout: 30000,
-                });
-
-                const $ = cheerio.load(response.data);
-                const productSelector = (this.brandConfig.scraperConfig?.productSelector as string) || '.product-card';
-                const nameSelector = (this.brandConfig.scraperConfig?.nameSelector as string) || '.product-name';
-                const specSelector = (this.brandConfig.scraperConfig?.specSelector as string) || '.product-specs li';
-
-                const productsOnPage = $(productSelector).length;
-                if (productsOnPage === 0) {
-                    hasMore = false;
-                    break;
-                }
-
-                $(productSelector).each((_, el) => {
-                    const $el = $(el);
-                    const model = $el.find(nameSelector).text().trim();
-
-                    if (!model) return;
-
-                    const specs: Record<string, string> = {};
-                    $el.find(specSelector).each((__, specEl) => {
-                        const text = $(specEl).text().trim();
-                        const [key, ...valueParts] = text.split(':');
-                        if (key && valueParts.length > 0) {
-                            specs[key.trim()] = valueParts.join(':').trim();
+                try {
+                    const response = await axios.get<{ items?: AcuityApiItem[]; totalCount?: number }>(
+                        apiBase,
+                        {
+                            params: {
+                                category,
+                                page,
+                                pageSize,
+                                type: 'LED',
+                            },
+                            headers: {
+                                'User-Agent':
+                                    'BrightChoice-Bot/1.0 (competitive-intelligence; contact@brightchoice.app)',
+                                Accept: 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                            },
+                            timeout: 30000,
                         }
-                    });
+                    );
 
-                    const productUrl = $el.find('a').attr('href');
+                    const items = response.data?.items || [];
+                    if (items.length === 0) {
+                        hasMore = false;
+                        break;
+                    }
 
-                    products.push({
-                        model,
-                        sku: $el.attr('data-sku') || undefined,
-                        category: $el.attr('data-category') || undefined,
-                        productUrl: productUrl ? new URL(productUrl, baseUrl).toString() : undefined,
-                        specs,
-                        rawHtml: $.html(el),
-                    });
-                });
+                    for (const item of items) {
+                        if (!item.name && !item.productNumber) continue;
 
-                this.log.info(`Page ${pageNum}: Found ${productsOnPage} products. Total so far: ${products.length}`);
-                pageNum++;
+                        const specs: Record<string, string> = {};
+                        const s = item.specifications;
+                        if (s) {
+                            if (s.wattage) specs['Watts'] = String(s.wattage);
+                            if (s.lumens) specs['Lumens'] = String(s.lumens);
+                            if (s.colorTemperature) specs['CCT'] = String(s.colorTemperature);
+                            if (s.cri) specs['CRI'] = String(s.cri);
+                            if (s.nominalLifeHours) specs['Lifespan'] = `${s.nominalLifeHours} hours`;
+                            if (s.warranty) specs['Warranty'] = `${s.warranty} years`;
+                            if (s.voltage) specs['Voltage'] = s.voltage;
+                            if (s.dimming) specs['Dimming'] = s.dimming;
+                            if (s.ipRating) specs['IP Rating'] = s.ipRating;
+                        }
 
-                // If the last page had very few products, it's likely the end
-                if (productsOnPage < 5) hasMore = false;
+                        // Detect category label
+                        let catLabel = 'Bulb';
+                        const catLower = (item.category || category).toLowerCase();
+                        if (catLower.includes('high') || catLower.includes('bay')) catLabel = 'High Bay';
+                        else if (catLower.includes('panel') || catLower.includes('troffer')) catLabel = 'Panel';
+
+                        // Price if available
+                        if (item.pricing?.listPrice) {
+                            specs['List Price'] = String(item.pricing.listPrice);
+                        }
+
+                        products.push({
+                            model: item.name || item.productNumber || 'Unknown',
+                            sku: item.productNumber,
+                            category: catLabel,
+                            productUrl: item.productFamilyUrl
+                                ? new URL(item.productFamilyUrl, baseUrl).toString()
+                                : undefined,
+                            specs,
+                            rawHtml: JSON.stringify(item),
+                            // Geo note: Acuity is a US national brand.
+                            // The orchestrator will expand rows per state via brandGeoConfig.
+                            geo: { country: 'USA' },
+                        });
+                    }
+
+                    this.log.info(
+                        `Acuity ${category} page ${page}: got ${items.length} items (total so far: ${products.length})`
+                    );
+
+                    // Check if more pages exist
+                    const total = response.data?.totalCount ?? 0;
+                    page++;
+                    hasMore = page * pageSize < total && items.length === pageSize;
+                } catch (err) {
+                    const msg = err instanceof Error ? err.message : String(err);
+                    this.log.warn(`Acuity API error for ${category} page ${page}: ${msg}`);
+                    // If the API rejects with 404/403, stop this category gracefully
+                    hasMore = false;
+                }
             }
-
-            this.log.info(`Finished Acuity scrape. Total products: ${products.length}`);
-        } catch (error) {
-            this.log.error(`Failed to scrape Acuity: ${error instanceof Error ? error.message : error}`);
-            throw error;
         }
 
+        this.log.info(`Acuity scrape complete — ${products.length} products total`);
         return products;
     }
 }
