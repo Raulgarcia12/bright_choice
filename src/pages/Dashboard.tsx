@@ -87,9 +87,10 @@ export default function Dashboard() {
     // Filter products by selected US/CA state
     const filteredProducts = useMemo(() => {
         if (!selectedState) return allProducts;
-        return allProducts.filter(p =>
-            (p as any).regions?.abbreviation === selectedState
-        );
+        return allProducts.filter(p => {
+            const state = p.state_province || (p as any).regions?.abbreviation;
+            return state === selectedState;
+        });
     }, [allProducts, selectedState]);
 
     // Fetch recent changes
@@ -109,8 +110,12 @@ export default function Dashboard() {
     const usaRegionCounts = useMemo(() => {
         const counts: Record<string, number> = {};
         allProducts.forEach(p => {
-            const abbr = (p as any).regions?.abbreviation;
-            if (abbr && (p as any).regions?.country === 'USA') {
+            // Prefer direct field; fall back to joined region
+            const abbr = p.state_province || (p as any).regions?.abbreviation;
+            const country = p.currency === 'USD'
+                ? 'USA'
+                : ((p as any).regions?.country ?? null);
+            if (abbr && country === 'USA') {
                 counts[abbr] = (counts[abbr] || 0) + 1;
             }
         });
@@ -120,8 +125,11 @@ export default function Dashboard() {
     const canadaRegionCounts = useMemo(() => {
         const counts: Record<string, number> = {};
         allProducts.forEach(p => {
-            const abbr = (p as any).regions?.abbreviation;
-            if (abbr && (p as any).regions?.country === 'Canada') {
+            const abbr = p.state_province || (p as any).regions?.abbreviation;
+            const country = p.currency === 'CAD'
+                ? 'Canada'
+                : ((p as any).regions?.country ?? null);
+            if (abbr && country === 'Canada') {
                 counts[abbr] = (counts[abbr] || 0) + 1;
             }
         });

@@ -20,6 +20,7 @@ export interface Product {
   price: number;
   currency: string;
   region_id: string;
+  state_province: string | null;
   sales_channel: string;
   use_type: string;
   is_recommended: boolean;
