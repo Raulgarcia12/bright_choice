@@ -115,10 +115,10 @@ export default function GeoMap({ country, regionCounts, selectedState, onSelectS
     const projConfig =
         country === 'USA'
             ? { scale: 680 }
-            : { scale: 375, center: [-96, 62] as [number, number], rotate: [0, 0, 45] as [number, number, number] };
+            : { scale: 375, center: [-85, 60] as [number, number], rotate: [0, 0, 45] as [number, number, number] };
 
     return (
-        <div className="relative h-full w-full select-none">
+        <div className="relative h-full w-full select-none overflow-hidden">
             <ComposableMap
                 projection={projection}
                 projectionConfig={projConfig}
