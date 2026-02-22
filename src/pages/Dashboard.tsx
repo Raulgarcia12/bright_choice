@@ -275,25 +275,54 @@ export default function Dashboard() {
                 {/* ── Charts Grid ── */}
                 <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                     {/* Bar: Products by Brand */}
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+                    <motion.div
+                        layout
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                    >
                         <Card className="h-full shadow-sm">
                             <CardHeader className="pb-2">
-                                <CardTitle className="text-base">{language === 'en' ? 'Products by Brand' : 'Productos por Marca'}</CardTitle>
+                                <div className="flex items-center justify-between">
+                                    <CardTitle className="text-base">
+                                        {language === 'en' ? 'Products by Brand' : 'Productos por Marca'}
+                                    </CardTitle>
+                                    {selectedState && (
+                                        <Badge variant="secondary" className="text-[10px] font-normal px-2 py-0">
+                                            {selectedState}: {brandDistribution.reduce((sum, d) => sum + d.count, 0)}
+                                        </Badge>
+                                    )}
+                                </div>
                             </CardHeader>
                             <CardContent>
                                 <ResponsiveContainer width="100%" height={260}>
                                     <BarChart data={brandDistribution} margin={{ top: 4, right: 8, bottom: 40, left: 0 }}>
                                         <defs>
                                             <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="0%" stopColor="#6366f1" stopOpacity={0.85} />
-                                                <stop offset="100%" stopColor="#6366f1" stopOpacity={0.15} />
+                                                <stop offset="0%" stopColor="#6366f1" stopOpacity={0.9} />
+                                                <stop offset="100%" stopColor="#6366f1" stopOpacity={0.4} />
                                             </linearGradient>
                                         </defs>
-                                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" strokeOpacity={0.5} />
-                                        <XAxis dataKey="name" tick={{ fontSize: 10 }} angle={-35} textAnchor="end" height={60} tickLine={false} axisLine={false} />
-                                        <YAxis tick={{ fontSize: 10 }} tickLine={false} axisLine={false} />
-                                        <Tooltip content={<ChartTooltip />} cursor={{ fill: 'hsl(var(--muted))', fillOpacity: 0.4 }} />
-                                        <Bar dataKey="count" fill="url(#barGrad)" radius={[6, 6, 0, 0]} />
+                                        <CartesianGrid vertical={false} strokeDasharray="3 3" strokeOpacity={0.4} />
+                                        <XAxis
+                                            dataKey="name"
+                                            axisLine={false}
+                                            tickLine={false}
+                                            tick={{ fontSize: 10 }}
+                                            angle={-45}
+                                            textAnchor="end"
+                                            interval={0}
+                                            height={60}
+                                        />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
+                                        <Tooltip content={<ChartTooltip />} />
+                                        <Bar
+                                            dataKey="count"
+                                            fill="url(#barGrad)"
+                                            radius={[4, 4, 0, 0]}
+                                            isAnimationActive={true}
+                                            animationDuration={800}
+                                        />
                                     </BarChart>
                                 </ResponsiveContainer>
                             </CardContent>
@@ -301,10 +330,24 @@ export default function Dashboard() {
                     </motion.div>
 
                     {/* Pie: Category Distribution */}
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }}>
+                    <motion.div
+                        layout
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.25 }}
+                    >
                         <Card className="h-full shadow-sm">
                             <CardHeader className="pb-2">
-                                <CardTitle className="text-base">{language === 'en' ? 'Category Distribution' : 'Distribución por Categoría'}</CardTitle>
+                                <div className="flex items-center justify-between">
+                                    <CardTitle className="text-base">
+                                        {language === 'en' ? 'Category Distribution' : 'Distribución por Categoría'}
+                                    </CardTitle>
+                                    {selectedState && (
+                                        <Badge variant="secondary" className="text-[10px] font-normal px-2 py-0">
+                                            {selectedState}: {categoryDistribution.reduce((sum, d) => sum + d.value, 0)}
+                                        </Badge>
+                                    )}
+                                </div>
                             </CardHeader>
                             <CardContent>
                                 <ResponsiveContainer width="100%" height={260}>
@@ -323,9 +366,11 @@ export default function Dashboard() {
                                             innerRadius={55} outerRadius={90}
                                             paddingAngle={3}
                                             dataKey="value"
+                                            isAnimationActive={true}
+                                            animationDuration={800}
                                         >
                                             {categoryDistribution.map((_, i) => (
-                                                <Cell key={i} fill={`url(#pieGrad${i})`} stroke="transparent" />
+                                                <Cell key={i} fill={`url(#pieGrad${i % CHART_COLORS.length})`} stroke="transparent" />
                                             ))}
                                         </Pie>
                                         <Tooltip content={<ChartTooltip />} />
