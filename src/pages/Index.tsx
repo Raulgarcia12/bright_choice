@@ -29,6 +29,8 @@ const Index = () => {
     setCurrentPage(1);
   }, [filters, allProducts]);
 
+  const categories = useMemo(() => new Set(allProducts.map(p => p.category)), [allProducts]);
+
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginatedProducts = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
@@ -77,7 +79,7 @@ const Index = () => {
           >
             {[
               { icon: Lightbulb, value: `${allProducts.length}+`, label: language === 'en' ? 'Products' : 'Productos' },
-              { icon: TrendingUp, value: '3', label: language === 'en' ? 'Categories' : 'Categorías' },
+              { icon: TrendingUp, value: String(categories.size), label: language === 'en' ? 'Categories' : 'Categorías' },
               { icon: Shield, value: '3', label: language === 'en' ? 'Certifications' : 'Certificaciones' },
             ].map((stat, i) => (
               <div key={i} className="flex flex-col items-center rounded-xl border bg-card/80 p-3 backdrop-blur-sm sm:p-4">

@@ -50,6 +50,8 @@ export function applyFilters(products: Product[], filters: Filters): Product[] {
 export default function FilterSidebar({ products, filters, onFiltersChange }: FilterSidebarProps) {
   const { language } = useAppStore();
   const brands = [...new Set(products.map((p) => p.brand))].sort();
+  const categories = [...new Set(products.map((p) => p.category))].sort();
+  const useTypes = [...new Set(products.map((p) => p.use_type))].sort();
   const maxPrice = Math.max(...products.map((p) => p.price), 500);
 
   const update = (partial: Partial<Filters>) => onFiltersChange({ ...filters, ...partial });
@@ -70,9 +72,9 @@ export default function FilterSidebar({ products, filters, onFiltersChange }: Fi
           <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t('allCategories', language)}</SelectItem>
-            <SelectItem value="Bulb">{t('Bulb', language)}</SelectItem>
-            <SelectItem value="Panel">{t('Panel', language)}</SelectItem>
-            <SelectItem value="High Bay">{t('High Bay', language)}</SelectItem>
+            {categories.map((c) => (
+              <SelectItem key={c} value={c}>{t(c as any, language)}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -84,9 +86,9 @@ export default function FilterSidebar({ products, filters, onFiltersChange }: Fi
           <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{t('allUseTypes', language)}</SelectItem>
-            <SelectItem value="Residential">{t('Residential', language)}</SelectItem>
-            <SelectItem value="Commercial">{t('Commercial', language)}</SelectItem>
-            <SelectItem value="Industrial">{t('Industrial', language)}</SelectItem>
+            {useTypes.map((u) => (
+              <SelectItem key={u} value={u}>{t(u as any, language)}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
