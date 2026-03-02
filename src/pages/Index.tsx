@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { BarChart3, Lightbulb, TrendingUp, Shield, SlidersHorizontal, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '@/components/Header';
@@ -14,10 +15,11 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 const Index = () => {
+  const [searchParams] = useSearchParams();
   const { language, selectedRegion, compareList } = useAppStore();
   const { data: products, isLoading } = useProducts(selectedRegion);
   const [filters, setFilters] = useState<Filters>(defaultFilters);
-  const [activeTab, setActiveTab] = useState('catalog');
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'catalog');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
 
