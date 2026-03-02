@@ -207,3 +207,143 @@ body {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
+
+/* ──────────────────────────────────────────────
+   Welcome / LEDCO Corporate Palette
+   Scoped to .welcome-page so it does NOT affect
+   Products, Dashboard, or Changes pages.
+   ────────────────────────────────────────────── */
+
+.welcome-page {
+  --copper: 25 75% 50%;
+  --copper-light: 25 85% 65%;
+  --cobalt: 215 80% 40%;
+  --cobalt-light: 215 90% 60%;
+  --copper-glow: 25 80% 55%;
+  --cobalt-glow: 215 80% 55%;
+
+  --welcome-bg: 222.2 84% 4.9%;
+  --welcome-fg: 210 40% 98%;
+  --welcome-card: 220 25% 10%;
+  --welcome-card-border: 215 19% 20%;
+  --welcome-muted: 215 16% 46%;
+  --welcome-primary: 217.2 91.2% 59.8%;
+}
+
+/* ── Welcome animations ── */
+
+@keyframes float-orb {
+
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(-20px) scale(1.05);
+  }
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.welcome-page .animate-float-orb {
+  animation: float-orb 6s ease-in-out infinite;
+}
+
+.welcome-page .animate-pulse-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+.welcome-page .animate-gradient-shift {
+  background-size: 200% 200%;
+  animation: gradient-shift 8s ease infinite;
+}
+
+.welcome-page .animate-reveal-up {
+  animation: reveal-up 0.8s ease-out forwards;
+}
+
+.welcome-page .animate-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer 3s linear infinite;
+}
+
+/* ── Glass card ── */
+.welcome-page .glass-card {
+  background: hsla(220, 25%, 12%, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid hsla(215, 19%, 28%, 0.5);
+  border-radius: 1rem;
+}
+
+/* ── 3D tilt on hover ── */
+.welcome-page .card-3d {
+  perspective: 1000px;
+  transition: transform 0.4s ease;
+}
+
+.welcome-page .card-3d:hover {
+  transform: rotateX(2deg) rotateY(-3deg) translateY(-4px);
+}
+
+/* ── Copper / Cobalt gradient text ── */
+.welcome-page .text-gradient-copper {
+  background: linear-gradient(135deg, hsl(25, 85%, 65%), hsl(25, 75%, 50%));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.welcome-page .text-gradient-cobalt {
+  background: linear-gradient(135deg, hsl(215, 90%, 60%), hsl(215, 80%, 40%));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

@@ -23,7 +23,7 @@ interface ProductForm {
 const emptyForm: ProductForm = {
   brand: '', model: '', category: 'Bulb', watts: '', lumens: '', cct: '4000', cri: '80',
   lifespan: '25000', warranty: '3', cert_ul: false, cert_dlc: false, cert_energy_star: false,
-  price: '', currency: 'USD', region_id: '', state_province: '', sales_channel: 'Distributor',
+  price: '', currency: 'USD', region_id: '', state_province: '__none__', sales_channel: 'Distributor',
   use_type: 'Commercial', is_recommended: false,
 };
 
@@ -70,7 +70,7 @@ export default function ProductFormDialog({ open, onOpenChange, editProduct, reg
         cert_ul: editProduct.cert_ul, cert_dlc: editProduct.cert_dlc, cert_energy_star: editProduct.cert_energy_star,
         price: String(editProduct.price), currency: editProduct.currency, region_id: editProduct.region_id || '',
         sales_channel: editProduct.sales_channel, use_type: editProduct.use_type,
-        state_province: editProduct.state_province || '',
+        state_province: editProduct.state_province || '__none__',
         is_recommended: editProduct.is_recommended,
       });
     } else {
@@ -88,7 +88,7 @@ export default function ProductFormDialog({ open, onOpenChange, editProduct, reg
       cri: Number(form.cri), lifespan: Number(form.lifespan), warranty: Number(form.warranty),
       cert_ul: form.cert_ul, cert_dlc: form.cert_dlc, cert_energy_star: form.cert_energy_star,
       price: Number(form.price), currency: form.currency, region_id: form.region_id || null,
-      state_province: form.state_province || null,
+      state_province: form.state_province === '__none__' ? null : (form.state_province || null),
       sales_channel: form.sales_channel, use_type: form.use_type, is_recommended: form.is_recommended,
     };
 
@@ -212,7 +212,7 @@ export default function ProductFormDialog({ open, onOpenChange, editProduct, reg
             <Select value={form.state_province} onValueChange={(v) => updateForm('state_province', v)}>
               <SelectTrigger><SelectValue placeholder="Select state or province" /></SelectTrigger>
               <SelectContent className="max-h-60">
-                <SelectItem value="">— None —</SelectItem>
+                <SelectItem value="__none__">— None —</SelectItem>
                 <SelectItem value="__us__" disabled className="text-[10px] font-semibold uppercase text-muted-foreground">🇺🇸 United States</SelectItem>
                 {US_STATES.map(([abbr, name]) => (
                   <SelectItem key={abbr} value={abbr}>{abbr} — {name}</SelectItem>

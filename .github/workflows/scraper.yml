@@ -27,11 +27,11 @@ jobs:
 
       - name: Install scraper dependencies
         working-directory: services/scraper
-        run: npm install
+        run: npm ci
 
-      - name: Install Playwright browsers
+      - name: Type-check scraper
         working-directory: services/scraper
-        run: npx playwright install chromium
+        run: npx tsc --noEmit
 
       - name: Run scraper
         working-directory: services/scraper

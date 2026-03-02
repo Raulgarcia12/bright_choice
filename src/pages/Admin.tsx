@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Pencil, Trash2, Search } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, Mail } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useProducts, useRegions } from '@/hooks/useProducts';
@@ -15,12 +15,74 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 import ProductFormDialog from '@/components/admin/ProductFormDialog';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import type { Language } from '@/lib/i18n';
+
+/* ── Contact Requests Section ── */
+function ContactRequestsSection({ language }: { language: Language }) {
+  const { data: requests, isLoading } = useQuery({
+    queryKey: ['contact_requests'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('contact_requests')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  if (isLoading || !requests || requests.length === 0) return null;
+
+  return (
+    <div className="mx-auto max-w-7xl px-4 pb-8">
+      <div className="mb-4 mt-10 flex items-center gap-2">
+        <Mail className="h-5 w-5 text-primary" />
+        <h2 className="text-lg font-bold text-foreground">
+          {language === 'es' ? 'Solicitudes de Demo' : 'Demo Requests'}
+        </h2>
+        <Badge variant="secondary" className="ml-2">{requests.length}</Badge>
+      </div>
+      <div className="rounded-lg border bg-card">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>{language === 'es' ? 'Nombre' : 'Name'}</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>{language === 'es' ? 'Empresa' : 'Company'}</TableHead>
+              <TableHead>{language === 'es' ? 'Fecha' : 'Date'}</TableHead>
+              <TableHead>Status</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {requests.map((r) => (
+              <TableRow key={r.id}>
+                <TableCell className="font-medium">{r.full_name}</TableCell>
+                <TableCell>
+                  <a href={`mailto:${r.email}`} className="text-primary hover:underline">{r.email}</a>
+                </TableCell>
+                <TableCell>{r.company}</TableCell>
+                <TableCell className="text-muted-foreground text-sm">
+                  {new Date(r.created_at).toLocaleDateString()}
+                </TableCell>
+                <TableCell>
+                  <Badge variant={r.status === 'new' ? 'default' : 'secondary'}>
+                    {r.status}
+                  </Badge>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+}
 
 export default function AdminPage() {
   const { language } = useAppStore();
@@ -162,6 +224,9 @@ export default function AdminPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* ── Contact / Demo Requests ── */}
+      <ContactRequestsSection language={language} />
     </div>
   );
 }

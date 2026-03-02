@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   Globe, LogIn, LogOut, Shield, BarChart3, Menu, X,
-  Moon, Sun, Package, Activity, LayoutDashboard,
+  Moon, Sun, Package, Activity, LayoutDashboard, Home,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,8 @@ import { t } from '@/lib/i18n';
 import { useTheme } from '@/hooks/useTheme';
 
 const NAV_ITEMS = [
-  { to: '/', label: 'Products', labelEs: 'Productos', icon: Package, exact: true },
+  { to: '/', label: 'Welcome', labelEs: 'Bienvenida', icon: Home, exact: true },
+  { to: '/products', label: 'Products', labelEs: 'Productos', icon: Package, exact: true },
   { to: '/dashboard', label: 'Dashboard', labelEs: 'Dashboard', icon: LayoutDashboard },
   { to: '/changes', label: 'Changes', labelEs: 'Cambios', icon: Activity },
 ];
@@ -56,8 +57,8 @@ export default function Header() {
                   key={item.to}
                   to={item.to}
                   className={`flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-sm font-medium transition-all duration-200 ${active
-                      ? 'bg-card text-foreground shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-card/60'
+                    ? 'bg-card text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-card/60'
                     }`}
                 >
                   <item.icon className={`h-3.5 w-3.5 ${active ? 'text-primary' : ''}`} />
@@ -171,8 +172,8 @@ export default function Header() {
                     to={item.to}
                     onClick={() => setMobileOpen(false)}
                     className={`flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium transition-colors ${active
-                        ? 'bg-primary/10 text-primary'
-                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                       }`}
                   >
                     <item.icon className="h-4 w-4" />

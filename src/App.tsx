@@ -12,6 +12,7 @@ import LoginPage from "./pages/Login";
 import AdminPage from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import SetupPage from "./pages/Setup";
+import WelcomePage from "./pages/Welcome";
 
 const queryClient = new QueryClient();
 
@@ -22,7 +23,8 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<WelcomePage />} />
+          <Route path="/products" element={<Index />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/products/:id" element={<ProductDetail />} />
           <Route path="/changes" element={<ProtectedRoute minRole="analyst"><ChangeLog /></ProtectedRoute>} />

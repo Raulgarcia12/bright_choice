@@ -50,6 +50,36 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_requests: {
+        Row: {
+          id: string
+          full_name: string
+          email: string
+          company: string
+          message: string | null
+          status: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          full_name: string
+          email: string
+          company: string
+          message?: string | null
+          status?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          full_name?: string
+          email?: string
+          company?: string
+          message?: string | null
+          status?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
       change_logs: {
         Row: {
           id: string
