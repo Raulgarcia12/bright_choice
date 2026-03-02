@@ -274,7 +274,7 @@ export default function WelcomePage() {
                                 color: 'hsl(215, 90%, 70%)',
                                 background: 'hsla(215, 80%, 40%, 0.1)',
                             }}
-                            onClick={() => navigate('/?tab=compare')}
+                            onClick={() => navigate('/products?tab=compare')}
                         >
                             Probar el Comparador <BarChart3 className="h-4 w-4" />
                         </Button>
