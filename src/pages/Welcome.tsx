@@ -327,7 +327,7 @@ export default function WelcomePage() {
                 <div className="mx-auto mt-14 grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-4">
                     {[
                         { label: 'Products Tracked', value: '1,000+' },
-                        { label: 'Brands Monitored', value: '3+' },
+                        { label: 'Brands Monitored', value: '4+' },
                         { label: 'US & Canada Regions', value: '63' },
                         { label: 'Spec Updates / Month', value: '500+' },
                     ].map((stat, i) => (
