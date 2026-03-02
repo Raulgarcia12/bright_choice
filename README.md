@@ -10,20 +10,20 @@
 ## 🚀 Technical Highlights
 
 ### 🤖 Advanced ETL & Scraper Architecture
-Our modular scraper service handles heterogeneous data sources with enterprise-grade robustness:
-- **Multi-Engine Adapters:** Custom adapters using **Playwright** (dynamic JS rendering), **Cheerio** (high-speed static parsing), and **REST APIs**.
+Our modular scraper service handles heterogeneous data sources with enterprise-grade robustness, tracking **4 major brands** (Acuity Brands, Cree Lighting, Philips, and RAB Lighting) and **over 7,000+ products**:
+- **Multi-Engine Adapters:** Custom adapters using **Playwright** (dynamic JS rendering), **Cheerio** (high-speed static parsing), and **Internal JSON APIs**.
 - **Data Integrity:** Implements **SHA-256 hashing** to detect granular specification changes and maintain a versioned, immutable change log.
 - **Resiliency:** Built-in **Exponential Backoff** retry logic, proxy-ready request rotation, and domain-specific **Rate Limiting**.
 
 ### 📊 Business Intelligence & ROI Drivers
 - **The Efficiency Frontier:** A real-time scatter plot analysis of $Price$ vs. $Luminous\ Efficacy\ (lm/W)$, identifying market leaders and over-priced outliers.
 - **Convenience Score™:** A proprietary weighted algorithm that aggregates technical performance and warranty terms into a single, comparable metric.
-- **Competitive Gap Analysis:** Automated benchmarking of manufacturer performance against market averages across different product categories (Bulb, Panel, High Bay).
+- **Competitive Gap Analysis:** Automated benchmarking of manufacturer performance against market averages across 13+ product categories.
 
 ### 🛠️ Cloud & Full-Stack Mastery
 - **Serverless Analytics:** Business logic offloaded to **Supabase Edge Functions (Deno)** to ensure high-speed KPI computation on large datasets.
 - **Granular Security:** Professional implementation of **Row Level Security (RLS)** at the database layer, combined with Role-Based Access Control (RBAC) in React.
-- **Scalable UI:** Optimized for high data volume ($500+$ products) with client-side virtualization and smart pagination.
+- **Scalable UI:** Optimized for extreme data volume (7,000+ records) using Supabase PostgREST pagination and smart client-side rendering. Includes Corporate Identity pages and dynamic lead-generation Contact Forms.
 
 ---
 
@@ -41,7 +41,7 @@ graph LR
     end
     
     subgraph "Frontend Experience"
-    D -- JSON --> E[React Dashboard]
+    D -- JSON / Paginated API --> E[React Dashboard]
     E -- Filters --> C
     end
 ```
@@ -62,13 +62,13 @@ graph LR
 bright_choice/
 ├── src/                          # Modern React Application
 │   ├── lib/convenience/          # Proprietary Business Logic
-│   └── components/visuals/       # Recharts Integration (Efficiency Frontier)
+│   └── components/               # UI, Filtering, and Recharts Components
 ├── services/scraper/             # Node.js ETL Tooling
-│   ├── src/brands/               # Manufacturer Adapters
+│   ├── src/brands/               # Manufacturer Adapters (Acuity, Cree, Philips, RAB)
 │   └── src/detector/             # Hashing & Versioning Engine
 ├── supabase/
 │   ├── functions/                # Serverless Business logic
-│   └── migrations/               # Version-controlled SQL Schema
+│   └── migrations/               # Version-controlled SQL Schema (Products, Brands, Contacts)
 └── .github/workflows/            # Automated Scraper Pipeline (CRON)
 ```
 
@@ -97,7 +97,7 @@ VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_ANON_KEY
 
 ### 3. Database Sync
 Apply the professional schema (Tables, RLS, Views) via the Supabase SQL Editor:
-`supabase/migrations/20260218010000_competitive_intelligence_schema.sql`
+`supabase/migrations/20260218010000_competitive_intelligence_schema.sql` (and subsequent migrations for RBAC, Contact Forms, and Brands).
 
 ---
 
