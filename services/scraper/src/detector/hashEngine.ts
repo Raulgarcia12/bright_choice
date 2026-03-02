@@ -42,7 +42,6 @@ export function buildSpecSnapshot(product: {
     cri?: number;
     lifespan?: number;
     warranty?: number;
-    price?: number;
     cert_ul?: boolean;
     cert_dlc?: boolean;
     cert_energy_star?: boolean;
@@ -56,7 +55,6 @@ export function buildSpecSnapshot(product: {
         cri: product.cri,
         lifespan: product.lifespan,
         warranty: product.warranty,
-        price: product.price,
         cert_ul: product.cert_ul,
         cert_dlc: product.cert_dlc,
         cert_energy_star: product.cert_energy_star,

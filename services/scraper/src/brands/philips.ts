@@ -51,10 +51,6 @@ interface PhilipsApiProduct {
     category?: string;
     url?: string;
     attributes?: Record<string, string | number>;
-    pricing?: {
-        price?: number;
-        currency?: string;
-    };
 }
 
 export class PhilipsScraper extends BaseScraper {
@@ -141,10 +137,6 @@ export class PhilipsScraper extends BaseScraper {
                             const catStr = (item.category || category).toLowerCase();
                             if (catStr.includes('high') || catStr.includes('bay')) catLabel = 'High Bay';
                             else if (catStr.includes('panel') || catStr.includes('troffer')) catLabel = 'Panel';
-
-                            if (item.pricing?.price) {
-                                specs['List Price'] = String(item.pricing.price);
-                            }
 
                             products.push({
                                 model: item.name || item.productNumber || 'Unknown',

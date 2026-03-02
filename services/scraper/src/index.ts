@@ -176,7 +176,6 @@ async function processBrand(brand: BrandConfig): Promise<{
                             .insert({
                                 ...geoPayload,
                                 spec_hash: specHash,
-                                price: 0,
                                 last_scraped_at: new Date().toISOString(),
                             } as any);
 

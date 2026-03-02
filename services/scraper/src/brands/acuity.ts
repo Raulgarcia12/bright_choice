@@ -47,10 +47,6 @@ interface AcuityApiItem {
         dimming?: string;
         ipRating?: string;
     };
-    pricing?: {
-        listPrice?: number;
-        currency?: string;
-    };
 }
 
 export class AcuityScraper extends BaseScraper {
@@ -122,11 +118,6 @@ export class AcuityScraper extends BaseScraper {
                         const catLower = (item.category || category).toLowerCase();
                         if (catLower.includes('high') || catLower.includes('bay')) catLabel = 'High Bay';
                         else if (catLower.includes('panel') || catLower.includes('troffer')) catLabel = 'Panel';
-
-                        // Price if available
-                        if (item.pricing?.listPrice) {
-                            specs['List Price'] = String(item.pricing.listPrice);
-                        }
 
                         products.push({
                             model: item.name || item.productNumber || 'Unknown',

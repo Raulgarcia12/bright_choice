@@ -20,7 +20,6 @@ const VALIDATION_RULES: ValidationRule[] = [
     { field: 'cri', min: 50, max: 100, required: false },
     { field: 'lifespan', min: 10000, max: 200000, required: false },
     { field: 'warranty', min: 1, max: 25, required: false },
-    { field: 'price', min: 0.01, max: 50000, required: false },
 ];
 
 export interface ValidationResult {
