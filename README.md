@@ -1,4 +1,4 @@
-# 💡 Bright Choice: Enterprise Competitive Intelligence Platform
+# Bright Choice: Enterprise Competitive Intelligence Platform
 
 [![Tech Stack](https://img.shields.io/badge/Stack-React%20%7C%20Supabase%20%7C%20Node.js-blue)](https://github.com/Raulgarcia12/bright_choice)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -7,27 +7,27 @@
 
 ---
 
-## 🚀 Technical Highlights
+## Technical Highlights
 
-### 🤖 Advanced ETL & Scraper Architecture
+### Advanced ETL & Scraper Architecture
 Our modular scraper service handles heterogeneous data sources with enterprise-grade robustness, tracking **4 major brands** (Acuity Brands, Cree Lighting, Philips, and RAB Lighting) and **over 7,000+ products**:
 - **Multi-Engine Adapters:** Custom adapters using **Playwright** (dynamic JS rendering), **Cheerio** (high-speed static parsing), and **Internal JSON APIs**.
 - **Data Integrity:** Implements **SHA-256 hashing** to detect granular specification changes and maintain a versioned, immutable change log.
 - **Resiliency:** Built-in **Exponential Backoff** retry logic, proxy-ready request rotation, and domain-specific **Rate Limiting**.
 
-### 📊 Business Intelligence & ROI Drivers
+### Business Intelligence & ROI Drivers
 - **The Efficiency Frontier:** A real-time scatter plot analysis of $Price$ vs. $Luminous\ Efficacy\ (lm/W)$, identifying market leaders and over-priced outliers.
 - **Convenience Score™:** A proprietary weighted algorithm that aggregates technical performance and warranty terms into a single, comparable metric.
 - **Competitive Gap Analysis:** Automated benchmarking of manufacturer performance against market averages across 13+ product categories.
 
-### 🛠️ Cloud & Full-Stack Mastery
+### Cloud & Full-Stack Mastery
 - **Serverless Analytics:** Business logic offloaded to **Supabase Edge Functions (Deno)** to ensure high-speed KPI computation on large datasets.
 - **Granular Security:** Professional implementation of **Row Level Security (RLS)** at the database layer, combined with Role-Based Access Control (RBAC) in React.
 - **Scalable UI:** Optimized for extreme data volume (7,000+ records) using Supabase PostgREST pagination and smart client-side rendering. Includes Corporate Identity pages and dynamic lead-generation Contact Forms.
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```mermaid
 graph LR
@@ -56,7 +56,7 @@ graph LR
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```text
 bright_choice/
@@ -74,7 +74,7 @@ bright_choice/
 
 ---
 
-## ⚙️ Engineering Setup
+## Engineering Setup
 
 ### Prerequisites
 - Node.js 18.x
@@ -101,7 +101,7 @@ Apply the professional schema (Tables, RLS, Views) via the Supabase SQL Editor:
 
 ---
 
-## 🔒 Security & Standards
+## Security & Standards
 - Standardized use of **TypeScript** for end-to-end type safety.
 - **RLS (Row Level Security)** enforced on every table to ensure data tenancy and role isolation.
 - Structured **Winston Logging** for audit trails and ETL debugging.
@@ -109,7 +109,7 @@ Apply the professional schema (Tables, RLS, Views) via the Supabase SQL Editor:
 
 ---
 
-## 📬 Contact & Portfolio
+## Contact & Portfolio
 This project demonstrates senior-level proficiency in **Data Engineering**, **System Architecture**, and **Modern Full-Stack Development**. 
 
 **Author:** [Raul Garcia](https://github.com/Raulgarcia12)  
