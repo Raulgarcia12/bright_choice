@@ -1,0 +1,20 @@
+
+--- MaxLite 18 Watt 6" 10W/18W/23W Wattage Selectable, Color Selectable  2700K/3000K/3500K/4000K/5000K 120-277V ---
+{ Watts: '18', CCT: '2700K', Voltage: '120-277' }
+
+--- Maxlite LED G40 Enclosed Frosted Filament 8.5W Dimmable 90Cri 3000K ---
+{ Watts: '8.5', CCT: '3000K', CRI: '30', Warranty: '3 years' }
+
+--- Maxlite RCF613CSW Universal Downlight Fixture 6IN 13W Color Selectable 3000K/3500K/4000K ---
+{ Watts: '13', CCT: '3000K' }
+
+--- Maxlite LED Flat Panel 2X4 Wattage Selectable ---
+{
+  Watts: '27',
+  CCT: '3500K',
+  Lifespan: '100,000 hours',
+  Voltage: '120-277'
+}
+
+--- Maxlite 25W 5000K Single or Double-Ended T5 LED Bulb, Ballast Bypass (Only sold in cases of 25) ---
+{ Watts: '25', CCT: '5000K' }

@@ -10,6 +10,7 @@ import { AcuityScraper } from './brands/acuity';
 import { CreeScraper } from './brands/cree';
 import { PhilipsScraper } from './brands/philips';
 import { RABScraper } from './brands/rab';
+import { MaxLiteScraper } from './brands/maxlite';
 import { mapAttributes } from './normalizer/attributeMap';
 import { parseAndConvert, extractNumeric } from './normalizer/unitConverter';
 import { validateProduct } from './normalizer/validator';
@@ -24,6 +25,7 @@ const SCRAPER_REGISTRY: Record<string, new (config: BrandConfig) => BaseScraper>
     'Cree Lighting': CreeScraper as any,
     'Philips': PhilipsScraper as any,
     'RAB Lighting': RABScraper as any,
+    'MaxLite': MaxLiteScraper as any,
 };
 
 /**
@@ -176,6 +178,7 @@ async function processBrand(brand: BrandConfig): Promise<{
                             .insert({
                                 ...geoPayload,
                                 spec_hash: specHash,
+                                price: 0,
                                 last_scraped_at: new Date().toISOString(),
                             } as any);
 

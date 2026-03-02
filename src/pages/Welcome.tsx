@@ -326,7 +326,7 @@ export default function WelcomePage() {
                 <div className="mx-auto mt-14 grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-4">
                     {[
                         { label: t('statProducts', language), value: '1,000+' },
-                        { label: t('statBrands', language), value: '4+' },
+                        { label: t('statBrands', language), value: '5+' },
                         { label: t('statRegions', language), value: '63' },
                         { label: t('statUpdates', language), value: '500+' },
                     ].map((stat, i) => (
