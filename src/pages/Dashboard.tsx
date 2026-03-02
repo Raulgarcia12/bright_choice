@@ -4,7 +4,7 @@
  * and interactive US + Canada choropleth maps for geographic filtering.
  */
 import { useMemo, useState } from 'react';
-import { BarChart3, TrendingUp, Zap, DollarSign, Activity, Clock, MapPin, X } from 'lucide-react';
+import { BarChart3, TrendingUp, Zap, ShieldCheck, Activity, Clock, MapPin, X, Sun } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -136,19 +136,18 @@ export default function Dashboard() {
         return counts;
     }, [allProducts]);
 
-    // ── KPIs (based on filtered products) ──
     const kpis = useMemo(() => {
         if (filteredProducts.length === 0) return null;
         const avgEfficiency = filteredProducts.reduce((s, p) => s + (p.efficiency || 0), 0) / filteredProducts.length;
-        const avgPrice = filteredProducts.reduce((s, p) => s + p.price, 0) / filteredProducts.length;
-        const avgCRI = filteredProducts.reduce((s, p) => s + p.cri, 0) / filteredProducts.length;
+        const avgLifespan = filteredProducts.reduce((s, p) => s + (p.lifespan || 0), 0) / filteredProducts.length;
+        const avgLumens = filteredProducts.reduce((s, p) => s + (p.lumens || 0), 0) / filteredProducts.length;
         const brands = new Set(filteredProducts.map(p => p.brand));
         const certDLC = filteredProducts.filter(p => p.cert_dlc).length;
         return {
             totalProducts: filteredProducts.length,
             avgEfficiency: avgEfficiency.toFixed(1),
-            avgPrice: avgPrice.toFixed(2),
-            avgCRI: Math.round(avgCRI),
+            avgLifespan: (avgLifespan / 1000).toFixed(1),
+            avgLumens: Math.round(avgLumens),
             brandCount: brands.size,
             certDLCPercent: ((certDLC / filteredProducts.length) * 100).toFixed(0),
         };
@@ -170,24 +169,24 @@ export default function Dashboard() {
 
     const frontierData = useMemo(() => {
         return filteredProducts
-            .filter(p => p.price > 0 && p.efficiency > 0)
-            .map(p => ({ name: `${p.brand} ${p.model}`, brand: p.brand, price: p.price, efficiency: p.efficiency, lumens: p.lumens }));
+            .filter(p => p.lumens > 0 && p.efficiency > 0)
+            .map(p => ({ name: `${p.brand} ${p.model}`, brand: p.brand, lumens: p.lumens, efficiency: p.efficiency, lifespan: p.lifespan }));
     }, [filteredProducts]);
 
     const competitiveGaps = useMemo(() => {
         if (filteredProducts.length === 0) return [];
         const marketAvgEff = filteredProducts.reduce((s, p) => s + (p.efficiency || 0), 0) / filteredProducts.length;
-        const marketAvgPrice = filteredProducts.reduce((s, p) => s + p.price, 0) / filteredProducts.length;
-        const brandStats = new Map<string, { totalEff: number; totalPrice: number; count: number }>();
+        const marketAvgLumens = filteredProducts.reduce((s, p) => s + (p.lumens || 0), 0) / filteredProducts.length;
+        const brandStats = new Map<string, { totalEff: number; totalLumens: number; count: number }>();
         filteredProducts.forEach(p => {
-            const s = brandStats.get(p.brand) || { totalEff: 0, totalPrice: 0, count: 0 };
-            s.totalEff += p.efficiency || 0; s.totalPrice += p.price || 0; s.count += 1;
+            const s = brandStats.get(p.brand) || { totalEff: 0, totalLumens: 0, count: 0 };
+            s.totalEff += p.efficiency || 0; s.totalLumens += p.lumens || 0; s.count += 1;
             brandStats.set(p.brand, s);
         });
         return Array.from(brandStats.entries()).map(([brand, s]) => ({
             brand,
-            effGap: ((s.totalEff / s.count - marketAvgEff) / marketAvgEff) * 100,
-            priceGap: ((s.totalPrice / s.count - marketAvgPrice) / marketAvgPrice) * 100,
+            effGap: marketAvgEff > 0 ? ((s.totalEff / s.count - marketAvgEff) / marketAvgEff) * 100 : 0,
+            lumensGap: marketAvgLumens > 0 ? ((s.totalLumens / s.count - marketAvgLumens) / marketAvgLumens) * 100 : 0,
         })).sort((a, b) => b.effGap - a.effGap);
     }, [filteredProducts]);
 
@@ -259,11 +258,11 @@ export default function Dashboard() {
                     <section>
                         <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3 lg:grid-cols-6">
                             <KPICard icon={BarChart3} title="Products" value={String(kpis.totalProducts)} subtitle="In catalog" />
-                            <KPICard icon={Zap} title={language === 'en' ? 'Avg Efficacy' : 'Eficacia'} value={`${kpis.avgEfficiency}`} subtitle="lm/W" trend="+2.3% vs Q3" />
-                            <KPICard icon={DollarSign} title={language === 'en' ? 'Avg Price' : 'Precio Prom.'} value={`$${kpis.avgPrice}`} subtitle="USD" />
-                            <KPICard icon={Activity} title="Avg CRI" value={String(kpis.avgCRI)} subtitle="Color Rendering" />
+                            <KPICard icon={Zap} title={language === 'en' ? 'Avg Efficacy' : 'Eficacia'} value={`${kpis.avgEfficiency}`} subtitle="lm/W" />
+                            <KPICard icon={Clock} title={language === 'en' ? 'Avg Lifespan' : 'Vida Prom.'} value={`${kpis.avgLifespan}K`} subtitle="hours" />
+                            <KPICard icon={Sun} title={language === 'en' ? 'Avg Lumens' : 'Lúmenes Prom.'} value={String(kpis.avgLumens)} subtitle="Output" />
                             <KPICard icon={TrendingUp} title={language === 'en' ? 'Brands' : 'Marcas'} value={String(kpis.brandCount)} subtitle={language === 'en' ? 'Tracked' : 'Rastreadas'} />
-                            <KPICard icon={Clock} title="DLC" value={`${kpis.certDLCPercent}%`} subtitle="Certified" />
+                            <KPICard icon={ShieldCheck} title="DLC" value={`${kpis.certDLCPercent}%`} subtitle="Certified" />
                         </div>
                     </section>
                 ) : (
@@ -386,19 +385,19 @@ export default function Dashboard() {
                         <Card className="shadow-sm">
                             <CardHeader className="flex flex-col gap-2 pb-2 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
-                                    <CardTitle className="text-base">{language === 'en' ? 'Efficiency Frontier' : 'Frontera de Eficiencia'}</CardTitle>
-                                    <p className="text-xs text-muted-foreground mt-0.5">{language === 'en' ? 'Ideal: high efficiency, low price (top-left)' : 'Ideal: alta eficiencia, bajo precio (arriba-izquierda)'}</p>
+                                    <CardTitle className="text-base">{language === 'en' ? 'Performance Frontier' : 'Frontera de Rendimiento'}</CardTitle>
+                                    <p className="text-xs text-muted-foreground mt-0.5">{language === 'en' ? 'Ideal: high efficiency, high lumen output (top-right)' : 'Ideal: alta eficiencia, altos lúmenes (arriba-derecha)'}</p>
                                 </div>
-                                <Badge variant="outline" className="text-[10px] self-start sm:self-auto">Efficiency vs Price</Badge>
+                                <Badge variant="outline" className="text-[10px] self-start sm:self-auto">Lumens vs Efficiency</Badge>
                             </CardHeader>
                             <CardContent>
                                 <div className="h-[240px] sm:h-[340px] lg:h-[380px] w-full">
                                     <ResponsiveContainer width="100%" height="100%">
                                         <ScatterChart margin={{ top: 16, right: 24, bottom: 32, left: 16 }}>
                                             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" strokeOpacity={0.5} />
-                                            <XAxis type="number" dataKey="price" name="Price" unit="$" tick={{ fontSize: 11 }} label={{ value: 'Price (USD)', position: 'bottom', fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} />
+                                            <XAxis type="number" dataKey="lumens" name="Lumens" unit=" lm" tick={{ fontSize: 11 }} label={{ value: 'Output (Lumens)', position: 'bottom', fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} />
                                             <YAxis type="number" dataKey="efficiency" name="Efficiency" unit=" lm/W" tick={{ fontSize: 11 }} label={{ value: 'Efficiency (lm/W)', angle: -90, position: 'insideLeft', fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} tickLine={false} />
-                                            <ZAxis type="number" dataKey="lumens" range={[40, 300]} name="Lumens" />
+                                            <ZAxis type="number" dataKey="lifespan" range={[40, 300]} name="Lifespan" />
                                             <Tooltip cursor={{ strokeDasharray: '3 3' }} content={({ active, payload }) => {
                                                 if (active && payload?.length) {
                                                     const d = payload[0].payload;
@@ -407,9 +406,9 @@ export default function Dashboard() {
                                                             <p className="font-bold">{d.name}</p>
                                                             <p className="text-muted-foreground">{d.brand}</p>
                                                             <div className="mt-1.5 space-y-0.5">
-                                                                <div className="flex justify-between gap-4"><span>Price</span><span className="font-medium">${d.price.toFixed(2)}</span></div>
                                                                 <div className="flex justify-between gap-4 text-green-600"><span>Efficacy</span><span className="font-medium">{d.efficiency} lm/W</span></div>
                                                                 <div className="flex justify-between gap-4 text-blue-500"><span>Lumens</span><span className="font-medium">{d.lumens.toLocaleString()}</span></div>
+                                                                <div className="flex justify-between gap-4 text-amber-500"><span>Lifespan</span><span className="font-medium">{(d.lifespan / 1000).toFixed(0)}K</span></div>
                                                             </div>
                                                         </div>
                                                     );
@@ -444,8 +443,8 @@ export default function Dashboard() {
                                                     <span className={gap.effGap >= 0 ? 'text-emerald-600 font-medium' : 'text-red-500'}>
                                                         Eff: {gap.effGap >= 0 ? '+' : ''}{gap.effGap.toFixed(1)}%
                                                     </span>
-                                                    <span className={gap.priceGap <= 0 ? 'text-emerald-600 font-medium' : 'text-red-500'}>
-                                                        Price: {gap.priceGap >= 0 ? '+' : ''}{gap.priceGap.toFixed(1)}%
+                                                    <span className={gap.lumensGap >= 0 ? 'text-emerald-600 font-medium' : 'text-red-500'}>
+                                                        Lumens: {gap.lumensGap >= 0 ? '+' : ''}{gap.lumensGap.toFixed(1)}%
                                                     </span>
                                                 </div>
                                             </div>
@@ -454,7 +453,7 @@ export default function Dashboard() {
                                                     <div className={`h-full rounded-full transition-all duration-500 ${gap.effGap >= 0 ? 'bg-emerald-500' : 'bg-red-400'}`} style={{ width: `${Math.min(Math.max(50 + gap.effGap, 2), 100)}%` }} />
                                                 </div>
                                                 <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                                                    <div className={`h-full rounded-full transition-all duration-500 ${gap.priceGap <= 0 ? 'bg-emerald-500' : 'bg-red-400'}`} style={{ width: `${Math.min(Math.max(50 - gap.priceGap, 2), 100)}%` }} />
+                                                    <div className={`h-full rounded-full transition-all duration-500 ${gap.lumensGap >= 0 ? 'bg-emerald-500' : 'bg-red-400'}`} style={{ width: `${Math.min(Math.max(50 + gap.lumensGap, 2), 100)}%` }} />
                                                 </div>
                                             </div>
                                         </div>

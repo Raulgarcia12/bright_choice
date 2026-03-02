@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ChevronDown, ChevronUp, Trophy, DollarSign, Zap, Clock, ExternalLink } from 'lucide-react';
+import { ChevronDown, ChevronUp, Trophy, Zap, Clock, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer, PolarRadiusAxis } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -44,7 +44,6 @@ export default function ComparatorView({ products, allProducts }: ComparatorView
     );
   }
 
-  const bestPrice = scored.reduce((a, b) => (a.product.price < b.product.price ? a : b));
   const bestEff = scored.reduce((a, b) => (a.product.efficiency > b.product.efficiency ? a : b));
   const bestLife = scored.reduce((a, b) => (a.product.lifespan > b.product.lifespan ? a : b));
   const bestWarranty = scored.reduce((a, b) => (a.product.warranty > b.product.warranty ? a : b));
@@ -52,7 +51,6 @@ export default function ComparatorView({ products, allProducts }: ComparatorView
   function getBadges(productId: string) {
     const badges: { label: string; icon: React.ReactNode }[] = [];
     if (scored.length > 1) {
-      if (bestPrice.product.id === productId) badges.push({ label: t('bestPrice', language), icon: <DollarSign className="h-3 w-3" /> });
       if (bestEff.product.id === productId) badges.push({ label: t('bestEfficiency', language), icon: <Zap className="h-3 w-3" /> });
       if (bestLife.product.id === productId) badges.push({ label: t('bestDurability', language), icon: <Clock className="h-3 w-3" /> });
       if (bestWarranty.product.id === productId) badges.push({ label: t('bestWarranty', language), icon: <Trophy className="h-3 w-3" /> });
@@ -63,8 +61,8 @@ export default function ComparatorView({ products, allProducts }: ComparatorView
   function getCellClass(productId: string, field: string): string {
     if (scored.length <= 1) return '';
     const vals = scored.map((s) => ({ id: s.product.id, val: (s.product as any)[field] }));
-    const best = field === 'price' ? Math.min(...vals.map((v) => v.val)) : Math.max(...vals.map((v) => v.val));
-    const worst = field === 'price' ? Math.max(...vals.map((v) => v.val)) : Math.min(...vals.map((v) => v.val));
+    const best = Math.max(...vals.map((v) => v.val));
+    const worst = Math.min(...vals.map((v) => v.val));
     const current = vals.find((v) => v.id === productId)?.val;
     if (current === best) return 'text-score-high font-semibold';
     if (current === worst) return 'text-muted-foreground';
@@ -72,7 +70,6 @@ export default function ComparatorView({ products, allProducts }: ComparatorView
   }
 
   const specRows = [
-    { key: 'price', label: t('price', language), format: (p: Product) => `${p.currency === 'CAD' ? 'CA$' : '$'}${p.price.toFixed(2)}` },
     { key: 'efficiency', label: t('efficiency', language), format: (p: Product) => `${p.efficiency} lm/W` },
     { key: 'lumens', label: t('lumens', language), format: (p: Product) => `${p.lumens.toLocaleString()} lm` },
     { key: 'watts', label: t('watts', language), format: (p: Product) => `${p.watts}W` },

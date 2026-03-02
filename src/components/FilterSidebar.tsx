@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
 import { useAppStore, type Product } from '@/lib/store';
@@ -18,7 +17,6 @@ export interface Filters {
   category: string;
   useType: string;
   brand: string;
-  priceRange: [number, number];
   certUl: boolean;
   certDlc: boolean;
   certEnergyStar: boolean;
@@ -28,7 +26,6 @@ export const defaultFilters: Filters = {
   category: 'all',
   useType: 'all',
   brand: 'all',
-  priceRange: [0, 500],
   certUl: false,
   certDlc: false,
   certEnergyStar: false,
@@ -39,7 +36,6 @@ export function applyFilters(products: Product[], filters: Filters): Product[] {
     if (filters.category !== 'all' && p.category !== filters.category) return false;
     if (filters.useType !== 'all' && p.use_type !== filters.useType) return false;
     if (filters.brand !== 'all' && p.brand !== filters.brand) return false;
-    if (p.price < filters.priceRange[0] || p.price > filters.priceRange[1]) return false;
     if (filters.certUl && !p.cert_ul) return false;
     if (filters.certDlc && !p.cert_dlc) return false;
     if (filters.certEnergyStar && !p.cert_energy_star) return false;
@@ -52,7 +48,6 @@ export default function FilterSidebar({ products, filters, onFiltersChange }: Fi
   const brands = [...new Set(products.map((p) => p.brand))].sort();
   const categories = [...new Set(products.map((p) => p.category))].sort();
   const useTypes = [...new Set(products.map((p) => p.use_type))].sort();
-  const maxPrice = Math.max(...products.map((p) => p.price), 500);
 
   const update = (partial: Partial<Filters>) => onFiltersChange({ ...filters, ...partial });
 
@@ -105,18 +100,6 @@ export default function FilterSidebar({ products, filters, onFiltersChange }: Fi
             ))}
           </SelectContent>
         </Select>
-      </div>
-
-      {/* Price range */}
-      <div className="space-y-2">
-        <Label className="text-xs">{t('priceRange', language)}: ${filters.priceRange[0]} – ${filters.priceRange[1]}</Label>
-        <Slider
-          min={0}
-          max={Math.ceil(maxPrice)}
-          step={1}
-          value={filters.priceRange}
-          onValueChange={(v) => update({ priceRange: v as [number, number] })}
-        />
       </div>
 
       {/* Certifications */}

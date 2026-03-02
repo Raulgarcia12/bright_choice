@@ -45,10 +45,6 @@ export default function ProductCard({ product, allProducts }: ProductCardProps) 
             <Badge variant="outline" className="text-[10px] sm:text-xs">{t(product.use_type as any, language)}</Badge>
           </div>
 
-          <div className="mb-2 text-xl font-bold text-foreground sm:mb-3 sm:text-2xl">
-            {product.currency === 'CAD' ? 'CA$' : '$'}{product.price.toFixed(2)}
-          </div>
-
           <div className="mb-2 grid grid-cols-2 gap-1.5 text-[11px] text-muted-foreground sm:mb-3 sm:gap-2 sm:text-xs">
             <div><span className="font-medium text-foreground">{product.efficiency}</span> lm/W</div>
             <div><span className="font-medium text-foreground">{product.lumens.toLocaleString()}</span> lm</div>
