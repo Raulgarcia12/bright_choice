@@ -11,6 +11,8 @@ import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { useAppStore } from '@/lib/store';
+import { t } from '@/lib/i18n';
 
 /* ────────────────────────────────────────────
    Helper: Section wrapper with scroll reveal
@@ -165,6 +167,7 @@ function FeatureCard({
 export default function WelcomePage() {
     const navigate = useNavigate();
     const { toast } = useToast();
+    const { language } = useAppStore();
     const [form, setForm] = useState({ full_name: '', email: '', company: '' });
     const [sending, setSending] = useState(false);
     const [sent, setSent] = useState(false);
@@ -172,7 +175,7 @@ export default function WelcomePage() {
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         if (!form.full_name || !form.email || !form.company) {
-            toast({ title: 'Please fill in all fields', variant: 'destructive' });
+            toast({ title: t('errEmpty', language), variant: 'destructive' });
             return;
         }
         setSending(true);
@@ -183,10 +186,10 @@ export default function WelcomePage() {
         });
         setSending(false);
         if (error) {
-            toast({ title: 'Error sending request. Please try again.', variant: 'destructive' });
+            toast({ title: t('errSend', language), variant: 'destructive' });
         } else {
             setSent(true);
-            toast({ title: 'Demo request sent successfully!' });
+            toast({ title: t('okSend', language) });
             setForm({ full_name: '', email: '', company: '' });
         }
     }
@@ -215,7 +218,7 @@ export default function WelcomePage() {
                     >
                         <Sparkles className="h-3.5 w-3.5" style={{ color: 'hsl(215, 90%, 60%)' }} />
                         <span className="text-xs font-semibold tracking-wider" style={{ color: 'hsl(215, 90%, 70%)' }}>
-                            LEDC — BRIGHT CHOICE
+                            {t('heroBadge', language)}
                         </span>
                     </motion.div>
 
@@ -226,11 +229,11 @@ export default function WelcomePage() {
                         className="mb-6 text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl lg:text-6xl"
                         style={{ color: 'hsl(210, 40%, 98%)' }}
                     >
-                        TRANSFORMING NORTH AMERICAN{' '}
-                        <span className="text-gradient-copper">COMMERCIAL LIGHTING</span>
+                        {t('heroTitle1', language)}{' '}
+                        <span className="text-gradient-copper">{t('heroTitle2', language)}</span>
                         <br />
-                        WITH{' '}
-                        <span className="text-gradient-cobalt">DATA PRECISION</span>
+                        {t('heroTitle3', language)}{' '}
+                        <span className="text-gradient-cobalt">{t('heroTitle4', language)}</span>
                     </motion.h1>
 
                     <motion.p
@@ -240,8 +243,7 @@ export default function WelcomePage() {
                         className="mx-auto mb-10 max-w-2xl text-base leading-relaxed sm:text-lg"
                         style={{ color: 'hsl(215, 16%, 60%)' }}
                     >
-                        Technical business intelligence that transforms how you select, compare,
-                        and sell commercial LED products — enabling faster decisions and increased revenue.
+                        {t('heroSubtitle', language)}
                     </motion.p>
 
                     <motion.div
@@ -263,7 +265,7 @@ export default function WelcomePage() {
                                 el?.scrollIntoView({ behavior: 'smooth' });
                             }}
                         >
-                            Solicitar Demo <ArrowRight className="h-4 w-4" />
+                            {t('btnDemo', language)} <ArrowRight className="h-4 w-4" />
                         </Button>
                         <Button
                             variant="outline"
@@ -276,7 +278,7 @@ export default function WelcomePage() {
                             }}
                             onClick={() => navigate('/products?tab=compare')}
                         >
-                            Probar el Comparador <BarChart3 className="h-4 w-4" />
+                            {t('btnComparator', language)} <BarChart3 className="h-4 w-4" />
                         </Button>
                     </motion.div>
 
@@ -303,33 +305,30 @@ export default function WelcomePage() {
                     <h2
                         className="mb-3 text-xs font-bold uppercase tracking-widest text-gradient-cobalt"
                     >
-                        Data Intelligence for Commercial Lighting
+                        {t('dataIntEyebrow', language)}
                     </h2>
                     <h3
                         className="mb-6 text-3xl font-bold sm:text-4xl"
                         style={{ color: 'hsl(210, 40%, 98%)' }}
                     >
-                        Intelligence that Drives{' '}
-                        <span className="text-gradient-copper">Precision</span>
+                        {t('dataIntTitle1', language)}{' '}
+                        <span className="text-gradient-copper">{t('dataIntTitle2', language)}</span>
                     </h3>
                     <p
                         className="mx-auto max-w-2xl text-base leading-relaxed sm:text-lg"
                         style={{ color: 'hsl(215, 16%, 60%)' }}
                     >
-                        LEDCO is a data-intelligence platform designed for companies who want to transform
-                        how commercial lighting decisions are made. By combining analytics, product comparison,
-                        and regional market insights, LEDCO empowers professionals to move from guesswork
-                        to precision.
+                        {t('dataIntDesc', language)}
                     </p>
                 </div>
 
                 {/* Stat pills */}
                 <div className="mx-auto mt-14 grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-4">
                     {[
-                        { label: 'Products Tracked', value: '1,000+' },
-                        { label: 'Brands Monitored', value: '4+' },
-                        { label: 'US & Canada Regions', value: '63' },
-                        { label: 'Spec Updates / Month', value: '500+' },
+                        { label: t('statProducts', language), value: '1,000+' },
+                        { label: t('statBrands', language), value: '4+' },
+                        { label: t('statRegions', language), value: '63' },
+                        { label: t('statUpdates', language), value: '500+' },
                     ].map((stat, i) => (
                         <motion.div
                             key={stat.label}
@@ -361,9 +360,9 @@ export default function WelcomePage() {
                         {/* Card 1: Real-Time Metrics */}
                         <FeatureCard
                             icon={Zap}
-                            subtitle="Real-Time Performance Metrics"
-                            title="Actionable Data, Zero Guesswork."
-                            description="Leverage real-time performance analytics on technical metrics—price, efficiency, and lumen output—to make instant, data-driven purchasing decisions."
+                            subtitle={t('f1Sub', language)}
+                            title={t('f1Title', language)}
+                            description={t('f1Desc', language)}
                             delay={0}
                             accentColor="cobalt"
                         />
@@ -371,9 +370,9 @@ export default function WelcomePage() {
                         {/* Card 2: Convenience Score */}
                         <FeatureCard
                             icon={Target}
-                            subtitle="The Convenience Score Insight"
-                            title="Optimize Decisions with the Convenience Score."
-                            description="A proprietary, weighted algorithm that ranks product performance, ensuring you select the optimal solution for every regional requirement in North America."
+                            subtitle={t('f2Sub', language)}
+                            title={t('f2Title', language)}
+                            description={t('f2Desc', language)}
                             delay={0.15}
                             accentColor="copper"
                         />
@@ -381,9 +380,9 @@ export default function WelcomePage() {
                         {/* Card 3: Accelerate Sales */}
                         <FeatureCard
                             icon={TrendingUp}
-                            subtitle="Accelerate North American Market Sales"
-                            title="Sell Better, Faster, with Technical Precision."
-                            description="Gain regional market insights that translate directly into faster sell-through, greater presence, and increased revenue in the vast North American LED market."
+                            subtitle={t('f3Sub', language)}
+                            title={t('f3Title', language)}
+                            description={t('f3Desc', language)}
                             delay={0.3}
                             accentColor="cobalt"
                         />
@@ -400,21 +399,20 @@ export default function WelcomePage() {
                         {/* Text */}
                         <div>
                             <h2 className="mb-2 text-xs font-bold uppercase tracking-widest text-gradient-cobalt">
-                                Enterprise-Ready Analytics
+                                {t('anaEyebrow', language)}
                             </h2>
                             <h3 className="mb-4 text-3xl font-bold" style={{ color: 'hsl(210, 40%, 98%)' }}>
-                                BI Tools for Modern Lighting Operations.
+                                {t('anaTitle', language)}
                             </h3>
                             <p className="mb-6 leading-relaxed" style={{ color: 'hsl(215, 16%, 60%)' }}>
-                                A centralized data dashboard and analytics platform tailored for lighting
-                                manufacturers to monitor performance and predict market demand.
+                                {t('anaDesc', language)}
                             </p>
 
                             <div className="space-y-3">
                                 {[
-                                    { icon: Globe2, text: 'North American market coverage (US + Canada)' },
-                                    { icon: Database, text: 'Real-time product tracking & change detection' },
-                                    { icon: Shield, text: 'Enterprise-grade security & role-based access' },
+                                    { icon: Globe2, text: t('anaB1', language) },
+                                    { icon: Database, text: t('anaB2', language) },
+                                    { icon: Shield, text: t('anaB3', language) },
                                 ].map(({ icon: Ic, text }) => (
                                     <div key={text} className="flex items-center gap-3">
                                         <div
@@ -515,15 +513,15 @@ export default function WelcomePage() {
                                     className="mb-4 text-2xl font-bold sm:text-3xl"
                                     style={{ color: 'hsl(210, 40%, 98%)' }}
                                 >
-                                    Ready to Transform Your{' '}
-                                    <span className="text-gradient-copper">Lighting Business?</span>
+                                    {t('ctgReady', language)}{' '}
+                                    <span className="text-gradient-copper">{t('ctgBusiness', language)}</span>
                                 </h2>
                                 <p className="mb-6 leading-relaxed" style={{ color: 'hsl(215, 16%, 60%)' }}>
-                                    Join the leaders leveraging data precision in North America.
+                                    {t('ctgDesc1', language)}
                                 </p>
 
                                 <p className="mb-8 text-sm" style={{ color: 'hsl(215, 16%, 50%)' }}>
-                                    Explora nuestro comparador de productos LED con métricas técnicas en tiempo real.
+                                    {t('ctgDesc2', language)}
                                 </p>
 
                                 <Button
@@ -536,7 +534,7 @@ export default function WelcomePage() {
                                     }}
                                     onClick={() => navigate('/')}
                                 >
-                                    Probar el Comparador <BarChart3 className="h-4 w-4" />
+                                    {t('btnComparator', language)} <BarChart3 className="h-4 w-4" />
                                 </Button>
                             </div>
 
@@ -546,7 +544,7 @@ export default function WelcomePage() {
                                     className="mb-6 text-lg font-bold"
                                     style={{ color: 'hsl(210, 40%, 98%)' }}
                                 >
-                                    Registrarse para Demo
+                                    {t('formTitle', language)}
                                 </h3>
 
                                 {sent ? (
@@ -557,22 +555,22 @@ export default function WelcomePage() {
                                     >
                                         <CheckCircle className="h-12 w-12" style={{ color: 'hsl(145, 63%, 42%)' }} />
                                         <p className="font-semibold" style={{ color: 'hsl(210, 40%, 98%)' }}>
-                                            ¡Solicitud enviada!
+                                            {t('formSuccess', language)}
                                         </p>
                                         <p className="text-sm" style={{ color: 'hsl(215, 16%, 60%)' }}>
-                                            Nos pondremos en contacto contigo pronto.
+                                            {t('formSuccessDesc', language)}
                                         </p>
                                     </motion.div>
                                 ) : (
                                     <form onSubmit={handleSubmit} className="space-y-4">
                                         <div>
                                             <label className="mb-1 block text-xs font-medium" style={{ color: 'hsl(215, 16%, 60%)' }}>
-                                                Nombre completo
+                                                {t('formName', language)}
                                             </label>
                                             <Input
                                                 value={form.full_name}
                                                 onChange={(e) => setForm({ ...form, full_name: e.target.value })}
-                                                placeholder="Juan Pérez"
+                                                placeholder={t('formNamePh', language)}
                                                 className="rounded-lg border-none"
                                                 style={{
                                                     background: 'hsla(215, 19%, 18%, 0.8)',
@@ -582,13 +580,13 @@ export default function WelcomePage() {
                                         </div>
                                         <div>
                                             <label className="mb-1 block text-xs font-medium" style={{ color: 'hsl(215, 16%, 60%)' }}>
-                                                Email corporativo
+                                                {t('formEmail', language)}
                                             </label>
                                             <Input
                                                 type="email"
                                                 value={form.email}
                                                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                                                placeholder="juan@empresa.com"
+                                                placeholder={t('formEmailPh', language)}
                                                 className="rounded-lg border-none"
                                                 style={{
                                                     background: 'hsla(215, 19%, 18%, 0.8)',
@@ -598,12 +596,12 @@ export default function WelcomePage() {
                                         </div>
                                         <div>
                                             <label className="mb-1 block text-xs font-medium" style={{ color: 'hsl(215, 16%, 60%)' }}>
-                                                Empresa
+                                                {t('formCompany', language)}
                                             </label>
                                             <Input
                                                 value={form.company}
                                                 onChange={(e) => setForm({ ...form, company: e.target.value })}
-                                                placeholder="Empresa S.A."
+                                                placeholder={t('formCompanyPh', language)}
                                                 className="rounded-lg border-none"
                                                 style={{
                                                     background: 'hsla(215, 19%, 18%, 0.8)',
@@ -621,7 +619,7 @@ export default function WelcomePage() {
                                                 color: 'white',
                                             }}
                                         >
-                                            {sending ? 'Enviando...' : 'Solicitar Demo'}
+                                            {sending ? t('formSending', language) : t('formTitle', language)}
                                             <Send className="h-4 w-4" />
                                         </Button>
                                     </form>
@@ -642,7 +640,7 @@ export default function WelcomePage() {
                     color: 'hsl(215, 16%, 40%)',
                 }}
             >
-                © {new Date().getFullYear()} LEDCO — Bright Choice. All rights reserved.
+                © {new Date().getFullYear()} LEDCO — Bright Choice. {t('rights', language)}
             </footer>
         </div>
     );
