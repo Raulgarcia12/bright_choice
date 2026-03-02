@@ -1,0 +1,1 @@
+import { supabaseAdmin } from './src/utils/supabaseAdmin'; async function seed() { const { error } = await supabaseAdmin.from('brands').insert({name: 'RAB Lighting', website_url: 'https://www.rablighting.com', is_active: true}); if (error) console.error(error); else console.log('Seeded RAB Lighting'); } seed();

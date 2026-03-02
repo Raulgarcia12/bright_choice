@@ -1,0 +1,1 @@
+import axios from 'axios'; async function run() { const {data} = await axios.get('https://www.rablighting.com/indoor'); const matches = data.match(/\/feature\/[a-zA-Z0-9-_]+/g); console.log('Matches:', matches ? new Set(matches).size : 0); } run();

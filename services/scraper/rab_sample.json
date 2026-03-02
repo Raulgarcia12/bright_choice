@@ -1,0 +1,532 @@
+{
+  "amps240": "",
+  "flicker": null,
+  "bac": "N",
+  "r9": null,
+  "lm79Troffer": null,
+  "type": "Dimmable",
+  "division": null,
+  "coveragePatternImg": "",
+  "lm79": "ivat3-75l730h-dlf1901118-4a.pdf",
+  "inputWatts": "69.3",
+  "fieldAdjIcon": null,
+  "productGroup_keyword": "LIGHTCLOUD, HIDEPRODUCTGROUP",
+  "epa": "0.0",
+  "product_id": "3313817",
+  "product_specification_type": "",
+  "majorGroup_keyword": "LIGHTCLOUD_ENABLED_FIXTURES, IVELOT_EDGELIT_AREA_LIGHTS",
+  "rank": 1.9912239137965324,
+  "productFilters": [
+    {
+      "optionValue": [
+        "Dimmable"
+      ],
+      "optionName": "type"
+    },
+    {
+      "optionValue": [
+        "Gray"
+      ],
+      "optionName": "finish"
+    },
+    {
+      "optionValue": [
+        "67"
+      ],
+      "optionName": "watts"
+    },
+    {
+      "optionValue": [
+        "69.3"
+      ],
+      "optionName": "inputWatts"
+    },
+    {
+      "optionValue": [
+        "7580"
+      ],
+      "optionName": "lumens"
+    },
+    {
+      "optionValue": [
+        "3000K (Warm)"
+      ],
+      "optionName": "colorTemp"
+    },
+    {
+      "optionValue": [
+        "480V"
+      ],
+      "optionName": "voltage"
+    },
+    {
+      "optionValue": [
+        "79"
+      ],
+      "optionName": "CRI"
+    },
+    {
+      "optionValue": [
+        "DLC"
+      ],
+      "optionName": "DLC"
+    },
+    {
+      "optionValue": [
+        "No Photocell"
+      ],
+      "optionName": "photocell"
+    },
+    {
+      "optionValue": [
+        "LED"
+      ],
+      "optionName": "lampType"
+    },
+    {
+      "optionValue": [
+        "100000"
+      ],
+      "optionName": "l70Lifespan"
+    },
+    {
+      "optionValue": [
+        "S-Q0PMT2"
+      ],
+      "optionName": "dlcProductId"
+    },
+    {
+      "optionValue": [
+        "YYYFJV"
+      ],
+      "optionName": "dlcFamilyCode"
+    },
+    {
+      "optionValue": [
+        "Yes"
+      ],
+      "optionName": "lightcloudInstalled"
+    },
+    {
+      "optionValue": [
+        "Area Lights"
+      ],
+      "optionName": "category"
+    },
+    {
+      "optionValue": [
+        "Type III"
+      ],
+      "optionName": "distribution"
+    },
+    {
+      "optionValue": [
+        "Multi Level Motion Sensor WS2 w/ Lightcloud Controller"
+      ],
+      "optionName": "option"
+    },
+    {
+      "optionValue": [
+        "Outdoor"
+      ],
+      "optionName": "productType"
+    },
+    {
+      "optionValue": [
+        "Slipfitter"
+      ],
+      "optionName": "mount"
+    }
+  ],
+  "height": null,
+  "gauge": null,
+  "featurePage": "10/23/25",
+  "shape": null,
+  "cutOutTemplate": "",
+  "upc": "",
+  "hasFccCaution": 0,
+  "productView": {
+    "l70": "100000",
+    "colorTemp": "3000K (Warm)",
+    "flicker": "N/A",
+    "inputVoltage": "N/A",
+    "lampLumens": "7,580 lm",
+    "weight": "13.5 lbs",
+    "efficacy": "109.4 lm/W",
+    "equivalency": "N/A",
+    "thdi": "THD-27611",
+    "thd": "THD-27611",
+    "inputWatts": "69.3W",
+    "watts": "67W",
+    "finish": "Gray",
+    "cri": "79 CRI",
+    "powerFactor": "Power Factor-28149"
+  },
+  "mount": "Slipfitter",
+  "switchingCapacity": null,
+  "hubSize": null,
+  "lampInfo": "LED",
+  "dimensionDrawing": "ivelot_slipfitter_dimension_2.png",
+  "globe": null,
+  "size": null,
+  "driver": "Driver-31017",
+  "Title24": null,
+  "lunaType": null,
+  "amps120": "",
+  "maxWatts": null,
+  "hash_value": "f16b56cd33883ad1fe3535cefe376a49",
+  "photocontrol": null,
+  "EnergyStar": null,
+  "updateDate": null,
+  "tiers": null,
+  "maximumSpacingGuidelinesImg": "",
+  "l70": "100000",
+  "guard": null,
+  "inputVoltage": null,
+  "goLiveDate": "2000-01-01 12:00:00",
+  "largeOrdQty": 0,
+  "matrix": "IVA-T3-75L-SF-730-G-H-/WS2-/LC-",
+  "distribution": "Type III",
+  "equivalency": null,
+  "photometric": "0",
+  "watts": "67",
+  "spacing": "",
+  "pageType": "LED",
+  "arm": null,
+  "dlcType": "DLC",
+  "detection": null,
+  "repMeth": "M",
+  "isFinalClearance": 0,
+  "resourcesLinks": null,
+  "ansi": null,
+  "hits": 24,
+  "thd": "THD-27611",
+  "productFiltersNested": [
+    {
+      "optionValue": [
+        "Dimmable"
+      ],
+      "optionName": "type"
+    },
+    {
+      "optionValue": [
+        "Gray"
+      ],
+      "optionName": "finish"
+    },
+    {
+      "optionValue": [
+        "67"
+      ],
+      "optionName": "watts"
+    },
+    {
+      "optionValue": [
+        "69.3"
+      ],
+      "optionName": "inputWatts"
+    },
+    {
+      "optionValue": [
+        "7580"
+      ],
+      "optionName": "lumens"
+    },
+    {
+      "optionValue": [
+        "3000K (Warm)"
+      ],
+      "optionName": "colorTemp"
+    },
+    {
+      "optionValue": [
+        "480V"
+      ],
+      "optionName": "voltage"
+    },
+    {
+      "optionValue": [
+        "79"
+      ],
+      "optionName": "CRI"
+    },
+    {
+      "optionValue": [
+        "DLC"
+      ],
+      "optionName": "DLC"
+    },
+    {
+      "optionValue": [
+        "No Photocell"
+      ],
+      "optionName": "photocell"
+    },
+    {
+      "optionValue": [
+        "LED"
+      ],
+      "optionName": "lampType"
+    },
+    {
+      "optionValue": [
+        "100000"
+      ],
+      "optionName": "l70Lifespan"
+    },
+    {
+      "optionValue": [
+        "S-Q0PMT2"
+      ],
+      "optionName": "dlcProductId"
+    },
+    {
+      "optionValue": [
+        "YYYFJV"
+      ],
+      "optionName": "dlcFamilyCode"
+    },
+    {
+      "optionValue": [
+        "Yes"
+      ],
+      "optionName": "lightcloudInstalled"
+    },
+    {
+      "optionValue": [
+        "Area Lights"
+      ],
+      "optionName": "category"
+    },
+    {
+      "optionValue": [
+        "Type III"
+      ],
+      "optionName": "distribution"
+    },
+    {
+      "optionValue": [
+        "Multi Level Motion Sensor WS2 w/ Lightcloud Controller"
+      ],
+      "optionName": "option"
+    },
+    {
+      "optionValue": [
+        "Outdoor"
+      ],
+      "optionName": "productType"
+    },
+    {
+      "optionValue": [
+        "Slipfitter"
+      ],
+      "optionName": "mount"
+    }
+  ],
+  "product_keyword": "IVAT3-75LSF730GH/WS2/LC",
+  "caseQty": "0",
+  "energyStarFile": "",
+  "reflector": null,
+  "majorGroupSubTitle": ", 38W - 117W",
+  "revit": "",
+  "totUsage": "0",
+  "cutoff": null,
+  "isQuickShip": 0,
+  "dimmerList": null,
+  "instructions": "ivelot_edgelit_type2345.pdf",
+  "callouts": "0",
+  "productLine_keyword": "IVELOT_EDGELIT_TYPE2345_LIGHTCLOUD",
+  "coo": "",
+  "disableEzlayout": 0,
+  "productFiltersNested_keyword": [
+    {
+      "optionValue": [
+        "Dimmable"
+      ],
+      "optionName": "type"
+    },
+    {
+      "optionValue": [
+        "Gray"
+      ],
+      "optionName": "finish"
+    },
+    {
+      "optionValue": [
+        "67"
+      ],
+      "optionName": "watts"
+    },
+    {
+      "optionValue": [
+        "69.3"
+      ],
+      "optionName": "inputWatts"
+    },
+    {
+      "optionValue": [
+        "7580"
+      ],
+      "optionName": "lumens"
+    },
+    {
+      "optionValue": [
+        "3000K (Warm)"
+      ],
+      "optionName": "colorTemp"
+    },
+    {
+      "optionValue": [
+        "480V"
+      ],
+      "optionName": "voltage"
+    },
+    {
+      "optionValue": [
+        "79"
+      ],
+      "optionName": "CRI"
+    },
+    {
+      "optionValue": [
+        "DLC"
+      ],
+      "optionName": "DLC"
+    },
+    {
+      "optionValue": [
+        "No Photocell"
+      ],
+      "optionName": "photocell"
+    },
+    {
+      "optionValue": [
+        "LED"
+      ],
+      "optionName": "lampType"
+    },
+    {
+      "optionValue": [
+        "100000"
+      ],
+      "optionName": "l70Lifespan"
+    },
+    {
+      "optionValue": [
+        "S-Q0PMT2"
+      ],
+      "optionName": "dlcProductId"
+    },
+    {
+      "optionValue": [
+        "YYYFJV"
+      ],
+      "optionName": "dlcFamilyCode"
+    },
+    {
+      "optionValue": [
+        "Yes"
+      ],
+      "optionName": "lightcloudInstalled"
+    },
+    {
+      "optionValue": [
+        "Area Lights"
+      ],
+      "optionName": "category"
+    },
+    {
+      "optionValue": [
+        "Type III"
+      ],
+      "optionName": "distribution"
+    },
+    {
+      "optionValue": [
+        "Multi Level Motion Sensor WS2 w/ Lightcloud Controller"
+      ],
+      "optionName": "option"
+    },
+    {
+      "optionValue": [
+        "Outdoor"
+      ],
+      "optionName": "productType"
+    },
+    {
+      "optionValue": [
+        "Slipfitter"
+      ],
+      "optionName": "mount"
+    }
+  ],
+  "lampLumens": "7580",
+  "lumens": null,
+  "ballastCompatibilityList": null,
+  "sellPkgQty": "1",
+  "tilt": "0",
+  "photometricsImg": "",
+  "metaDescription": "RAB Lighting Model IVAT3-75LSF730GH/WS2/LC. Ivelot T3 70W 7500L Sf 3000K 70 Cri Gray 347-480V Dim Ws2 Lc ",
+  "arrangement": "0",
+  "isClearance": 0,
+  "productLine": "IVELOT_EDGELIT_TYPE2345_LIGHTCLOUD",
+  "driverInfo": "Constant Current",
+  "specs": null,
+  "lineDrawing": null,
+  "dimming": false,
+  "taa": null,
+  "productGroupDescription": "Lightcloud,  ",
+  "lampHours": "100000",
+  "shaftSize": null,
+  "UL": null,
+  "finish": "Gray",
+  "amps277": "",
+  "compatibilityList": "",
+  "image": "ivelot_slipfitter_gray_wattstopper_sensor.png",
+  "replacementsku": null,
+  "majorGroupDescription": "Lightcloud Enabled Fixtures, IVELOT<sup>&reg;</sup>",
+  "shade": null,
+  "weight": "13.5",
+  "bledCount": null,
+  "sellPkgQtyOv": "Y",
+  "dlcVersion": "5.1",
+  "holeSize": null,
+  "majorGroup": "LIGHTCLOUD_ENABLED_FIXTURES, IVELOT_EDGELIT_AREA_LIGHTS",
+  "majorGroupSummary": ", 38W - 117W",
+  "amps208": "",
+  "name": "IVAT3-75LSF730GH/WS2/LC",
+  "DLC": null,
+  "majorGroupFeaturePage": "lightcloud-enterprise, IVELOT_EDGELIT_AREA_LIGHTS",
+  "region": "US",
+  "mountingHeight": "0",
+  "compatibility": null,
+  "lampType": null,
+  "powerFactor": "Power Factor-28149",
+  "photometricsReport": null,
+  "patent": "",
+  "colorTemp": "3000K (Warm)",
+  "sellSheetSpanish": null,
+  "hubCount": null,
+  "description": "IVELOT T3 70W 7500L SF 3000K 70 CRI GRAY 347-480V DIM WS2 LC ",
+  "lens": null,
+  "lunaVersion": null,
+  "metaKeywords": "Ivat3-75Lsf730Gh/Ws2/Lc,Ivelot Edgelit Type2345 Lightcloud,Arealights,Lightcloud",
+  "ies": "dlf1901118-4a.ies",
+  "lunaId": null,
+  "powerConfigurationsImg": "",
+  "cri": "79",
+  "holeCount": null,
+  "dlcId": "S-Q0PMT2",
+  "wiringDiagram": "",
+  "familySpecSheet": "{}",
+  "isObsolete": "0",
+  "makeToOrder": null,
+  "efficacy": "",
+  "sellSheet": null,
+  "voltage": "480V",
+  "ezLayout": null,
+  "material": null,
+  "productGroup": "LIGHTCLOUD, HIDEPRODUCTGROUP",
+  "amps347": "",
+  "base": null
+}

@@ -1,0 +1,1 @@
+import axios from 'axios'; async function run() { try { const {data} = await axios.get('https://www.rablighting.com/services/search/filter?majorgroup=LIGHTCLOUD_ENABLED_FIXTURES&size=2', {headers: {'X-Requested-With': 'XMLHttpRequest'}}); console.log(JSON.stringify(data.data.products, null, 2)); } catch(e) { console.log('API failed', e.message); } } run();

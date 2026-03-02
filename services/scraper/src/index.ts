@@ -9,6 +9,7 @@ import { supabaseAdmin } from './utils/supabaseAdmin';
 import { AcuityScraper } from './brands/acuity';
 import { CreeScraper } from './brands/cree';
 import { PhilipsScraper } from './brands/philips';
+import { RABScraper } from './brands/rab';
 import { mapAttributes } from './normalizer/attributeMap';
 import { parseAndConvert, extractNumeric } from './normalizer/unitConverter';
 import { validateProduct } from './normalizer/validator';
@@ -22,6 +23,7 @@ const SCRAPER_REGISTRY: Record<string, new (config: BrandConfig) => BaseScraper>
     'Acuity Brands': AcuityScraper as any,
     'Cree Lighting': CreeScraper as any,
     'Philips': PhilipsScraper as any,
+    'RAB Lighting': RABScraper as any,
 };
 
 /**

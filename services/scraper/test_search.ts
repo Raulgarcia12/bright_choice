@@ -1,0 +1,1 @@
+import axios from 'axios'; async function run() { try { const {data} = await axios.get('https://www.rablighting.com/sitemap_index.xml'); console.log(data.slice(0, 500)); } catch(e) { console.log('API failed', e.message); } } run();

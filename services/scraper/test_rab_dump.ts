@@ -1,0 +1,1 @@
+import axios from 'axios'; import fs from 'fs'; async function run() { try { const {data} = await axios.get('https://www.rablighting.com/services/search/filter?size=1', {headers: {'X-Requested-With': 'XMLHttpRequest'}}); fs.writeFileSync('rab_sample.json', JSON.stringify(data.data.products[0], null, 2)); } catch(e) { } } run();

@@ -1,0 +1,1 @@
+import axios from 'axios'; async function run() { try { const {data} = await axios.get('https://www.rablighting.com/services/search/filter?size=1', {headers: {'X-Requested-With': 'XMLHttpRequest'}}); console.log(Object.keys(data.data.products[0]).join(', ')); } catch(e) { console.log('API failed', e.message); } } run();

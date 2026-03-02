@@ -1,0 +1,1 @@
+{"error":"no nuxt/react data block found"}
