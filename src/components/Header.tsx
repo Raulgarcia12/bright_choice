@@ -39,8 +39,12 @@ export default function Header() {
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4">
         {/* Logo */}
         <Link to="/" className="flex shrink-0 items-center gap-2 group">
-          <img src="/logo-dark.png" alt="LEDCO" className="h-8 w-auto hidden dark:block" />
-          <img src="/logo-light.png" alt="LEDCO" className="h-8 w-auto block dark:hidden" />
+          <div className="rounded-lg bg-primary p-1.5 transition-transform duration-200 group-hover:scale-105">
+            <BarChart3 className="h-4 w-4 text-primary-foreground" />
+          </div>
+          <span className="hidden text-base font-bold tracking-tight text-foreground sm:inline">
+            {t('appName', language)}
+          </span>
         </Link>
 
         {/* ── Desktop pill-nav ── */}
