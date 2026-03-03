@@ -203,20 +203,23 @@ export default function WelcomePage() {
             {/* ═══════════════════════════════════════
           SECTION 1 — HERO
           ═══════════════════════════════════════ */}
-            <section className="relative overflow-hidden px-4 pb-20 pt-16 sm:pt-24 lg:pb-32 lg:pt-32">
+            <section className="relative overflow-hidden px-4 pb-20 pt-8 sm:pt-12 lg:pb-32 lg:pt-16">
                 <GlowingOrb />
 
-                <div className="relative z-10 mx-auto max-w-5xl text-center">
+                <div className="relative z-10 mx-auto max-w-7xl mb-8 sm:mb-16">
                     {/* Logo Graphic for Welcome Page */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.6 }}
-                        className="mb-8 flex justify-center"
+                        className="flex justify-start"
                     >
-                        <img src={logoDark} alt="LEDCO" className="h-16 md:h-20 w-auto hidden dark:block" />
-                        <img src={logoLight} alt="LEDCO" className="h-16 md:h-20 w-auto block dark:hidden" />
+                        <img src={logoDark} alt="LEDCO" className="h-24 md:h-[120px] w-auto hidden dark:block" />
+                        <img src={logoLight} alt="LEDCO" className="h-24 md:h-[120px] w-auto block dark:hidden" />
                     </motion.div>
+                </div>
+
+                <div className="relative z-10 mx-auto max-w-5xl text-center">
 
                     {/* Eyebrow badge */}
                     <motion.div
