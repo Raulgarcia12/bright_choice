@@ -13,6 +13,8 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useAppStore } from '@/lib/store';
 import { t } from '@/lib/i18n';
+import logoDark from '@/assets/logo-dark.png';
+import logoLight from '@/assets/logo-light.png';
 
 /* ────────────────────────────────────────────
    Helper: Section wrapper with scroll reveal
@@ -212,8 +214,8 @@ export default function WelcomePage() {
                         transition={{ duration: 0.6 }}
                         className="mb-8 flex justify-center"
                     >
-                        <img src="/logo-dark.png" alt="LEDCO" className="h-16 md:h-20 w-auto hidden dark:block" />
-                        <img src="/logo-light.png" alt="LEDCO" className="h-16 md:h-20 w-auto block dark:hidden" />
+                        <img src={logoDark} alt="LEDCO" className="h-16 md:h-20 w-auto hidden dark:block" />
+                        <img src={logoLight} alt="LEDCO" className="h-16 md:h-20 w-auto block dark:hidden" />
                     </motion.div>
 
                     {/* Eyebrow badge */}
