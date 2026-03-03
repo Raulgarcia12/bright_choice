@@ -359,3 +359,46 @@ body {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+/* ── Custom Animated Web ロゴ (CSS + SVG) ── */
+
+.ring-o {
+  background: conic-gradient(from 180deg, #46b4ff, #ffaa46 50%, #46b4ff);
+  box-shadow: 0 0 10px rgba(70, 180, 255, 0.5),
+    0 0 10px rgba(255, 170, 70, 0.5);
+  animation: ring-pulse 2s infinite ease-in-out;
+}
+
+.ring-o::after {
+  content: "";
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  background-color: hsl(222.2, 84%, 4.9%);
+  /* Mismo color del fondo base oscuro */
+  border-radius: 50%;
+}
+
+@keyframes ring-pulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(70, 180, 255, 0.6),
+      0 0 10px rgba(255, 170, 70, 0.6);
+  }
+
+  50% {
+    box-shadow: 0 0 25px rgba(70, 180, 255, 1),
+      0 0 25px rgba(255, 170, 70, 1);
+  }
+}
+
+.animate-draw-line {
+  animation: draw-line 1.5s 0.5s ease-out forwards;
+}
+
+@keyframes draw-line {
+  to {
+    stroke-dashoffset: 0;
+  }
+}

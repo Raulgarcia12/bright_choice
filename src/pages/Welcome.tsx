@@ -78,6 +78,38 @@ function GlowingOrb() {
 }
 
 /* ────────────────────────────────────────────
+   Animated LEDCO Logo (CSS + SVG)
+   ──────────────────────────────────────────── */
+function AnimatedLogo() {
+    return (
+        <div className="flex justify-start">
+            {/* Dark Mode Logo */}
+            <div className="hidden dark:flex items-center">
+                <div className="text-[#ffffff] text-[64px] tracking-[5px] font-bold uppercase -mr-[10px]">LEDC</div>
+                <div className="ring-o flex justify-center items-center relative w-[60px] h-[60px] -mt-[12px] rounded-full"></div>
+            </div>
+
+            {/* Light Mode Logo */}
+            <div className="flex dark:hidden flex-col items-center relative gap-0">
+                <div className="text-[#2a2c31] text-[64px] tracking-[5px] font-bold uppercase -mb-[12px]">LEDCO</div>
+                <div className="w-[300px] h-[3px] relative mb-[20px] ml-4">
+                    <svg viewBox="0 0 280 3" className="w-[110%] h-[110%] animate-draw-line stroke-dasharray-[280] stroke-dashoffset-[280]">
+                        <defs>
+                            <linearGradient id="led-line-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stopColor="#46b4ff" />
+                                <stop offset="50%" stopColor="#ffaa46" />
+                                <stop offset="100%" stopColor="#46b4ff" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M 0 1.5 L 280 1.5" stroke="url(#led-line-gradient)" strokeWidth="3" strokeLinecap="round" fill="none" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+/* ────────────────────────────────────────────
    Feature Card (3D tilt + glassmorphism)
    ──────────────────────────────────────────── */
 function FeatureCard({
@@ -212,10 +244,9 @@ export default function WelcomePage() {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.6 }}
-                        className="flex justify-start"
+                        className="flex justify-start origin-left transform scale-75 sm:scale-100" // Responsive scaling
                     >
-                        <img src={logoDark} alt="LEDCO" className="h-24 md:h-[120px] w-auto hidden dark:block" />
-                        <img src={logoLight} alt="LEDCO" className="h-24 md:h-[120px] w-auto block dark:hidden" />
+                        <AnimatedLogo />
                     </motion.div>
                 </div>
 
