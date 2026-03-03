@@ -205,6 +205,17 @@ export default function WelcomePage() {
                 <GlowingOrb />
 
                 <div className="relative z-10 mx-auto max-w-5xl text-center">
+                    {/* Logo Graphic for Welcome Page */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.6 }}
+                        className="mb-8 flex justify-center"
+                    >
+                        <img src="/logo-dark.png" alt="LEDCO" className="h-16 md:h-20 w-auto hidden dark:block" />
+                        <img src="/logo-light.png" alt="LEDCO" className="h-16 md:h-20 w-auto block dark:hidden" />
+                    </motion.div>
+
                     {/* Eyebrow badge */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
