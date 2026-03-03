@@ -316,11 +316,16 @@ body {
 
 /* ── Glass card ── */
 .welcome-page .glass-card {
-  background: hsla(220, 25%, 12%, 0.6);
+  background: hsla(210, 20%, 96%, 0.8);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid hsla(215, 19%, 28%, 0.5);
+  border: 1px solid hsla(210, 20%, 85%, 0.5);
   border-radius: 1rem;
+}
+
+.dark .welcome-page .glass-card {
+  background: hsla(220, 25%, 12%, 0.6);
+  border: 1px solid hsla(215, 19%, 28%, 0.5);
 }
 
 /* ── 3D tilt on hover ── */
@@ -334,14 +339,21 @@ body {
 }
 
 /* ── Copper / Cobalt gradient text ── */
-.welcome-page .text-gradient-copper {
+.welcome-page .text-gradient-copper,
+.welcome-page .text-gradient-cobalt {
+  color: #000;
+  -webkit-text-fill-color: #000;
+  background: none;
+}
+
+.dark .welcome-page .text-gradient-copper {
   background: linear-gradient(135deg, hsl(25, 85%, 65%), hsl(25, 75%, 50%));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.welcome-page .text-gradient-cobalt {
+.dark .welcome-page .text-gradient-cobalt {
   background: linear-gradient(135deg, hsl(215, 90%, 60%), hsl(215, 80%, 40%));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
