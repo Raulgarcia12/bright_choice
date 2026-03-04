@@ -30,6 +30,7 @@ export interface Product {
   ip_rating: string | null;
   dimming: string | null;
   voltage: string | null;
+  seller_name: string | null;
   last_scraped_at: string | null;
   created_at: string;
   updated_at: string;

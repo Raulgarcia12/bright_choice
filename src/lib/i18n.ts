@@ -73,6 +73,10 @@ const translations = {
     priceRange: 'Price Range',
     certifications: 'Certifications',
     clearFilters: 'Clear Filters',
+    seller: 'Seller',
+    allSellers: 'All Sellers',
+    state: 'State',
+    allStates: 'All States',
 
     // Categories
     Bulb: 'Bulb',
@@ -250,6 +254,10 @@ const translations = {
     priceRange: 'Rango de Precio',
     certifications: 'Certificaciones',
     clearFilters: 'Limpiar Filtros',
+    seller: 'Vendedor',
+    allSellers: 'Todos los Vendedores',
+    state: 'Estado',
+    allStates: 'Todos los Estados',
 
     Bulb: 'Bulbo',
     Panel: 'Panel',

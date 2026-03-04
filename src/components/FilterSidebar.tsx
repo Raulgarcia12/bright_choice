@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -17,6 +16,8 @@ export interface Filters {
   category: string;
   useType: string;
   brand: string;
+  seller: string;
+  state: string;
   certUl: boolean;
   certDlc: boolean;
   certEnergyStar: boolean;
@@ -26,6 +27,8 @@ export const defaultFilters: Filters = {
   category: 'all',
   useType: 'all',
   brand: 'all',
+  seller: 'all',
+  state: 'all',
   certUl: false,
   certDlc: false,
   certEnergyStar: false,
@@ -36,6 +39,8 @@ export function applyFilters(products: Product[], filters: Filters): Product[] {
     if (filters.category !== 'all' && p.category !== filters.category) return false;
     if (filters.useType !== 'all' && p.use_type !== filters.useType) return false;
     if (filters.brand !== 'all' && p.brand !== filters.brand) return false;
+    if (filters.seller !== 'all' && (p.seller_name || '') !== filters.seller) return false;
+    if (filters.state !== 'all' && (p.state_province || '') !== filters.state) return false;
     if (filters.certUl && !p.cert_ul) return false;
     if (filters.certDlc && !p.cert_dlc) return false;
     if (filters.certEnergyStar && !p.cert_energy_star) return false;
@@ -48,6 +53,8 @@ export default function FilterSidebar({ products, filters, onFiltersChange }: Fi
   const brands = [...new Set(products.map((p) => p.brand))].sort();
   const categories = [...new Set(products.map((p) => p.category))].sort();
   const useTypes = [...new Set(products.map((p) => p.use_type))].sort();
+  const sellers = [...new Set(products.map((p) => p.seller_name).filter(Boolean))].sort() as string[];
+  const states = [...new Set(products.map((p) => p.state_province).filter(Boolean))].sort() as string[];
 
   const update = (partial: Partial<Filters>) => onFiltersChange({ ...filters, ...partial });
 
@@ -59,6 +66,38 @@ export default function FilterSidebar({ products, filters, onFiltersChange }: Fi
           <X className="mr-1 h-3 w-3" />{t('clearFilters', language)}
         </Button>
       </div>
+
+      {/* Seller */}
+      {sellers.length > 0 && (
+        <div className="space-y-2">
+          <Label className="text-xs">{t('seller', language)}</Label>
+          <Select value={filters.seller} onValueChange={(v) => update({ seller: v })}>
+            <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t('allSellers', language)}</SelectItem>
+              {sellers.map((s) => (
+                <SelectItem key={s} value={s}>{s}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
+      {/* State */}
+      {states.length > 0 && (
+        <div className="space-y-2">
+          <Label className="text-xs">{t('state', language)}</Label>
+          <Select value={filters.state} onValueChange={(v) => update({ state: v })}>
+            <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">{t('allStates', language)}</SelectItem>
+              {states.map((s) => (
+                <SelectItem key={s} value={s}>{s}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       {/* Category */}
       <div className="space-y-2">
@@ -121,3 +160,4 @@ export default function FilterSidebar({ products, filters, onFiltersChange }: Fi
     </div>
   );
 }
+
