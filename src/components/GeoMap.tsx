@@ -82,15 +82,17 @@ export default function GeoMap({ country, regionCounts, selectedState, onSelectS
         return geo.properties?.name || geo.properties?.NAME || geo.properties?.PRENAME || '';
     }
 
-    const center: [number, number] = country === 'USA' ? [-97, 40] : [-97, 60];
-    const scale = country === 'USA' ? 700 : 420;
+    const projection = country === 'USA' ? "geoAlbersUsa" : "geoMercator";
+    const projectionConfig = country === 'USA'
+        ? { scale: 800 }
+        : { scale: 400, center: [-95, 60] as [number, number] };
 
     return (
-        <div className="relative w-full select-none">
+        <div className="relative h-full w-full select-none">
             <ComposableMap
-                projection="geoAlbersUsa"
+                projection={projection}
                 style={{ width: '100%', height: '100%' }}
-                projectionConfig={{ scale, center }}
+                projectionConfig={projectionConfig}
             >
                 <Geographies geography={geoUrl}>
                     {({ geographies }) =>
