@@ -57,28 +57,16 @@ export default function GeoMap({ country, regionCounts, selectedState, onSelectS
         [maxCount]
     );
 
-    interface GeoFeature {
-        id?: string | number;
-        rsmKey?: string;
-        properties?: {
-            name?: string;
-            NAME?: string;
-            PRENAME?: string;
-            postal?: string;
-            abbr?: string;
-        };
-    }
-
-    function getAbbr(geo: GeoFeature): string {
+    function getAbbr(geo: any): string {
         if (country === 'USA') {
-            return US_FIPS[geo.id as string] || geo.properties?.postal || '';
+            return US_FIPS[geo.id] || geo.properties?.postal || '';
         }
         // Canada: try various property keys
         const name = geo.properties?.name || geo.properties?.NAME || geo.properties?.PRENAME || '';
         return CA_PROV[name] || geo.properties?.abbr || '';
     }
 
-    function getName(geo: GeoFeature): string {
+    function getName(geo: any): string {
         return geo.properties?.name || geo.properties?.NAME || geo.properties?.PRENAME || '';
     }
 
