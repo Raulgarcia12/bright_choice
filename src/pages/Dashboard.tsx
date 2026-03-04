@@ -42,7 +42,22 @@ const BRAND_COLORS: Record<string, string> = {
     'Other': '#94a3b8',
 };
 
-// Removed KNOWN_SELLERS and EXTRACTABLE_BRANDS as we now use DB data (p.seller_name and p.brand)
+// Whitelist of REAL product brands — anything not listed here gets mapped to 'Other'
+const REAL_BRANDS = new Set([
+    'Philips', 'Westgate', 'GE', 'Sylvania', 'Keystone', 'Eiko', 'Satco',
+    'RAB', 'MaxLite', 'Cree', 'TCP', 'Halco', 'Lutron', 'Hatch',
+    'NaturaLED', 'Hubbell', 'Lithonia', 'Feit', 'Sunlite', 'Howard',
+    'Acuity Brands', 'Acuity', 'RAB Lighting', 'Cree Lighting',
+    'Green Creative', 'Light Efficient Design', 'Cooper', 'Eaton',
+    'American Lighting', 'Bulbrite', 'Topaz', 'Toggled', 'Universal',
+    'Advance', 'Sola', 'Big Ass Fans', 'Arctic Chill', 'Venture',
+    'Energetic', 'Archipelago', 'Ecosmart',
+]);
+
+/** Map any unrecognized brand to 'Other' */
+function normalizeBrand(brand: string): string {
+    return REAL_BRANDS.has(brand) ? brand : 'Other';
+}
 
 // ────────────────────────────────────────────────────────────
 // KPI Card
@@ -167,7 +182,10 @@ export default function Dashboard() {
     // ── Chart data ──
     const brandDistribution = useMemo(() => {
         const counts = new Map<string, number>();
-        filteredProducts.forEach(p => counts.set(p.brand, (counts.get(p.brand) || 0) + 1));
+        filteredProducts.forEach(p => {
+            const b = normalizeBrand(p.brand);
+            counts.set(b, (counts.get(b) || 0) + 1);
+        });
         return Array.from(counts.entries()).map(([name, count]) => ({ name, count }))
             .sort((a, b) => b.count - a.count).slice(0, 8);
     }, [filteredProducts]);
@@ -180,21 +198,27 @@ export default function Dashboard() {
 
     const frontierData = useMemo(() => {
         return filteredProducts
-            .filter(p => p.lumens > 0 && p.efficiency > 0)
-            .map(p => ({ name: `${p.brand} ${p.model}`, brand: p.brand, lumens: p.lumens, efficiency: p.efficiency, lifespan: p.lifespan }));
+            .filter(p => p.lumens > 0 && p.efficiency > 0 && p.efficiency < 300)
+            .map(p => ({
+                name: `${normalizeBrand(p.brand)} ${p.model}`,
+                brand: normalizeBrand(p.brand),
+                lumens: p.lumens,
+                efficiency: p.efficiency,
+                lifespan: p.lifespan,
+            }));
     }, [filteredProducts]);
 
     const competitiveGaps = useMemo(() => {
-        // Now that the DB has the true product brands, we can use all filteredProducts!
-        const brandProducts = filteredProducts;
-        if (brandProducts.length === 0) return [];
-        const marketAvgEff = brandProducts.reduce((s, p) => s + (p.efficiency || 0), 0) / brandProducts.length;
-        const marketAvgLumens = brandProducts.reduce((s, p) => s + (p.lumens || 0), 0) / brandProducts.length;
+        if (filteredProducts.length === 0) return [];
+        const marketAvgEff = filteredProducts.reduce((s, p) => s + (p.efficiency || 0), 0) / filteredProducts.length;
+        const marketAvgLumens = filteredProducts.reduce((s, p) => s + (p.lumens || 0), 0) / filteredProducts.length;
         const brandStats = new Map<string, { totalEff: number; totalLumens: number; count: number }>();
-        brandProducts.forEach(p => {
-            const s = brandStats.get(p.brand) || { totalEff: 0, totalLumens: 0, count: 0 };
+        filteredProducts.forEach(p => {
+            const b = normalizeBrand(p.brand);
+            if (b === 'Other') return; // skip unrecognized brands for gap analysis
+            const s = brandStats.get(b) || { totalEff: 0, totalLumens: 0, count: 0 };
             s.totalEff += p.efficiency || 0; s.totalLumens += p.lumens || 0; s.count += 1;
-            brandStats.set(p.brand, s);
+            brandStats.set(b, s);
         });
         return Array.from(brandStats.entries()).map(([brand, s]) => ({
             brand,
@@ -203,32 +227,41 @@ export default function Dashboard() {
         })).sort((a, b) => b.effGap - a.effGap);
     }, [filteredProducts]);
 
-    // ── Seller stacked bar chart data ──
-    // Each seller gets a bar, stacked by product brand
+    // ── Seller chart data ──
+    // Shows product counts per seller, broken down by top real brands
     const { sellerChartData, sellerBrands } = useMemo(() => {
-        // Build a map: sellerName → { brandA: count, brandB: count, ... }
         const sellerMap = new Map<string, Record<string, number>>();
-        const allBrandsInSellers = new Set<string>();
+        const brandTotals = new Map<string, number>(); // sum across sellers
 
         filteredProducts.forEach(p => {
-            // Only process products that belong to a known seller
             if (!p.seller_name) return;
-
+            const b = normalizeBrand(p.brand);
             if (!sellerMap.has(p.seller_name)) sellerMap.set(p.seller_name, {});
             const brands = sellerMap.get(p.seller_name)!;
-            brands[p.brand] = (brands[p.brand] || 0) + 1;
-            allBrandsInSellers.add(p.brand);
+            brands[b] = (brands[b] || 0) + 1;
+            brandTotals.set(b, (brandTotals.get(b) || 0) + 1);
         });
 
-        const data = Array.from(sellerMap.entries()).map(([seller, brands]) => ({
-            seller,
-            ...brands,
-        }));
+        // Keep only the top 8 brands by total count; group the rest into 'Other'
+        const sortedBrands = Array.from(brandTotals.entries())
+            .filter(([name]) => name !== 'Other')
+            .sort((a, b) => b[1] - a[1]);
+        const topBrandNames = new Set(sortedBrands.slice(0, 8).map(([n]) => n));
 
-        return {
-            sellerChartData: data,
-            sellerBrands: Array.from(allBrandsInSellers).sort(),
-        };
+        const data = Array.from(sellerMap.entries()).map(([seller, brands]) => {
+            const collapsed: Record<string, number> = {};
+            for (const [b, count] of Object.entries(brands)) {
+                const key = topBrandNames.has(b) ? b : 'Other';
+                collapsed[key] = (collapsed[key] || 0) + count;
+            }
+            return { seller, ...collapsed };
+        });
+
+        const finalBrands = [...Array.from(topBrandNames).sort()];
+        // Add 'Other' last if any exist
+        if (data.some(d => (d as Record<string, unknown>)['Other'])) finalBrands.push('Other');
+
+        return { sellerChartData: data, sellerBrands: finalBrands };
     }, [filteredProducts]);
 
     return (

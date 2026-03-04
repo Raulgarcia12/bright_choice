@@ -104,8 +104,8 @@ function extractBrand(title: string): string {
     const mfgMatch = title.match(/^(\w+)\s+MFG\b/i);
     if (mfgMatch) return mfgMatch[1];
 
-    // Fallback: use first word
-    return title.split(/\s+/)[0] || 'Unknown';
+    // Fallback: unknown brand
+    return 'Other';
 }
 
 export class BulbsDepotScraper extends BaseScraper {

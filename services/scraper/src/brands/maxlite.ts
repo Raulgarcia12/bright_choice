@@ -43,8 +43,8 @@ function extractBrand(title: string, vendor?: string): string {
     const mfgMatch = title.match(/^(\w+)\s+MFG\b/i);
     if (mfgMatch) return mfgMatch[1];
 
-    // Fallback: use first word
-    return title.split(/\s+/)[0] || 'Unknown';
+    // Fallback: unknown brand
+    return 'Other';
 }
 
 // Exported with original name for backward compatibility
