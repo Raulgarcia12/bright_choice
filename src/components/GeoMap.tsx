@@ -116,6 +116,8 @@ export default function GeoMap({ usaRegionCounts, canadaRegionCounts, selectedSt
             <ComposableMap
                 projection={projection}
                 projectionConfig={projConfig}
+                width={800}
+                height={500}
                 style={{ width: '100%', height: '100%' }}
             >
                 {/* ── USA States ── */}

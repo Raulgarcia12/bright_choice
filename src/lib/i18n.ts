@@ -130,6 +130,16 @@ const translations = {
     availabilityScore: 'Regional availability',
     regionalMessage: 'This product is more convenient in {region1} than in {region2}',
 
+    // Market Intelligence Panel
+    miTitle: 'Market Intelligence',
+    miSubtitle: 'Retailers & distributors in {state}',
+    miInventory: 'Inventory',
+    miBrands: 'Brands',
+    miClients: 'Reported Clients',
+    miClientName: 'Client Name',
+    miNoRetailers: 'No retailers found in this state',
+    miPriceScore: 'Price Competitiveness',
+
     // Specs
     watts: 'Watts',
     lumens: 'Lumens',
@@ -291,6 +301,16 @@ const translations = {
     warrantyScore: 'Buena garantía',
     availabilityScore: 'Disponibilidad regional',
     regionalMessage: 'Este producto es más conveniente en {region1} que en {region2}',
+
+    // Panel de Inteligencia de Mercado
+    miTitle: 'Inteligencia de Mercado',
+    miSubtitle: 'Distribuidores y vendedores en {state}',
+    miInventory: 'Inventario',
+    miBrands: 'Marcas',
+    miClients: 'Clientes Reportados',
+    miClientName: 'Nombre del Cliente',
+    miNoRetailers: 'No se encontraron distribuidores en este estado',
+    miPriceScore: 'Competitividad de Precio',
 
     watts: 'Watts',
     lumens: 'Lúmenes',

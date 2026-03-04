@@ -13,6 +13,7 @@ import {
 } from 'recharts';
 import Header from '@/components/Header';
 import GeoMap from '@/components/GeoMap';
+import MarketIntelPanel from '@/components/MarketIntelPanel';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -252,6 +253,13 @@ export default function Dashboard() {
                         </CardContent>
                     </Card>
                 </motion.section>
+
+                {/* ── Market Intelligence Panel (appears on state click) ── */}
+                <MarketIntelPanel
+                    stateAbbr={selectedState}
+                    onClose={() => setSelectedState(null)}
+                    language={language}
+                />
 
                 {/* ── KPI Cards ── */}
                 {kpis ? (

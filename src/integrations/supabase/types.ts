@@ -439,6 +439,105 @@ export type Database = {
         }
         Relationships: []
       }
+      retailers: {
+        Row: {
+          id: string
+          name: string
+          address: string | null
+          city: string | null
+          state_province: string
+          country: string
+          phone: string | null
+          website_url: string | null
+          inventory_count: number
+          primary_brands: string[] | null
+          reported_clients: Json | null
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          address?: string | null
+          city?: string | null
+          state_province: string
+          country?: string
+          phone?: string | null
+          website_url?: string | null
+          inventory_count?: number
+          primary_brands?: string[] | null
+          reported_clients?: Json | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          address?: string | null
+          city?: string | null
+          state_province?: string
+          country?: string
+          phone?: string | null
+          website_url?: string | null
+          inventory_count?: number
+          primary_brands?: string[] | null
+          reported_clients?: Json | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      retailer_prices: {
+        Row: {
+          id: string
+          product_id: string
+          retailer_id: string
+          unit_price: number
+          currency: string
+          is_available: boolean
+          last_verified_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          product_id: string
+          retailer_id: string
+          unit_price: number
+          currency?: string
+          is_available?: boolean
+          last_verified_at?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          product_id?: string
+          retailer_id?: string
+          unit_price?: number
+          currency?: string
+          is_available?: boolean
+          last_verified_at?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "retailer_prices_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "retailer_prices_retailer_id_fkey"
+            columns: ["retailer_id"]
+            isOneToOne: false
+            referencedRelation: "retailers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
