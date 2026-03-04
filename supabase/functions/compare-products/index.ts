@@ -42,8 +42,18 @@ serve(async (req) => {
 
         const all = allProducts || [];
 
+        interface CompareItem {
+            id: string;
+            watts: number;
+            lumens: number;
+            price: number;
+            cri: number;
+            lifespan: number;
+            efficiency: number;
+        }
+
         // Compute comparison summary
-        const comparison = (products || []).map((p: any) => {
+        const comparison = (products || []).map((p) => {
             const efficiency = p.watts > 0 ? Math.round((p.lumens / p.watts) * 10) / 10 : 0;
 
             // Percentile calculations
@@ -57,14 +67,14 @@ serve(async (req) => {
                 effPercentile: Math.round(effPercentile),
                 pricePercentile: Math.round(pricePercentile),
                 criPercentile: Math.round(criPercentile),
-            };
+            } as CompareItem;
         });
 
         // Determine "best in" categories
-        const bestEfficiency = comparison.reduce((a: any, b: any) => a.efficiency > b.efficiency ? a : b);
-        const bestPrice = comparison.reduce((a: any, b: any) => a.price < b.price ? a : b);
-        const bestCRI = comparison.reduce((a: any, b: any) => a.cri > b.cri ? a : b);
-        const bestLifespan = comparison.reduce((a: any, b: any) => a.lifespan > b.lifespan ? a : b);
+        const bestEfficiency = comparison.reduce((a, b) => a.efficiency > b.efficiency ? a : b);
+        const bestPrice = comparison.reduce((a, b) => a.price < b.price ? a : b);
+        const bestCRI = comparison.reduce((a, b) => a.cri > b.cri ? a : b);
+        const bestLifespan = comparison.reduce((a, b) => a.lifespan > b.lifespan ? a : b);
 
         return new Response(
             JSON.stringify({

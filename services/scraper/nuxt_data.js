@@ -1,1 +1,1 @@
-{"error":"no nuxt/react data block found"}
+export default { "error": "no nuxt/react data block found" };

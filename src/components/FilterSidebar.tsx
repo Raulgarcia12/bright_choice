@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
 import { useAppStore, type Product } from '@/lib/store';
-import { t } from '@/lib/i18n';
+import { t, type TranslationKey } from '@/lib/i18n';
 
 interface FilterSidebarProps {
   products: Product[];
@@ -68,7 +68,7 @@ export default function FilterSidebar({ products, filters, onFiltersChange }: Fi
           <SelectContent>
             <SelectItem value="all">{t('allCategories', language)}</SelectItem>
             {categories.map((c) => (
-              <SelectItem key={c} value={c}>{t(c as any, language)}</SelectItem>
+              <SelectItem key={c} value={c}>{t(c as TranslationKey, language)}</SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -82,7 +82,7 @@ export default function FilterSidebar({ products, filters, onFiltersChange }: Fi
           <SelectContent>
             <SelectItem value="all">{t('allUseTypes', language)}</SelectItem>
             {useTypes.map((u) => (
-              <SelectItem key={u} value={u}>{t(u as any, language)}</SelectItem>
+              <SelectItem key={u} value={u}>{t(u as TranslationKey, language)}</SelectItem>
             ))}
           </SelectContent>
         </Select>

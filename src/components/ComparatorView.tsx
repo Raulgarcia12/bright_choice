@@ -58,9 +58,9 @@ export default function ComparatorView({ products, allProducts }: ComparatorView
     return badges;
   }
 
-  function getCellClass(productId: string, field: string): string {
+  function getCellClass(productId: string, field: keyof Product): string {
     if (scored.length <= 1) return '';
-    const vals = scored.map((s) => ({ id: s.product.id, val: (s.product as any)[field] }));
+    const vals = scored.map((s) => ({ id: s.product.id, val: s.product[field] as number }));
     const best = Math.max(...vals.map((v) => v.val));
     const worst = Math.min(...vals.map((v) => v.val));
     const current = vals.find((v) => v.id === productId)?.val;
@@ -141,7 +141,7 @@ export default function ComparatorView({ products, allProducts }: ComparatorView
                       {specRows.map((row) => (
                         <div key={row.key} className="flex justify-between text-xs py-1 border-b border-border/50 last:border-0">
                           <span className="text-muted-foreground">{row.label}</span>
-                          <span className={getCellClass(p.id, row.key)}>{row.format(p)}</span>
+                          <span className={getCellClass(p.id, row.key as keyof Product)}>{row.format(p)}</span>
                         </div>
                       ))}
                     </div>

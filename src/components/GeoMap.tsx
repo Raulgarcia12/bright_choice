@@ -66,11 +66,23 @@ export default function GeoMap({ usaRegionCounts, canadaRegionCounts, selectedSt
         return vals.length > 0 ? Math.max(1, ...vals) : 1;
     }, [allCounts]);
 
-    function getUsaAbbr(geo: any): string {
+    interface GeoFeature {
+        id?: string | number;
+        properties?: {
+            name?: string;
+            NAME?: string;
+            PRENAME?: string;
+            prov_name_en?: string;
+            abbrev?: string;
+            postal?: string;
+        };
+    }
+
+    function getUsaAbbr(geo: GeoFeature): string {
         return US_FIPS[String(geo.id)] || '';
     }
 
-    function getCanadaAbbr(geo: any): string {
+    function getCanadaAbbr(geo: GeoFeature): string {
         const name =
             geo.properties?.name ||
             geo.properties?.NAME ||
@@ -79,7 +91,7 @@ export default function GeoMap({ usaRegionCounts, canadaRegionCounts, selectedSt
         return CA_PROV[name] || geo.properties?.abbrev || geo.properties?.postal || '';
     }
 
-    function getName(geo: any): string {
+    function getName(geo: GeoFeature): string {
         return (
             geo.properties?.name ||
             geo.properties?.NAME ||

@@ -71,7 +71,7 @@ export class CreeScraper extends BaseScraper {
 
                 // Detect the category name from the H1
                 const categoryName = $('h1').first().text().trim() || catPath;
-                let catLabel = this.inferCategory(catPath);
+                const catLabel = this.inferCategory(catPath);
 
                 // Find all product family detail links on the page
                 // Cree uses links like /products/indoor/troffers/flex-series-square-lens/

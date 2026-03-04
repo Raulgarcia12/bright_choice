@@ -1,14 +1,13 @@
 /**
  * Lightweight Google Analytics 4 wrapper.
- *
- * Usage:
- *   1. Set your Measurement ID in the GA_MEASUREMENT_ID constant below.
- *   2. Call `initGA()` once from main.tsx.
- *   3. Use `trackEvent()` from anywhere to send custom events.
- *
- * If no Measurement ID is set, all calls are silently no-ops so the app
- * works identically in development without GA loaded.
  */
+
+declare global {
+    interface Window {
+        dataLayer: unknown[];
+        gtag: (...args: unknown[]) => void;
+    }
+}
 
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || '';
 
@@ -24,18 +23,15 @@ export function initGA() {
     script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
     document.head.appendChild(script);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).dataLayer = (window as any).dataLayer || [];
+    window.dataLayer = window.dataLayer || [];
     function gtag(...args: unknown[]) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (window as any).dataLayer.push(args);
+        window.dataLayer.push(args);
     }
     gtag('js', new Date());
     gtag('config', GA_MEASUREMENT_ID, { send_page_view: true });
 
     // Expose globally for trackEvent
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).gtag = gtag;
+    window.gtag = gtag;
 }
 
 /** Send a custom GA4 event. Safe to call even if GA is not loaded. */
@@ -43,8 +39,7 @@ export function trackEvent(
     eventName: string,
     params?: Record<string, string | number | boolean>,
 ) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const gtag = (window as any).gtag;
+    const gtag = window.gtag;
     if (typeof gtag !== 'function') return;
     gtag('event', eventName, params);
 }

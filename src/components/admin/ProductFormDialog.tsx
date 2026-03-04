@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAppStore } from '@/lib/store';
+import { useAppStore, type Product } from '@/lib/store';
 import { t } from '@/lib/i18n';
+import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import type { Region } from '@/lib/store';
 
@@ -50,7 +50,7 @@ const CA_PROVINCES = [
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  editProduct: any | null;
+  editProduct: Product | null;
   regions: Region[];
 }
 
@@ -78,7 +78,7 @@ export default function ProductFormDialog({ open, onOpenChange, editProduct, reg
     }
   }, [editProduct, open]);
 
-  const updateForm = (field: keyof ProductForm, value: any) => setForm((f) => ({ ...f, [field]: value }));
+  const updateForm = (field: keyof ProductForm, value: string | boolean | number) => setForm((f) => ({ ...f, [field]: value }));
 
   async function handleSave() {
     setSaving(true);

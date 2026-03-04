@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useAppStore, type Product } from '@/lib/store';
 import { calculateConvenienceScore } from '@/lib/convenienceScore';
-import { t } from '@/lib/i18n';
+import { t, type TranslationKey } from '@/lib/i18n';
 
 interface ProductCardProps {
   product: Product;
@@ -41,8 +41,8 @@ export default function ProductCard({ product, allProducts }: ProductCardProps) 
           <h3 className="mb-2 text-sm font-semibold leading-tight text-foreground sm:mb-3">{product.model}</h3>
 
           <div className="mb-2 flex flex-wrap gap-1 sm:mb-3">
-            <Badge variant="secondary" className="text-[10px] sm:text-xs">{t(product.category as any, language)}</Badge>
-            <Badge variant="outline" className="text-[10px] sm:text-xs">{t(product.use_type as any, language)}</Badge>
+            <Badge variant="secondary" className="text-[10px] sm:text-xs">{t(product.category as TranslationKey, language)}</Badge>
+            <Badge variant="outline" className="text-[10px] sm:text-xs">{t(product.use_type as TranslationKey, language)}</Badge>
           </div>
 
           <div className="mb-2 grid grid-cols-2 gap-1.5 text-[11px] text-muted-foreground sm:mb-3 sm:gap-2 sm:text-xs">

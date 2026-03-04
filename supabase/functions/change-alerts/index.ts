@@ -26,11 +26,22 @@ serve(async (req) => {
 
         // Get changes from last 24 hours
         const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+        interface ChangeLog {
+            field_name: string;
+            old_value: string | null;
+            new_value: string | null;
+            detected_at: string;
+            products?: {
+                brand: string;
+                model: string;
+            };
+        }
+
         const { data: changes, error } = await supabase
             .from("change_logs")
             .select("*, products(brand, model, category)")
             .gte("detected_at", since)
-            .order("detected_at", { ascending: false });
+            .order("detected_at", { ascending: false }) as { data: ChangeLog[] | null, error: any };
 
         if (error) throw error;
         if (!changes || changes.length === 0) {
@@ -43,9 +54,9 @@ serve(async (req) => {
         // Build the alert summary
         const summary = {
             totalChanges: changes.length,
-            affectedProducts: [...new Set(changes.map((c: any) => `${c.products?.brand} ${c.products?.model}`))],
-            fieldsChanged: [...new Set(changes.map((c: any) => c.field_name))],
-            details: changes.map((c: any) => ({
+            affectedProducts: [...new Set(changes.map((c) => `${c.products?.brand} ${c.products?.model}`))],
+            fieldsChanged: [...new Set(changes.map((c) => c.field_name))],
+            details: changes.map((c) => ({
                 product: `${c.products?.brand} ${c.products?.model}`,
                 field: c.field_name,
                 oldValue: c.old_value,

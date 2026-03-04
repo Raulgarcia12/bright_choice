@@ -56,8 +56,8 @@ export async function processProductChange(
     existingProduct: ProductRow,
     incomingSpecs: Record<string, unknown>
 ): Promise<{ isNew: boolean; isChanged: boolean }> {
-    const existingSnapshot = buildSpecSnapshot(existingProduct as any);
-    const incomingSnapshot = buildSpecSnapshot(incomingSpecs as any);
+    const existingSnapshot = buildSpecSnapshot(existingProduct as unknown as Record<string, string | number | boolean | null | undefined>);
+    const incomingSnapshot = buildSpecSnapshot(incomingSpecs as unknown as Record<string, string | number | boolean | null | undefined>);
 
     const newHash = generateSpecHash(incomingSnapshot);
     const oldHash = existingProduct.spec_hash;

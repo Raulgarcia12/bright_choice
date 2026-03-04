@@ -53,7 +53,7 @@ serve(async (req) => {
 
         // Category benchmarks
         const categoryMap = new Map<string, { totalEff: number; count: number }>();
-        allProducts.forEach((p: any) => {
+        allProducts.forEach((p) => {
             if (p.category) {
                 const s = categoryMap.get(p.category) || { totalEff: 0, count: 0 };
                 s.totalEff += (p.watts > 0 ? p.lumens / p.watts : 0);
@@ -66,6 +66,20 @@ serve(async (req) => {
             category,
             avgEfficacy: Math.round((s.totalEff / s.count) * 10) / 10
         }));
+
+        // Recent changes
+        const { count: recentChangeCount } = await supabase
+            .from("change_logs")
+            .select("*", { count: "exact", head: true })
+            .gte("detected_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
+
+        // Last scrape run
+        const { data: scrapeRuns } = await supabase
+            .from("scrape_runs")
+            .select("*")
+            .order("completed_at", { ascending: false })
+            .limit(1);
+        const lastRun = scrapeRuns?.[0] || null;
 
         return new Response(
             JSON.stringify({

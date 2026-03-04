@@ -4,7 +4,7 @@ import { Plus, Pencil, Trash2, Search, Mail } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { useProducts, useRegions } from '@/hooks/useProducts';
-import { useAppStore } from '@/lib/store';
+import { useAppStore, type Product } from '@/lib/store';
 import { t } from '@/lib/i18n';
 import Header from '@/components/Header';
 import { Button } from '@/components/ui/button';
@@ -95,7 +95,7 @@ export default function AdminPage() {
 
   const [search, setSearch] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editProduct, setEditProduct] = useState<any>(null);
+  const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -108,7 +108,7 @@ export default function AdminPage() {
     `${p.brand} ${p.model}`.toLowerCase().includes(search.toLowerCase())
   );
 
-  function openEdit(product: any) {
+  function openEdit(product: Product) {
     setEditProduct(product);
     setDialogOpen(true);
   }

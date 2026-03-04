@@ -21,11 +21,11 @@ import type { BaseScraper, BrandConfig, RawProduct } from './brands/BaseScraper'
 
 // Map brand names to scraper classes
 const SCRAPER_REGISTRY: Record<string, new (config: BrandConfig) => BaseScraper> = {
-    'Acuity Brands': AcuityScraper as any,
-    'Cree Lighting': CreeScraper as any,
-    'Philips': PhilipsScraper as any,
-    'RAB Lighting': RABScraper as any,
-    'MaxLite': MaxLiteScraper as any,
+    'Acuity Brands': AcuityScraper,
+    'Cree Lighting': CreeScraper,
+    'Philips': PhilipsScraper,
+    'RAB Lighting': RABScraper,
+    'MaxLite': MaxLiteScraper,
 };
 
 /**
@@ -120,12 +120,12 @@ async function processBrand(brand: BrandConfig): Promise<{
                 if (mapped.dimming) normalized.dimming = mapped.dimming.value;
 
                 // Certification flags
-                normalized.cert_ul = raw.specs['cert_ul'] === 'true' || (mapped as any).raw_cert_ul?.value === 'true' || false;
-                normalized.cert_dlc = raw.specs['cert_dlc'] === 'true' || (mapped as any).raw_cert_dlc?.value === 'true' || false;
-                normalized.cert_energy_star = raw.specs['cert_energy_star'] === 'true' || (mapped as any).raw_cert_energy_star?.value === 'true' || false;
+                normalized.cert_ul = raw.specs['cert_ul'] === 'true' || mapped['raw_cert_ul']?.value === 'true' || false;
+                normalized.cert_dlc = raw.specs['cert_dlc'] === 'true' || mapped['raw_cert_dlc']?.value === 'true' || false;
+                normalized.cert_energy_star = raw.specs['cert_energy_star'] === 'true' || mapped['raw_cert_energy_star']?.value === 'true' || false;
 
                 // Validate core spec data
-                const validation = validateProduct(normalized as any);
+                const validation = validateProduct(normalized as Record<string, string | number | null | undefined>);
                 if (!validation.isValid) {
                     logger.warn(`Skipping invalid product ${raw.model}: ${validation.errors.join('; ')}`);
                     stats.errors++;
@@ -170,7 +170,7 @@ async function processBrand(brand: BrandConfig): Promise<{
                         const result = await processProductChange(existing.id, existing, geoPayload);
                         if (result.isChanged) stats.changed++;
                     } else {
-                        const specSnapshot = buildSpecSnapshot(geoPayload as any);
+                        const specSnapshot = buildSpecSnapshot(geoPayload as Record<string, unknown>);
                         const specHash = generateSpecHash(specSnapshot);
 
                         const { error: insertError } = await supabaseAdmin
@@ -180,7 +180,7 @@ async function processBrand(brand: BrandConfig): Promise<{
                                 spec_hash: specHash,
                                 price: 0,
                                 last_scraped_at: new Date().toISOString(),
-                            } as any);
+                            } as unknown as Record<string, unknown>);
 
                         if (insertError) {
                             logger.error(`Failed to insert ${raw.model}/${variant.state_province}: ${insertError.message}`);

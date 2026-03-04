@@ -224,7 +224,7 @@ export default function ProductDetail() {
                             <CardContent>
                                 {versions && versions.length > 0 ? (
                                     <div className="space-y-4">
-                                        {versions.map((v: any) => (
+                                        {versions.map((v: { id: string; version_number: number; captured_at: string; change_summary?: string }) => (
                                             <div key={v.id} className="relative border-l-2 border-primary/20 pl-4">
                                                 <div className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-primary" />
                                                 <p className="text-sm font-semibold">Version {v.version_number}</p>
@@ -251,7 +251,7 @@ export default function ProductDetail() {
                                 </CardHeader>
                                 <CardContent>
                                     <div className="space-y-2">
-                                        {changes.map((c: any) => (
+                                        {changes.map((c: { id: string; field_name: string; old_value: string | null; new_value: string | null }) => (
                                             <div key={c.id} className="flex items-start gap-2 text-xs">
                                                 <span className="font-medium text-foreground">{c.field_name}:</span>
                                                 <span className="text-red-500 line-through">{c.old_value}</span>

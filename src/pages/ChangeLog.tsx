@@ -22,8 +22,17 @@ export default function ChangeLog() {
     const [selectedField, setSelectedField] = useState<string>('all');
 
     // Fetch all changes with product data
-    const { data: changes, isLoading } = useQuery({
-        queryKey: ['allChanges'],
+    interface ChangeLogItem {
+        id: string;
+        field_name: string;
+        old_value: string | null;
+        new_value: string | null;
+        detected_at: string;
+        products: { id: string; brand: string; model: string; category: string } | null;
+    }
+
+    const { data: changes, isLoading } = useQuery<ChangeLogItem[]>({
+        queryKey: ['change-logs'],
         queryFn: async () => {
             const { data, error } = await supabase
                 .from('change_logs')
@@ -31,15 +40,15 @@ export default function ChangeLog() {
                 .order('detected_at', { ascending: false })
                 .limit(100);
             if (error) throw error;
-            return data || [];
+            return (data as unknown as ChangeLogItem[]) || [];
         },
     });
 
     // Get unique field names for the filter
-    const fieldNames = [...new Set((changes || []).map((c: any) => c.field_name))].sort();
+    const fieldNames = [...new Set((changes || []).map((c) => c.field_name))].sort();
 
     // Filter changes
-    const filteredChanges = (changes || []).filter((c: any) => {
+    const filteredChanges = (changes || []).filter((c) => {
         const matchesSearch =
             !searchTerm ||
             c.products?.brand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -113,7 +122,7 @@ export default function ChangeLog() {
                     </Card>
                 ) : (
                     <div className="space-y-3">
-                        {filteredChanges.map((change: any, index: number) => (
+                        {filteredChanges.map((change: ChangeLogItem, index: number) => (
                             <motion.div
                                 key={change.id}
                                 initial={{ opacity: 0, x: -10 }}

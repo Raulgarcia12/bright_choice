@@ -61,12 +61,18 @@ function KPICard({ title, value, subtitle, icon: Icon, trend }: {
 // ────────────────────────────────────────────────────────────
 // Custom Tooltip for charts
 // ────────────────────────────────────────────────────────────
-function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: any[]; label?: string }) {
+interface ChartEntry {
+    color?: string;
+    name?: string;
+    value?: string | number;
+}
+
+function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: ChartEntry[]; label?: string }) {
     if (!active || !payload?.length) return null;
     return (
         <div className="rounded-xl border bg-card/95 px-3 py-2 shadow-xl backdrop-blur-sm text-xs">
             {label && <p className="mb-1 font-semibold text-foreground">{label}</p>}
-            {payload.map((entry: any, i: number) => (
+            {payload.map((entry, i) => (
                 <p key={i} style={{ color: entry.color }} className="font-medium">
                     {entry.name}: {entry.value}
                 </p>
@@ -480,7 +486,14 @@ export default function Dashboard() {
                             <CardContent>
                                 {recentChanges && recentChanges.length > 0 ? (
                                     <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
-                                        {recentChanges.map((change: any) => (
+                                        {recentChanges.map((change: {
+                                            id: string;
+                                            field_name: string;
+                                            old_value: string | null;
+                                            new_value: string | null;
+                                            detected_at: string;
+                                            products: { brand: string; model: string } | null
+                                        }) => (
                                             <div key={change.id} className="flex items-start gap-3 rounded-lg border bg-muted/20 p-3 transition-colors hover:bg-muted/40">
                                                 <div className="mt-0.5 shrink-0 rounded-full bg-amber-100 p-1.5 dark:bg-amber-900/30">
                                                     <Activity className="h-3 w-3 text-amber-600" />
