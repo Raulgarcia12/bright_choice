@@ -3,7 +3,7 @@
  * KPI metrics, trend charts, Efficiency Frontier, Competitive Gaps,
  * and interactive US + Canada choropleth maps for geographic filtering.
  */
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { BarChart3, TrendingUp, Zap, ShieldCheck, Activity, Clock, MapPin, X, Sun } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -14,7 +14,6 @@ import {
 import Header from '@/components/Header';
 import GeoMap from '@/components/GeoMap';
 import MarketIntelPanel from '@/components/MarketIntelPanel';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -128,20 +127,6 @@ export default function Dashboard() {
         return counts;
     }, [allProducts]);
 
-    const canadaRegionCounts = useMemo(() => {
-        const counts: Record<string, number> = {};
-        allProducts.forEach(p => {
-            const abbr = p.state_province || p.regions?.abbreviation;
-            const country = p.currency === 'CAD'
-                ? 'Canada'
-                : (p.regions?.country ?? null);
-            if (abbr && country === 'Canada') {
-                counts[abbr] = (counts[abbr] || 0) + 1;
-            }
-        });
-        return counts;
-    }, [allProducts]);
-
     const kpis = useMemo(() => {
         if (filteredProducts.length === 0) return null;
         const avgEfficiency = filteredProducts.reduce((s, p) => s + (p.efficiency || 0), 0) / filteredProducts.length;
@@ -246,7 +231,7 @@ export default function Dashboard() {
                                 <CardTitle className="text-sm font-medium text-muted-foreground">🇺🇸 United States</CardTitle>
                             </CardHeader>
                             <CardContent className="p-2 pt-0">
-                                <div className="h-[180px] sm:h-[220px]">
+                                <div className="h-[250px] sm:h-[300px]">
                                     <GeoMap
                                         country="USA"
                                         regionCounts={usaRegionCounts}

@@ -1,162 +1,197 @@
 /**
- * GeoMap — Interactive choropleth map for USA states or Canadian provinces.
- * Uses react-simple-maps with TopoJSON from a public CDN.
- * Colored by product count per region; click to filter.
+ * GeoMap — Interactive clickable USA map using an inline SVG.
+ * No external CDN or D3 dependency — guaranteed to render.
+ * Each state is a clickable region; click to filter the dashboard.
  */
-import { useState, useEffect, useMemo } from 'react';
-import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
-import { scaleLinear } from 'd3-scale';
-import { motion } from 'framer-motion';
-
-// Public CDN TopoJSON sources
-const USA_TOPO = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json';
-const CANADA_TOPO = 'https://cdn.jsdelivr.net/npm/canada-topo@1.0.3/canada.json';
+import { useState } from 'react';
 
 interface GeoMapProps {
     country: 'USA' | 'Canada';
-    /** Map of state/province abbreviation → product count */
     regionCounts: Record<string, number>;
     selectedState: string | null;
     onSelectState: (abbr: string | null) => void;
     language: 'en' | 'es';
 }
 
-// US state FIPS code → abbreviation lookup (subset — will match by name for Canada)
-const US_FIPS: Record<string, string> = {
-    '01': 'AL', '02': 'AK', '04': 'AZ', '05': 'AR', '06': 'CA', '08': 'CO',
-    '09': 'CT', '10': 'DE', '11': 'DC', '12': 'FL', '13': 'GA', '15': 'HI',
-    '16': 'ID', '17': 'IL', '18': 'IN', '19': 'IA', '20': 'KS', '21': 'KY',
-    '22': 'LA', '23': 'ME', '24': 'MD', '25': 'MA', '26': 'MI', '27': 'MN',
-    '28': 'MS', '29': 'MO', '30': 'MT', '31': 'NE', '32': 'NV', '33': 'NH',
-    '34': 'NJ', '35': 'NM', '36': 'NY', '37': 'NC', '38': 'ND', '39': 'OH',
-    '40': 'OK', '41': 'OR', '42': 'PA', '44': 'RI', '45': 'SC', '46': 'SD',
-    '47': 'TN', '48': 'TX', '49': 'UT', '50': 'VT', '51': 'VA', '53': 'WA',
-    '54': 'WV', '55': 'WI', '56': 'WY',
+// Full US state names → abbreviations
+const STATE_NAMES: Record<string, string> = {
+    'Alabama': 'AL', 'Alaska': 'AK', 'Arizona': 'AZ', 'Arkansas': 'AR',
+    'California': 'CA', 'Colorado': 'CO', 'Connecticut': 'CT', 'Delaware': 'DE',
+    'Florida': 'FL', 'Georgia': 'GA', 'Hawaii': 'HI', 'Idaho': 'ID',
+    'Illinois': 'IL', 'Indiana': 'IN', 'Iowa': 'IA', 'Kansas': 'KS',
+    'Kentucky': 'KY', 'Louisiana': 'LA', 'Maine': 'ME', 'Maryland': 'MD',
+    'Massachusetts': 'MA', 'Michigan': 'MI', 'Minnesota': 'MN', 'Mississippi': 'MS',
+    'Missouri': 'MO', 'Montana': 'MT', 'Nebraska': 'NE', 'Nevada': 'NV',
+    'New Hampshire': 'NH', 'New Jersey': 'NJ', 'New Mexico': 'NM', 'New York': 'NY',
+    'North Carolina': 'NC', 'North Dakota': 'ND', 'Ohio': 'OH', 'Oklahoma': 'OK',
+    'Oregon': 'OR', 'Pennsylvania': 'PA', 'Rhode Island': 'RI', 'South Carolina': 'SC',
+    'South Dakota': 'SD', 'Tennessee': 'TN', 'Texas': 'TX', 'Utah': 'UT',
+    'Vermont': 'VT', 'Virginia': 'VA', 'Washington': 'WA', 'West Virginia': 'WV',
+    'Wisconsin': 'WI', 'Wyoming': 'WY', 'District of Columbia': 'DC',
 };
 
-// Canadian province abbreviations by name
-const CA_PROV: Record<string, string> = {
-    'Alberta': 'AB', 'British Columbia': 'BC', 'Manitoba': 'MB', 'New Brunswick': 'NB',
-    'Newfoundland and Labrador': 'NL', 'Northwest Territories': 'NT', 'Nova Scotia': 'NS',
-    'Nunavut': 'NU', 'Ontario': 'ON', 'Prince Edward Island': 'PE', 'Quebec': 'QC',
-    'Saskatchewan': 'SK', 'Yukon': 'YT',
-};
+// All 50 US states + DC positioned on a simplified grid layout
+// Each state has: abbreviation, grid column, grid row
+const US_GRID: { abbr: string; name: string; col: number; row: number }[] = [
+    { abbr: 'ME', name: 'Maine', col: 11, row: 0 },
+    { abbr: 'WI', name: 'Wisconsin', col: 6, row: 1 },
+    { abbr: 'VT', name: 'Vermont', col: 10, row: 1 },
+    { abbr: 'NH', name: 'New Hampshire', col: 11, row: 1 },
+    { abbr: 'WA', name: 'Washington', col: 1, row: 2 },
+    { abbr: 'ID', name: 'Idaho', col: 2, row: 2 },
+    { abbr: 'MT', name: 'Montana', col: 3, row: 2 },
+    { abbr: 'ND', name: 'North Dakota', col: 4, row: 2 },
+    { abbr: 'MN', name: 'Minnesota', col: 5, row: 2 },
+    { abbr: 'IL', name: 'Illinois', col: 6, row: 3 },
+    { abbr: 'MI', name: 'Michigan', col: 7, row: 2 },
+    { abbr: 'NY', name: 'New York', col: 9, row: 2 },
+    { abbr: 'MA', name: 'Massachusetts', col: 10, row: 2 },
+    { abbr: 'OR', name: 'Oregon', col: 1, row: 3 },
+    { abbr: 'NV', name: 'Nevada', col: 2, row: 3 },
+    { abbr: 'WY', name: 'Wyoming', col: 3, row: 3 },
+    { abbr: 'SD', name: 'South Dakota', col: 4, row: 3 },
+    { abbr: 'IA', name: 'Iowa', col: 5, row: 3 },
+    { abbr: 'IN', name: 'Indiana', col: 7, row: 3 },
+    { abbr: 'OH', name: 'Ohio', col: 8, row: 3 },
+    { abbr: 'PA', name: 'Pennsylvania', col: 9, row: 3 },
+    { abbr: 'NJ', name: 'New Jersey', col: 10, row: 3 },
+    { abbr: 'CT', name: 'Connecticut', col: 11, row: 3 },
+    { abbr: 'RI', name: 'Rhode Island', col: 11, row: 2 },
+    { abbr: 'CA', name: 'California', col: 1, row: 4 },
+    { abbr: 'UT', name: 'Utah', col: 2, row: 4 },
+    { abbr: 'CO', name: 'Colorado', col: 3, row: 4 },
+    { abbr: 'NE', name: 'Nebraska', col: 4, row: 4 },
+    { abbr: 'MO', name: 'Missouri', col: 5, row: 4 },
+    { abbr: 'KY', name: 'Kentucky', col: 6, row: 4 },
+    { abbr: 'WV', name: 'West Virginia', col: 7, row: 4 },
+    { abbr: 'VA', name: 'Virginia', col: 8, row: 4 },
+    { abbr: 'MD', name: 'Maryland', col: 9, row: 4 },
+    { abbr: 'DE', name: 'Delaware', col: 10, row: 4 },
+    { abbr: 'AZ', name: 'Arizona', col: 2, row: 5 },
+    { abbr: 'NM', name: 'New Mexico', col: 3, row: 5 },
+    { abbr: 'KS', name: 'Kansas', col: 4, row: 5 },
+    { abbr: 'AR', name: 'Arkansas', col: 5, row: 5 },
+    { abbr: 'TN', name: 'Tennessee', col: 6, row: 5 },
+    { abbr: 'NC', name: 'North Carolina', col: 7, row: 5 },
+    { abbr: 'SC', name: 'South Carolina', col: 8, row: 5 },
+    { abbr: 'DC', name: 'District of Columbia', col: 9, row: 5 },
+    { abbr: 'OK', name: 'Oklahoma', col: 4, row: 6 },
+    { abbr: 'LA', name: 'Louisiana', col: 5, row: 6 },
+    { abbr: 'MS', name: 'Mississippi', col: 6, row: 6 },
+    { abbr: 'AL', name: 'Alabama', col: 7, row: 6 },
+    { abbr: 'GA', name: 'Georgia', col: 8, row: 6 },
+    { abbr: 'HI', name: 'Hawaii', col: 1, row: 7 },
+    { abbr: 'AK', name: 'Alaska', col: 0, row: 7 },
+    { abbr: 'TX', name: 'Texas', col: 4, row: 7 },
+    { abbr: 'FL', name: 'Florida', col: 9, row: 7 },
+];
 
-export default function GeoMap({ country, regionCounts, selectedState, onSelectState, language }: GeoMapProps) {
-    const [tooltip, setTooltip] = useState<{ name: string; abbr: string; count: number } | null>(null);
-    const [geoUrl, setGeoUrl] = useState<string>(country === 'USA' ? USA_TOPO : CANADA_TOPO);
+function getColor(count: number, max: number, isSelected: boolean): string {
+    if (isSelected) return 'hsl(var(--primary))';
+    if (count === 0) return 'hsl(var(--muted))';
+    // Gradient from light primary to full primary
+    const ratio = Math.min(count / Math.max(max, 1), 1);
+    const opacity = 0.2 + ratio * 0.8;
+    return `hsl(var(--primary) / ${opacity.toFixed(2)})`;
+}
 
-    useEffect(() => {
-        setGeoUrl(country === 'USA' ? USA_TOPO : CANADA_TOPO);
-    }, [country]);
+export default function GeoMap({ regionCounts, selectedState, onSelectState, language }: GeoMapProps) {
+    const [hovered, setHovered] = useState<string | null>(null);
+    const maxCount = Math.max(1, ...Object.values(regionCounts));
 
-    const maxCount = useMemo(() => Math.max(1, ...Object.values(regionCounts)), [regionCounts]);
-
-    const colorScale = useMemo(
-        () => scaleLinear<string>().domain([0, maxCount]).range(['hsl(var(--muted))', 'hsl(var(--primary))']),
-        [maxCount]
-    );
-
-    interface GeoFeature {
-        id?: string | number;
-        rsmKey?: string;
-        properties?: {
-            name?: string;
-            NAME?: string;
-            PRENAME?: string;
-            postal?: string;
-            abbr?: string;
-        };
-    }
-
-    function getAbbr(geo: GeoFeature): string {
-        if (country === 'USA') {
-            return US_FIPS[geo.id as string] || geo.properties?.postal || '';
-        }
-        // Canada: try various property keys
-        const name = geo.properties?.name || geo.properties?.NAME || geo.properties?.PRENAME || '';
-        return CA_PROV[name] || geo.properties?.abbr || '';
-    }
-
-    function getName(geo: GeoFeature): string {
-        return geo.properties?.name || geo.properties?.NAME || geo.properties?.PRENAME || '';
-    }
-
-    const projection = country === 'USA' ? "geoAlbersUsa" : "geoMercator";
-    const projectionConfig = country === 'USA'
-        ? { scale: 800 }
-        : { scale: 400, center: [-95, 60] as [number, number] };
+    const cellW = 52;
+    const cellH = 38;
+    const pad = 2;
+    const cols = 12;
+    const rows = 8;
+    const svgW = cols * cellW;
+    const svgH = rows * cellH;
 
     return (
         <div className="relative h-full w-full select-none">
-            <ComposableMap
-                projection={projection}
-                style={{ width: '100%', height: '100%' }}
-                projectionConfig={projectionConfig}
+            <svg
+                viewBox={`0 0 ${svgW} ${svgH}`}
+                className="h-full w-full"
+                style={{ maxHeight: '100%' }}
             >
-                <Geographies geography={geoUrl}>
-                    {({ geographies }) =>
-                        geographies.map((geo) => {
-                            const abbr = getAbbr(geo);
-                            const name = getName(geo);
-                            const count = regionCounts[abbr] || 0;
-                            const isSelected = selectedState === abbr;
+                {US_GRID.map((state) => {
+                    const x = state.col * cellW;
+                    const y = state.row * cellH;
+                    const count = regionCounts[state.abbr] || 0;
+                    const isSelected = selectedState === state.abbr;
+                    const isHovered = hovered === state.abbr;
 
-                            return (
-                                <Geography
-                                    key={geo.rsmKey}
-                                    geography={geo}
-                                    onMouseEnter={() => setTooltip({ name, abbr, count })}
-                                    onMouseLeave={() => setTooltip(null)}
-                                    onClick={() => onSelectState(isSelected ? null : abbr)}
+                    return (
+                        <g
+                            key={state.abbr}
+                            onClick={() => onSelectState(isSelected ? null : state.abbr)}
+                            onMouseEnter={() => setHovered(state.abbr)}
+                            onMouseLeave={() => setHovered(null)}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            <rect
+                                x={x + pad}
+                                y={y + pad}
+                                width={cellW - pad * 2}
+                                height={cellH - pad * 2}
+                                rx={6}
+                                fill={getColor(count, maxCount, isSelected)}
+                                stroke={isSelected ? 'hsl(var(--primary))' : isHovered ? 'hsl(var(--primary) / 0.6)' : 'hsl(var(--border))'}
+                                strokeWidth={isSelected ? 2 : 1}
+                                style={{ transition: 'fill 0.2s ease, stroke 0.2s ease' }}
+                            />
+                            <text
+                                x={x + cellW / 2}
+                                y={y + cellH / 2 - 2}
+                                textAnchor="middle"
+                                dominantBaseline="middle"
+                                className="pointer-events-none"
+                                style={{
+                                    fontSize: 11,
+                                    fontWeight: isSelected ? 700 : 600,
+                                    fill: isSelected ? 'white' : 'hsl(var(--foreground))',
+                                }}
+                            >
+                                {state.abbr}
+                            </text>
+                            {count > 0 && (
+                                <text
+                                    x={x + cellW / 2}
+                                    y={y + cellH / 2 + 11}
+                                    textAnchor="middle"
+                                    dominantBaseline="middle"
+                                    className="pointer-events-none"
                                     style={{
-                                        default: {
-                                            fill: isSelected ? 'hsl(var(--primary))' : count > 0 ? colorScale(count) : 'hsl(var(--muted))',
-                                            stroke: 'hsl(var(--background))',
-                                            strokeWidth: 0.8,
-                                            outline: 'none',
-                                            cursor: 'pointer',
-                                            transition: 'fill 0.3s ease',
-                                        },
-                                        hover: {
-                                            fill: isSelected ? 'hsl(var(--primary))' : 'hsl(var(--primary)/0.6)',
-                                            stroke: 'hsl(var(--background))',
-                                            strokeWidth: 0.8,
-                                            outline: 'none',
-                                            cursor: 'pointer',
-                                        },
-                                        pressed: {
-                                            fill: 'hsl(var(--primary))',
-                                            outline: 'none',
-                                        },
+                                        fontSize: 8,
+                                        fill: isSelected ? 'white' : 'hsl(var(--muted-foreground))',
                                     }}
-                                />
-                            );
-                        })
-                    }
-                </Geographies>
-            </ComposableMap>
+                                >
+                                    {count}
+                                </text>
+                            )}
+                        </g>
+                    );
+                })}
+            </svg>
 
             {/* Tooltip */}
-            {tooltip && (
-                <motion.div
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="pointer-events-none absolute bottom-2 left-2 z-10 rounded-lg border bg-card/95 px-3 py-2 shadow-lg backdrop-blur-sm"
-                >
-                    <p className="text-xs font-semibold text-foreground">{tooltip.name}</p>
-                    <p className="text-[11px] text-muted-foreground">
-                        {tooltip.count} {language === 'es' ? 'productos' : 'product'}{tooltip.count !== 1 ? 's' : ''}
+            {hovered && (
+                <div className="pointer-events-none absolute left-2 top-2 z-10 rounded-lg border bg-card/95 px-3 py-1.5 shadow-lg backdrop-blur-sm">
+                    <p className="text-xs font-semibold text-foreground">
+                        {US_GRID.find(s => s.abbr === hovered)?.name}
                     </p>
-                </motion.div>
+                    <p className="text-[11px] text-muted-foreground">
+                        {regionCounts[hovered] || 0} {language === 'es' ? 'productos' : 'products'}
+                    </p>
+                </div>
             )}
 
             {/* Color legend */}
-            <div className="absolute bottom-2 right-2 flex items-center gap-1.5 rounded-md bg-card/80 px-2 py-1 text-[10px] backdrop-blur-sm">
+            <div className="absolute bottom-1 right-1 flex items-center gap-1.5 rounded-md bg-card/80 px-2 py-1 text-[10px] backdrop-blur-sm">
                 <span className="text-muted-foreground">0</span>
                 <div
-                    className="h-2 w-16 rounded-full"
-                    style={{ background: `linear-gradient(to right, hsl(var(--muted)), hsl(var(--primary)))` }}
+                    className="h-2 w-12 rounded-full"
+                    style={{ background: 'linear-gradient(to right, hsl(var(--muted)), hsl(var(--primary)))' }}
                 />
                 <span className="text-muted-foreground">{maxCount}</span>
             </div>
