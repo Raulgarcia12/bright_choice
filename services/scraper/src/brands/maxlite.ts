@@ -139,7 +139,7 @@ export class MaxLiteScraper extends BaseScraper {
                     if (fullTextLower.includes('high bay') || fullTextLower.includes('highbay')) catLabel = 'High Bay';
                     else if (fullTextLower.includes('panel') || fullTextLower.includes('troffer') || fullTextLower.includes('flat panel')) catLabel = 'Panel';
                     else if (fullTextLower.includes('downlight') || fullTextLower.includes('recessed')) catLabel = 'Downlight';
-                    else if (fullTextLower.includes('tube') || fullTextLower.includes('t8') || fullTextLower.includes('t5')) catLabel = 'Tube';
+                    else if (fullTextLower.includes('tube') || fullTextLower.includes('t8') || fullTextLower.includes('t5')) catLabel = 'Linear';
                     else if (fullTextLower.includes('flood')) catLabel = 'Flood Light';
                     else if (fullTextLower.includes('wall pack')) catLabel = 'Wall Pack';
                     else if (fullTextLower.includes('area light')) catLabel = 'Area Light';
@@ -160,8 +160,9 @@ export class MaxLiteScraper extends BaseScraper {
                     // Extract specs from body HTML
                     const specs = this.extractSpecs(item.body_html || '', item.title || '');
 
-                    // Store the extracted brand in specs for the orchestrator
+                    // Store the extracted brand and seller in specs for the orchestrator
                     specs['brand_override'] = brand;
+                    specs['seller_name'] = 'Green Lighting Wholesale';
 
                     // Extract price from first variant
                     const price = parseFloat(item.variants?.[0]?.price || '0');

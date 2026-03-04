@@ -76,13 +76,15 @@ async function processBrand(brand: BrandConfig): Promise<{
                 const mapped = mapAttributes(raw.specs);
 
                 // Build normalized product data
+                const actualBrand = raw.specs['brand_override'] || brand.name;
                 const normalized: Record<string, unknown> = {
-                    brand: brand.name,
+                    brand: actualBrand,
                     model: raw.model,
                     category: raw.category || 'Bulb',
                     sku: raw.sku,
                     product_url: raw.productUrl,
                     brand_id: brand.id,
+                    seller_name: raw.specs['seller_name'] || null,
                 };
 
                 // Extract numeric values with unit conversion
@@ -163,7 +165,7 @@ async function processBrand(brand: BrandConfig): Promise<{
                     const { data: existing } = await supabaseAdmin
                         .from('products')
                         .select('*')
-                        .eq('brand', brand.name)
+                        .eq('brand', actualBrand)
                         .eq('model', raw.model)
                         .eq('state_province', variant.state_province)
                         .single();

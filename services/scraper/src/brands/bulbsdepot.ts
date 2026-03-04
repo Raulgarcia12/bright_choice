@@ -206,6 +206,8 @@ export class BulbsDepotScraper extends BaseScraper {
 
             // Extract specs
             const specs = this.extractSpecsFromSummary(summary, title);
+            specs['brand_override'] = brand;
+            specs['seller_name'] = 'BulbsDepot';
             if (priceVal > 0) specs['Price'] = String(priceVal);
 
             products.push({

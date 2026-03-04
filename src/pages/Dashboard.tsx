@@ -42,18 +42,7 @@ const BRAND_COLORS: Record<string, string> = {
     'Other': '#94a3b8',
 };
 
-// Known sellers (brand field value → seller display name)
-const KNOWN_SELLERS: Record<string, string> = {
-    'BulbsDepot': 'BulbsDepot',
-    'MaxLite': 'Green Lighting Wholesale',
-};
-
-// Brands to try to extract from BulbsDepot product titles
-const EXTRACTABLE_BRANDS = [
-    'Philips', 'GE', 'Sylvania', 'Westgate', 'Keystone', 'Eiko', 'Satco',
-    'RAB', 'MaxLite', 'Cree', 'TCP', 'Halco', 'Topaz', 'Lutron', 'Hatch',
-    'NaturaLED', 'Hubbell', 'Lithonia', 'Feit', 'Sunlite', 'Howard',
-];
+// Removed KNOWN_SELLERS and EXTRACTABLE_BRANDS as we now use DB data (p.seller_name and p.brand)
 
 // ────────────────────────────────────────────────────────────
 // KPI Card
@@ -196,8 +185,8 @@ export default function Dashboard() {
     }, [filteredProducts]);
 
     const competitiveGaps = useMemo(() => {
-        // Exclude known sellers from competitive gap — only real product brands
-        const brandProducts = filteredProducts.filter(p => !KNOWN_SELLERS[p.brand]);
+        // Now that the DB has the true product brands, we can use all filteredProducts!
+        const brandProducts = filteredProducts;
         if (brandProducts.length === 0) return [];
         const marketAvgEff = brandProducts.reduce((s, p) => s + (p.efficiency || 0), 0) / brandProducts.length;
         const marketAvgLumens = brandProducts.reduce((s, p) => s + (p.lumens || 0), 0) / brandProducts.length;
@@ -221,28 +210,14 @@ export default function Dashboard() {
         const sellerMap = new Map<string, Record<string, number>>();
         const allBrandsInSellers = new Set<string>();
 
-
         filteredProducts.forEach(p => {
-            let sellerName: string;
-            let productBrand: string;
+            // Only process products that belong to a known seller
+            if (!p.seller_name) return;
 
-            if (KNOWN_SELLERS[p.brand]) {
-                // This is a seller — extract actual brand from title
-                sellerName = KNOWN_SELLERS[p.brand];
-                const titleLower = p.model.toLowerCase();
-                productBrand = EXTRACTABLE_BRANDS.find(b =>
-                    titleLower.startsWith(b.toLowerCase()) ||
-                    titleLower.includes(b.toLowerCase() + ' ')
-                ) || 'Other';
-            } else {
-                // Not a known seller — skip for this chart
-                return;
-            }
-
-            if (!sellerMap.has(sellerName)) sellerMap.set(sellerName, {});
-            const brands = sellerMap.get(sellerName)!;
-            brands[productBrand] = (brands[productBrand] || 0) + 1;
-            allBrandsInSellers.add(productBrand);
+            if (!sellerMap.has(p.seller_name)) sellerMap.set(p.seller_name, {});
+            const brands = sellerMap.get(p.seller_name)!;
+            brands[p.brand] = (brands[p.brand] || 0) + 1;
+            allBrandsInSellers.add(p.brand);
         });
 
         const data = Array.from(sellerMap.entries()).map(([seller, brands]) => ({
