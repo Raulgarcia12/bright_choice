@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useAppStore, type Product } from '@/lib/store';
 import { calculateConvenienceScore } from '@/lib/convenienceScore';
+import { useBestPricesByState } from '@/hooks/useRetailers';
 import { t } from '@/lib/i18n';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
@@ -18,16 +19,25 @@ interface ComparatorViewProps {
 }
 
 export default function ComparatorView({ products, allProducts }: ComparatorViewProps) {
-  const { language, removeFromCompare, clearCompare } = useAppStore();
+  const { language, removeFromCompare, clearCompare, selectedState } = useAppStore();
   const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  const { data: bestPrices } = useBestPricesByState(selectedState);
 
   const scored = useMemo(
     () =>
-      products.map((p) => ({
-        product: p,
-        score: calculateConvenienceScore(p, allProducts, language),
-      })),
-    [products, allProducts, language]
+      products.map((p) => {
+        const retailerInfo = bestPrices?.[p.id] ? {
+          bestPrice: bestPrices[p.id].price,
+          retailerName: bestPrices[p.id].retailer_name
+        } : undefined;
+
+        return {
+          product: p,
+          score: calculateConvenienceScore(p, allProducts, language, retailerInfo),
+        };
+      }),
+    [products, allProducts, language, bestPrices]
   );
 
   if (products.length === 0) {

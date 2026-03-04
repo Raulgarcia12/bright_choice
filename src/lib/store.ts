@@ -48,6 +48,8 @@ interface AppState {
   setLanguage: (lang: Language) => void;
   selectedRegion: string | null;
   setSelectedRegion: (regionId: string | null) => void;
+  selectedState: string | null;
+  setSelectedState: (stateAbbr: string | null) => void;
   compareList: string[];
   addToCompare: (productId: string) => void;
   removeFromCompare: (productId: string) => void;
@@ -59,6 +61,8 @@ export const useAppStore = create<AppState>((set) => ({
   setLanguage: (language) => set({ language }),
   selectedRegion: null,
   setSelectedRegion: (selectedRegion) => set({ selectedRegion }),
+  selectedState: null,
+  setSelectedState: (selectedState) => set({ selectedState }),
   compareList: [],
   addToCompare: (productId) =>
     set((state) => {

@@ -85,9 +85,8 @@ function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: 
 // Main Dashboard
 // ────────────────────────────────────────────────────────────
 export default function Dashboard() {
-    const { selectedRegion, language } = useAppStore();
+    const { selectedRegion, language, selectedState, setSelectedState } = useAppStore();
     const { data: products } = useProducts(selectedRegion);
-    const [selectedState, setSelectedState] = useState<string | null>(null);
 
     const allProducts = useMemo(() => products || [], [products]);
 

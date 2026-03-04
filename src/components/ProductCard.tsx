@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { useAppStore, type Product } from '@/lib/store';
 import { calculateConvenienceScore } from '@/lib/convenienceScore';
 import { t, type TranslationKey } from '@/lib/i18n';
+import { useBestPricesByState } from '@/hooks/useRetailers';
 
 interface ProductCardProps {
   product: Product;
@@ -14,9 +15,17 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, allProducts }: ProductCardProps) {
-  const { language, compareList, addToCompare, removeFromCompare } = useAppStore();
+  const { language, compareList, addToCompare, removeFromCompare, selectedState } = useAppStore();
   const isInCompare = compareList.includes(product.id);
-  const score = calculateConvenienceScore(product, allProducts, language);
+
+  const { data: bestPrices } = useBestPricesByState(selectedState);
+
+  const retailerInfo = bestPrices?.[product.id] ? {
+    bestPrice: bestPrices[product.id].price,
+    retailerName: bestPrices[product.id].retailer_name
+  } : undefined;
+
+  const score = calculateConvenienceScore(product, allProducts, language, retailerInfo);
 
   const scoreColor =
     score.total >= 70 ? 'hsl(var(--score-high))' : score.total >= 40 ? 'hsl(var(--score-medium))' : 'hsl(var(--score-low))';
@@ -52,6 +61,12 @@ export default function ProductCard({ product, allProducts }: ProductCardProps) 
             <div><span className="font-medium text-foreground">{(product.lifespan / 1000).toFixed(0)}K</span> {t('hours', language)}</div>
           </div>
 
+          {retailerInfo && (
+            <div className="mb-2 flex items-center justify-between rounded bg-emerald-500/10 px-2 py-1.5 text-xs text-emerald-700 dark:text-emerald-400">
+              <span className="font-medium">Retail local: ${retailerInfo.bestPrice.toFixed(2)}</span>
+              <span className="truncate max-w-[120px] text-[10px] opacity-80" title={retailerInfo.retailerName}>{retailerInfo.retailerName}</span>
+            </div>
+          )}
           {/* Convenience Score */}
           <div className="mb-2 rounded-lg border bg-muted/20 p-2 sm:mb-3 sm:p-3">
             <div className="mb-1 flex items-center justify-between">
@@ -90,6 +105,6 @@ export default function ProductCard({ product, allProducts }: ProductCardProps) 
           </Button>
         </CardContent>
       </Card>
-    </motion.div>
+    </motion.div >
   );
 }

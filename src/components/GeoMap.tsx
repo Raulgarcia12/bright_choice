@@ -107,12 +107,8 @@ export default function GeoMap({ usaRegionCounts, canadaRegionCounts, selectedSt
         return interpolateColor(t);
     }
 
-    // Use geoMercator for a standard North America view showing both countries
-    const projection = 'geoMercator';
-    const projConfig = {
-        scale: 220,
-        center: [-96, 55] as [number, number],
-    };
+    // Use geoAlbersUsa for a standard North America USA view
+    const projection = 'geoAlbersUsa';
 
     // If both failed, show error
     if (usaError && canadaError) {
@@ -127,7 +123,6 @@ export default function GeoMap({ usaRegionCounts, canadaRegionCounts, selectedSt
         <div className="relative h-full w-full select-none overflow-hidden">
             <ComposableMap
                 projection={projection}
-                projectionConfig={projConfig}
                 width={800}
                 height={500}
                 style={{ width: '100%', height: '100%' }}
