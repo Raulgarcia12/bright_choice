@@ -45,6 +45,7 @@ const BRAND_COLORS: Record<string, string> = {
 // Known sellers (brand field value → seller display name)
 const KNOWN_SELLERS: Record<string, string> = {
     'BulbsDepot': 'BulbsDepot',
+    'MaxLite': 'Green Lighting Wholesale',
 };
 
 // Brands to try to extract from BulbsDepot product titles
@@ -220,29 +221,21 @@ export default function Dashboard() {
         const sellerMap = new Map<string, Record<string, number>>();
         const allBrandsInSellers = new Set<string>();
 
-        // MaxLite products come from Green Lighting Wholesale
-        const BRAND_TO_SELLER: Record<string, string> = {
-            'MaxLite': 'Green Lighting Wholesale',
-        };
 
         filteredProducts.forEach(p => {
             let sellerName: string;
             let productBrand: string;
 
             if (KNOWN_SELLERS[p.brand]) {
-                // This is a seller (e.g. BulbsDepot) — extract actual brand from title
+                // This is a seller — extract actual brand from title
                 sellerName = KNOWN_SELLERS[p.brand];
                 const titleLower = p.model.toLowerCase();
                 productBrand = EXTRACTABLE_BRANDS.find(b =>
                     titleLower.startsWith(b.toLowerCase()) ||
                     titleLower.includes(b.toLowerCase() + ' ')
                 ) || 'Other';
-            } else if (BRAND_TO_SELLER[p.brand]) {
-                // Known brand → seller mapping
-                sellerName = BRAND_TO_SELLER[p.brand];
-                productBrand = p.brand;
             } else {
-                // Skip other brands that aren't tied to a known seller
+                // Not a known seller — skip for this chart
                 return;
             }
 

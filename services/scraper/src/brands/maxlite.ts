@@ -1,8 +1,53 @@
+/**
+ * GreenLightingScraper
+ * Scrapes ALL products from greenlightingwholesale.com (Shopify store).
+ * Location: 405 S 22nd St, Heath, OH 43056
+ * Uses the Shopify /products.json API to get the entire catalog across all brands.
+ * Extracts actual product brand from title (MaxLite, Lithonia, Eaton, etc.).
+ */
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { BaseScraper, type RawProduct } from './BaseScraper';
 import { rateLimit } from '../utils/rateLimiter';
 
+// Known brands to extract from product titles
+const KNOWN_BRANDS = [
+    'MaxLite', 'Lithonia', 'Eaton', 'RAB', 'Cree', 'Philips', 'GE',
+    'Sylvania', 'Keystone', 'TCP', 'Satco', 'Halco', 'NaturaLED',
+    'Westgate', 'Topaz', 'Sunlite', 'Howard', 'Hatch', 'Lutron',
+    'Feit', 'Bulbrite', 'Green Creative', 'Light Efficient Design',
+    'American Lighting', 'Cooper', 'Hubbell', 'Acuity', 'Toggled',
+    'Universal', 'Advance', 'Sola', 'Big Ass Fans', 'Arctic Chill',
+    'Venture', 'Energetic', 'Archipelago', 'Ecosmart',
+];
+
+function extractBrand(title: string, vendor?: string): string {
+    // Try vendor field first (Shopify stores often have this)
+    if (vendor) {
+        const vendorClean = vendor.trim();
+        const match = KNOWN_BRANDS.find(b => b.toLowerCase() === vendorClean.toLowerCase());
+        if (match) return match;
+    }
+
+    // Try matching from title
+    const titleLower = title.toLowerCase();
+    for (const brand of KNOWN_BRANDS) {
+        if (titleLower.startsWith(brand.toLowerCase() + ' ') ||
+            titleLower.startsWith(brand.toLowerCase() + '-') ||
+            titleLower.includes(' ' + brand.toLowerCase() + ' ')) {
+            return brand;
+        }
+    }
+
+    // Check for "Brand MFG" pattern
+    const mfgMatch = title.match(/^(\w+)\s+MFG\b/i);
+    if (mfgMatch) return mfgMatch[1];
+
+    // Fallback: use first word
+    return title.split(/\s+/)[0] || 'Unknown';
+}
+
+// Exported with original name for backward compatibility
 export class MaxLiteScraper extends BaseScraper {
     private extractSpecs(text: string, title: string): Record<string, string> {
         const specs: Record<string, string> = {};
@@ -52,19 +97,21 @@ export class MaxLiteScraper extends BaseScraper {
 
     async scrape(): Promise<RawProduct[]> {
         const products: RawProduct[] = [];
+        const seenSkus = new Set<string>();
         const baseUrl = 'https://greenlightingwholesale.com';
 
         let page = 1;
         const limit = 250;
         let hasMore = true;
 
-        this.log.info(`Scraping MaxLite from ${baseUrl}`);
+        this.log.info(`Scraping ALL products from ${baseUrl} (full catalog)`);
 
         while (hasMore) {
             await rateLimit(new URL(baseUrl).hostname);
 
             try {
-                const url = `${baseUrl}/collections/maxlite/products.json?limit=${limit}&page=${page}`;
+                // Use /products.json to get ALL products, not just one collection
+                const url = `${baseUrl}/products.json?limit=${limit}&page=${page}`;
                 const response = await axios.get(url, {
                     headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
                     timeout: 20000
@@ -80,16 +127,45 @@ export class MaxLiteScraper extends BaseScraper {
                     const sku = item.variants?.[0]?.sku || item.handle;
 
                     // Filter duplicates
-                    if (products.some(p => p.sku === sku)) continue;
+                    if (seenSkus.has(sku)) continue;
+                    seenSkus.add(sku);
 
+                    // Extract actual brand from title or vendor field
+                    const brand = extractBrand(item.title || '', item.vendor);
+
+                    // Categorize
                     let catLabel = 'Bulb';
                     const fullTextLower = `${item.title} ${item.product_type} ${item.tags?.join(' ')}`.toLowerCase();
                     if (fullTextLower.includes('high bay') || fullTextLower.includes('highbay')) catLabel = 'High Bay';
-                    else if (fullTextLower.includes('panel') || fullTextLower.includes('troffer')) catLabel = 'Panel';
-                    else if (fullTextLower.includes('downlight')) catLabel = 'Downlight';
+                    else if (fullTextLower.includes('panel') || fullTextLower.includes('troffer') || fullTextLower.includes('flat panel')) catLabel = 'Panel';
+                    else if (fullTextLower.includes('downlight') || fullTextLower.includes('recessed')) catLabel = 'Downlight';
                     else if (fullTextLower.includes('tube') || fullTextLower.includes('t8') || fullTextLower.includes('t5')) catLabel = 'Tube';
+                    else if (fullTextLower.includes('flood')) catLabel = 'Flood Light';
+                    else if (fullTextLower.includes('wall pack')) catLabel = 'Wall Pack';
+                    else if (fullTextLower.includes('area light')) catLabel = 'Area Light';
+                    else if (fullTextLower.includes('canopy')) catLabel = 'Canopy';
+                    else if (fullTextLower.includes('bollard')) catLabel = 'Bollard';
+                    else if (fullTextLower.includes('strip') || fullTextLower.includes('linear')) catLabel = 'Linear';
+                    else if (fullTextLower.includes('exit') || fullTextLower.includes('emergency')) catLabel = 'Specialty';
+                    else if (fullTextLower.includes('vapor') || fullTextLower.includes('wet')) catLabel = 'Vapor Tight';
+                    else if (fullTextLower.includes('street') || fullTextLower.includes('roadway') || fullTextLower.includes('cobra')) catLabel = 'Street Light';
+                    else if (fullTextLower.includes('parking')) catLabel = 'Parking Structure';
+                    else if (fullTextLower.includes('retrofit')) catLabel = 'Retrofit';
+                    else if (fullTextLower.includes('track')) catLabel = 'Track Light';
+                    else if (fullTextLower.includes('sport')) catLabel = 'Flood Light';
+                    else if (fullTextLower.includes('fan')) catLabel = 'Specialty';
+                    else if (fullTextLower.includes('surface') || fullTextLower.includes('flush')) catLabel = 'Surface Mount';
+                    else if (fullTextLower.includes('sconce') || fullTextLower.includes('decorative') || fullTextLower.includes('vanity')) catLabel = 'Specialty';
 
+                    // Extract specs from body HTML
                     const specs = this.extractSpecs(item.body_html || '', item.title || '');
+
+                    // Store the extracted brand in specs for the orchestrator
+                    specs['brand_override'] = brand;
+
+                    // Extract price from first variant
+                    const price = parseFloat(item.variants?.[0]?.price || '0');
+                    if (price > 0) specs['Price'] = String(price);
 
                     products.push({
                         model: item.title,
@@ -98,11 +174,11 @@ export class MaxLiteScraper extends BaseScraper {
                         productUrl: `${baseUrl}/products/${item.handle}`,
                         specs,
                         rawHtml: JSON.stringify(item),
-                        geo: { country: 'USA' }, // Base distribution
+                        geo: { country: 'USA', state_province: 'OH' },
                     });
                 }
 
-                this.log.info(`MaxLite page ${page}: got ${items.length} items (total: ${products.length})`);
+                this.log.info(`GLW page ${page}: got ${items.length} items (total: ${products.length})`);
 
                 if (items.length < limit) {
                     hasMore = false;
@@ -112,12 +188,12 @@ export class MaxLiteScraper extends BaseScraper {
 
             } catch (err) {
                 const msg = err instanceof Error ? err.message : String(err);
-                this.log.warn(`MaxLite Scraper API error page ${page}: ${msg}`);
+                this.log.warn(`GLW Scraper API error page ${page}: ${msg}`);
                 hasMore = false;
             }
         }
 
-        this.log.info(`MaxLite scrape complete — ${products.length} products total`);
+        this.log.info(`Green Lighting Wholesale scrape complete — ${products.length} products total`);
         return products;
     }
 }
