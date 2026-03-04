@@ -41,7 +41,7 @@ serve(async (req) => {
             .from("change_logs")
             .select("*, products(brand, model, category)")
             .gte("detected_at", since)
-            .order("detected_at", { ascending: false }) as { data: ChangeLog[] | null, error: any };
+            .order("detected_at", { ascending: false }) as { data: ChangeLog[] | null, error: unknown };
 
         if (error) throw error;
         if (!changes || changes.length === 0) {
