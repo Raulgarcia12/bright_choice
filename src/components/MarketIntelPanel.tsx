@@ -120,11 +120,11 @@ export default function MarketIntelPanel({ stateAbbr, onClose, language }: Marke
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 20, scale: 0.98 }}
                     transition={{ duration: 0.3, ease: 'easeOut' }}
-                    className="relative"
+                    className="relative h-full"
                 >
-                    <Card className="border-primary/20 shadow-lg overflow-hidden">
+                    <Card className="border-primary/20 shadow-lg overflow-hidden h-full flex flex-col">
                         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-emerald-500 to-primary/50" />
-                        <CardHeader className="flex flex-row items-center justify-between pb-2 pt-4">
+                        <CardHeader className="flex shrink-0 flex-row items-center justify-between pb-2 pt-4">
                             <div className="flex items-center gap-2">
                                 <div className="rounded-lg bg-primary/10 p-2">
                                     <MapPin className="h-4 w-4 text-primary" />
@@ -142,7 +142,7 @@ export default function MarketIntelPanel({ stateAbbr, onClose, language }: Marke
                                 <X className="h-4 w-4" />
                             </Button>
                         </CardHeader>
-                        <CardContent className="pb-4 space-y-4">
+                        <CardContent className="flex-1 overflow-y-auto pb-4 space-y-4">
                             {isLoading ? (
                                 <div className="flex items-center justify-center py-8">
                                     <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />

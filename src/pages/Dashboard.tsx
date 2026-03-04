@@ -258,33 +258,31 @@ export default function Dashboard() {
                             </CardContent>
                         </Card>
 
-                        {/* Canada Map */}
-                        <Card className="overflow-hidden">
-                            <CardHeader className="pb-1 pt-3 px-4">
-                                <CardTitle className="text-sm font-medium text-muted-foreground">🇨🇦 Canada</CardTitle>
-                            </CardHeader>
-                            <CardContent className="p-2 pt-0">
-                                <div className="h-[180px] sm:h-[220px]">
-                                    <GeoMap
-                                        country="Canada"
-                                        regionCounts={canadaRegionCounts}
-                                        selectedState={selectedState}
-                                        onSelectState={setSelectedState}
+                        {/* Market Intelligence Panel */}
+                        <div className="flex h-[260px] sm:h-[300px]">
+                            {selectedState ? (
+                                <div className="w-full h-full overflow-hidden">
+                                    <MarketIntelPanel
+                                        stateAbbr={selectedState}
+                                        onClose={() => setSelectedState(null)}
                                         language={language}
                                     />
                                 </div>
-                            </CardContent>
-                        </Card>
+                            ) : (
+                                <Card className="w-full h-full flex items-center justify-center border-dashed bg-muted/30">
+                                    <div className="text-center text-muted-foreground p-6">
+                                        <MapPin className="mx-auto mb-3 h-8 w-8 opacity-40" />
+                                        <p className="text-sm font-medium">
+                                            {language === 'en'
+                                                ? 'Select a US state on the map to view local retailers and intelligence'
+                                                : 'Selecciona un estado en el mapa para ver vendedores e inteligencia local'}
+                                        </p>
+                                    </div>
+                                </Card>
+                            )}
+                        </div>
                     </div>
                 </motion.section>
-
-                {/* ── Market Intelligence Panel (appears on state click) ── */}
-                <MarketIntelPanel
-                    stateAbbr={selectedState}
-                    onClose={() => setSelectedState(null)}
-                    language={language}
-                />
-
                 {/* ── KPI Cards ── */}
                 {kpis ? (
                     <section>
