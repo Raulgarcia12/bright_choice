@@ -24,6 +24,36 @@ import { useQuery } from '@tanstack/react-query';
 
 const CHART_COLORS = ['#6366f1', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
 
+// Brand colors for the stacked seller chart (more variety)
+const BRAND_COLORS: Record<string, string> = {
+    'Philips': '#0066cc',
+    'Westgate': '#f97316',
+    'GE': '#facc15',
+    'Sylvania': '#a855f7',
+    'Keystone': '#14b8a6',
+    'Eiko': '#ec4899',
+    'Satco': '#84cc16',
+    'RAB': '#ef4444',
+    'MaxLite': '#22c55e',
+    'Cree': '#06b6d4',
+    'TCP': '#f59e0b',
+    'Halco': '#8b5cf6',
+    'Lutron': '#6366f1',
+    'Other': '#94a3b8',
+};
+
+// Known sellers (brand field value → seller display name)
+const KNOWN_SELLERS: Record<string, string> = {
+    'BulbsDepot': 'BulbsDepot',
+};
+
+// Brands to try to extract from BulbsDepot product titles
+const EXTRACTABLE_BRANDS = [
+    'Philips', 'GE', 'Sylvania', 'Westgate', 'Keystone', 'Eiko', 'Satco',
+    'RAB', 'MaxLite', 'Cree', 'TCP', 'Halco', 'Topaz', 'Lutron', 'Hatch',
+    'NaturaLED', 'Hubbell', 'Lithonia', 'Feit', 'Sunlite', 'Howard',
+];
+
 // ────────────────────────────────────────────────────────────
 // KPI Card
 // ────────────────────────────────────────────────────────────
@@ -165,11 +195,13 @@ export default function Dashboard() {
     }, [filteredProducts]);
 
     const competitiveGaps = useMemo(() => {
-        if (filteredProducts.length === 0) return [];
-        const marketAvgEff = filteredProducts.reduce((s, p) => s + (p.efficiency || 0), 0) / filteredProducts.length;
-        const marketAvgLumens = filteredProducts.reduce((s, p) => s + (p.lumens || 0), 0) / filteredProducts.length;
+        // Exclude known sellers from competitive gap — only real product brands
+        const brandProducts = filteredProducts.filter(p => !KNOWN_SELLERS[p.brand]);
+        if (brandProducts.length === 0) return [];
+        const marketAvgEff = brandProducts.reduce((s, p) => s + (p.efficiency || 0), 0) / brandProducts.length;
+        const marketAvgLumens = brandProducts.reduce((s, p) => s + (p.lumens || 0), 0) / brandProducts.length;
         const brandStats = new Map<string, { totalEff: number; totalLumens: number; count: number }>();
-        filteredProducts.forEach(p => {
+        brandProducts.forEach(p => {
             const s = brandStats.get(p.brand) || { totalEff: 0, totalLumens: 0, count: 0 };
             s.totalEff += p.efficiency || 0; s.totalLumens += p.lumens || 0; s.count += 1;
             brandStats.set(p.brand, s);
@@ -179,6 +211,56 @@ export default function Dashboard() {
             effGap: marketAvgEff > 0 ? ((s.totalEff / s.count - marketAvgEff) / marketAvgEff) * 100 : 0,
             lumensGap: marketAvgLumens > 0 ? ((s.totalLumens / s.count - marketAvgLumens) / marketAvgLumens) * 100 : 0,
         })).sort((a, b) => b.effGap - a.effGap);
+    }, [filteredProducts]);
+
+    // ── Seller stacked bar chart data ──
+    // Each seller gets a bar, stacked by product brand
+    const { sellerChartData, sellerBrands } = useMemo(() => {
+        // Build a map: sellerName → { brandA: count, brandB: count, ... }
+        const sellerMap = new Map<string, Record<string, number>>();
+        const allBrandsInSellers = new Set<string>();
+
+        // MaxLite products come from Green Lighting Wholesale
+        const BRAND_TO_SELLER: Record<string, string> = {
+            'MaxLite': 'Green Lighting Wholesale',
+        };
+
+        filteredProducts.forEach(p => {
+            let sellerName: string;
+            let productBrand: string;
+
+            if (KNOWN_SELLERS[p.brand]) {
+                // This is a seller (e.g. BulbsDepot) — extract actual brand from title
+                sellerName = KNOWN_SELLERS[p.brand];
+                const titleLower = p.model.toLowerCase();
+                productBrand = EXTRACTABLE_BRANDS.find(b =>
+                    titleLower.startsWith(b.toLowerCase()) ||
+                    titleLower.includes(b.toLowerCase() + ' ')
+                ) || 'Other';
+            } else if (BRAND_TO_SELLER[p.brand]) {
+                // Known brand → seller mapping
+                sellerName = BRAND_TO_SELLER[p.brand];
+                productBrand = p.brand;
+            } else {
+                // Skip other brands that aren't tied to a known seller
+                return;
+            }
+
+            if (!sellerMap.has(sellerName)) sellerMap.set(sellerName, {});
+            const brands = sellerMap.get(sellerName)!;
+            brands[productBrand] = (brands[productBrand] || 0) + 1;
+            allBrandsInSellers.add(productBrand);
+        });
+
+        const data = Array.from(sellerMap.entries()).map(([seller, brands]) => ({
+            seller,
+            ...brands,
+        }));
+
+        return {
+            sellerChartData: data,
+            sellerBrands: Array.from(allBrandsInSellers).sort(),
+        };
     }, [filteredProducts]);
 
     return (
@@ -394,6 +476,65 @@ export default function Dashboard() {
                             </CardContent>
                         </Card>
                     </motion.div>
+
+                    {/* Stacked Bar: Products by Seller */}
+                    {sellerChartData.length > 0 && (
+                        <motion.div
+                            layout
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.27 }}
+                            className="lg:col-span-2"
+                        >
+                            <Card className="shadow-sm">
+                                <CardHeader className="pb-2">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <CardTitle className="text-base">
+                                                {language === 'en' ? 'Products by Seller' : 'Productos por Vendedor'}
+                                            </CardTitle>
+                                            <p className="text-xs text-muted-foreground mt-0.5">
+                                                {language === 'en' ? 'Stacked by brand — each color is a product brand' : 'Apilado por marca — cada color es una marca de productos'}
+                                            </p>
+                                        </div>
+                                        {selectedState && (
+                                            <Badge variant="secondary" className="text-[10px] font-normal px-2 py-0">
+                                                📍 {selectedState}
+                                            </Badge>
+                                        )}
+                                    </div>
+                                </CardHeader>
+                                <CardContent>
+                                    <ResponsiveContainer width="100%" height={300}>
+                                        <BarChart data={sellerChartData} margin={{ top: 8, right: 16, bottom: 40, left: 0 }}>
+                                            <CartesianGrid vertical={false} strokeDasharray="3 3" strokeOpacity={0.4} />
+                                            <XAxis
+                                                dataKey="seller"
+                                                axisLine={false}
+                                                tickLine={false}
+                                                tick={{ fontSize: 11, fontWeight: 600 }}
+                                                interval={0}
+                                            />
+                                            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10 }} />
+                                            <Tooltip content={<ChartTooltip />} />
+                                            <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 11 }} />
+                                            {sellerBrands.map((brand) => (
+                                                <Bar
+                                                    key={brand}
+                                                    dataKey={brand}
+                                                    stackId="seller"
+                                                    fill={BRAND_COLORS[brand] || CHART_COLORS[sellerBrands.indexOf(brand) % CHART_COLORS.length]}
+                                                    radius={sellerBrands.indexOf(brand) === sellerBrands.length - 1 ? [4, 4, 0, 0] : [0, 0, 0, 0]}
+                                                    isAnimationActive={true}
+                                                    animationDuration={800}
+                                                />
+                                            ))}
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+                    )}
 
                     {/* Efficiency Frontier — full width */}
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="lg:col-span-2">
