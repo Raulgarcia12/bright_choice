@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useAppStore } from '@/lib/store';
 import { t } from '@/lib/i18n';
+import { analytics } from '@/lib/analytics';
 
 /* ────────────────────────────────────────────
    Helper: Section wrapper with scroll reveal
@@ -191,6 +192,7 @@ export default function WelcomePage() {
             setSent(true);
             toast({ title: t('okSend', language) });
             setForm({ full_name: '', email: '', company: '' });
+            analytics.contactFormSubmitted();
         }
     }
 

@@ -10,6 +10,7 @@ import { useAppStore } from '@/lib/store';
 import { useAuth } from '@/hooks/useAuth';
 import { t } from '@/lib/i18n';
 import { useTheme } from '@/hooks/useTheme';
+import { analytics } from '@/lib/analytics';
 
 const NAV_ITEMS = [
   { to: '/', label: 'Welcome', labelEs: 'Bienvenida', icon: Home, exact: true },
@@ -94,7 +95,11 @@ export default function Header() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setLanguage(language === 'en' ? 'es' : 'en')}
+            onClick={() => {
+              const newLang = language === 'en' ? 'es' : 'en';
+              setLanguage(newLang);
+              analytics.languageSwitched(newLang);
+            }}
             className="h-9 gap-1 rounded-lg font-semibold tracking-wide text-xs"
           >
             <Globe className="h-3.5 w-3.5" />
