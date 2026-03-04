@@ -23,7 +23,7 @@ const Index = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
 
-  const allProducts = products || [];
+  const allProducts = useMemo(() => products || [], [products]);
   const filtered = useMemo(() => applyFilters(allProducts, filters), [allProducts, filters]);
 
   // Reset to page 1 whenever filters or products change

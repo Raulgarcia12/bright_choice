@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
-import { useAppStore } from '@/lib/store';
+import { useAppStore, type Product } from '@/lib/store';
 import { calculateConvenienceScore } from '@/lib/convenienceScore';
 import { useProducts } from '@/hooks/useProducts';
 
@@ -31,7 +31,7 @@ export default function ProductDetail() {
                 .eq('id', id!)
                 .single();
             if (error) throw error;
-            return data;
+            return data as unknown as Product;
         },
         enabled: !!id,
     });
@@ -96,8 +96,8 @@ export default function ProductDetail() {
         );
     }
 
-    const score = allProducts
-        ? calculateConvenienceScore(product as any, allProducts, language)
+    const score = allProducts && product
+        ? calculateConvenienceScore(product, allProducts, language)
         : null;
 
     return (
@@ -195,9 +195,9 @@ export default function ProductDetail() {
                                     </div>
                                 </div>
 
-                                {(product as any).product_url && (
+                                {product.product_url && (
                                     <a
-                                        href={(product as any).product_url}
+                                        href={product.product_url}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="mt-4 inline-flex items-center gap-1 text-sm text-primary hover:underline"

@@ -61,7 +61,7 @@ function KPICard({ title, value, subtitle, icon: Icon, trend }: {
 // ────────────────────────────────────────────────────────────
 // Custom Tooltip for charts
 // ────────────────────────────────────────────────────────────
-function ChartTooltip({ active, payload, label }: any) {
+function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: any[]; label?: string }) {
     if (!active || !payload?.length) return null;
     return (
         <div className="rounded-xl border bg-card/95 px-3 py-2 shadow-xl backdrop-blur-sm text-xs">
@@ -83,13 +83,13 @@ export default function Dashboard() {
     const { data: products } = useProducts(selectedRegion);
     const [selectedState, setSelectedState] = useState<string | null>(null);
 
-    const allProducts = products || [];
+    const allProducts = useMemo(() => products || [], [products]);
 
     // Filter products by selected US/CA state
     const filteredProducts = useMemo(() => {
         if (!selectedState) return allProducts;
         return allProducts.filter(p => {
-            const state = p.state_province || (p as any).regions?.abbreviation;
+            const state = p.state_province || p.regions?.abbreviation;
             return state === selectedState;
         });
     }, [allProducts, selectedState]);
@@ -112,10 +112,10 @@ export default function Dashboard() {
         const counts: Record<string, number> = {};
         allProducts.forEach(p => {
             // Prefer direct field; fall back to joined region
-            const abbr = p.state_province || (p as any).regions?.abbreviation;
+            const abbr = p.state_province || p.regions?.abbreviation;
             const country = p.currency === 'USD'
                 ? 'USA'
-                : ((p as any).regions?.country ?? null);
+                : (p.regions?.country ?? null);
             if (abbr && country === 'USA') {
                 counts[abbr] = (counts[abbr] || 0) + 1;
             }
@@ -126,10 +126,10 @@ export default function Dashboard() {
     const canadaRegionCounts = useMemo(() => {
         const counts: Record<string, number> = {};
         allProducts.forEach(p => {
-            const abbr = p.state_province || (p as any).regions?.abbreviation;
+            const abbr = p.state_province || p.regions?.abbreviation;
             const country = p.currency === 'CAD'
                 ? 'Canada'
-                : ((p as any).regions?.country ?? null);
+                : (p.regions?.country ?? null);
             if (abbr && country === 'Canada') {
                 counts[abbr] = (counts[abbr] || 0) + 1;
             }

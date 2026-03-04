@@ -87,12 +87,12 @@ export function useRetailersByState(stateAbbr: string | null) {
                 if (error) throw error;
 
                 if (data && data.length > 0) {
-                    return data.map((r: any) => ({
+                    return data.map((r: { reported_clients?: unknown } & Record<string, unknown>) => ({
                         ...r,
                         reported_clients: Array.isArray(r.reported_clients)
                             ? r.reported_clients
                             : [],
-                    })) as Retailer[];
+                    })) as unknown as Retailer[];
                 }
             } catch {
                 // Table might not exist yet — fall through to mock
