@@ -8,10 +8,14 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const groq = new Groq({ apiKey: Deno.env.get("GROQ_API_KEY") || "" });
-
 // --- Agent Loop ---
 async function runAgentLoop(userMessage: string, userId: string): Promise<string> {
+  const apiKey = Deno.env.get("GROQ_API_KEY");
+  if (!apiKey) {
+    throw new Error("GROQ_API_KEY is not set in environment variables");
+  }
+  const groq = new Groq({ apiKey });
+
   // Basic history array (In production, replace with actual DB history fetch using the Supabase Client)
   const messages = [
     {
